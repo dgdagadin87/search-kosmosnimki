@@ -4,6 +4,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import css from 'rollup-plugin-css-porter';
 import cpy from 'rollup-plugin-cpy';
 import pkg from './package.json';
+import serve from 'rollup-plugin-serve';
 
 export default [
     {
@@ -33,7 +34,12 @@ export default [
                 { files: 'src/fonts/*.woff', dest: 'dist/fonts' },
                 { files: 'src/img/*.*', dest: 'dist/img' },
             ]),
-            babel()
+            babel(),
+            serve({
+                contentBase:['', 'dist'],
+                host: 'localhost',
+                port: 8080,
+            })
         ]
     }
 ]; 
