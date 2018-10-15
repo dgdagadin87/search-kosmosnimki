@@ -5,6 +5,7 @@ import css from 'rollup-plugin-css-porter';
 import cpy from 'rollup-plugin-cpy';
 import pkg from './package.json';
 import serve from 'rollup-plugin-serve';
+import livereload from 'rollup-plugin-livereload';
 
 export default [
     {
@@ -39,7 +40,8 @@ export default [
                 contentBase:['', 'dist'],
                 host: 'localhost',
                 port: 8080,
-            })
+            }),
+            livereload('dist')
         ]
     }
 ]; 
