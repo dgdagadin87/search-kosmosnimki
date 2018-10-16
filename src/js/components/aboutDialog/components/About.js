@@ -7,7 +7,7 @@ import { VERSION, VERSION_DATE } from '../../../config/constants/constants';
 
 
 class About extends FloatingPanel {
-    constructor (container, {text}) {
+    constructor (container, {text, events}) {
         const {left, top} = getWindowCenter();
         super(container, {id: 'about.dialog', left, top, modal: true});
         this._text = text;
@@ -24,10 +24,7 @@ class About extends FloatingPanel {
             <div><ul>${this._text.split(/\r?\n/g).map(x => `<li>${x}</li>`).join('')}</ul></div>
         </div>
         <div class="about-link">${Translations.getText('about.help')}</div>`;
-        this._container.querySelector('.about-link').addEventListener('click', e => {
-            window.open ('https://scanex.github.io/Documentation/Catalog/index.html', '_blank');
-            this.hide();
-        });
+        this._container.querySelector('.about-link').addEventListener('click', e => events.trigger('click'));
     }
 }
 
