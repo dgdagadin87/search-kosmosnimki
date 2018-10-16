@@ -7,3 +7,9 @@ import '../../css/fonts.css';
 
 // scanex-auth
 import 'scanex-auth/dist/scanex-auth.css';
+
+// floating-panel
+import 'scanex-float-panel/dist/scanex-float-panel.css';
+
+// about
+import '../../css/about.css';

@@ -1,0 +1,34 @@
+import FloatingPanel from 'scanex-float-panel';
+
+import Translations from 'scanex-translations';
+
+import { getWindowCenter } from '../../../miskUtils/utils';
+import { VERSION, VERSION_DATE } from '../../../config/constants/constants';
+
+
+class About extends FloatingPanel {
+    constructor (container, {text}) {
+        const {left, top} = getWindowCenter();
+        super(container, {id: 'about.dialog', left, top, modal: true});
+        this._text = text;
+        this._container.classList.add('about-dialog');
+        this._content.innerHTML = `<div class="logo-symbol-about"></div>        
+        <div class="about-version">
+            <div></div>
+            <div>${Translations.getText('about.version')} ${VERSION}</div>
+            <div></div>
+        </div>
+        <div class="about-date">${moment(VERSION_DATE).format('L')}</div>
+        <div class="about-news">
+            <div>${Translations.getText('about.news')}</div>
+            <div><ul>${this._text.split(/\r?\n/g).map(x => `<li>${x}</li>`).join('')}</ul></div>
+        </div>
+        <div class="about-link">${Translations.getText('about.help')}</div>`;
+        this._container.querySelector('.about-link').addEventListener('click', e => {
+            window.open ('https://scanex.github.io/Documentation/Catalog/index.html', '_blank');
+            this.hide();
+        });
+    }
+}
+
+export default About;

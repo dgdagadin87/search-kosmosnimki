@@ -39,6 +39,7 @@
     "@babel/polyfill": "^7.0.0",
     "scanex-auth": "git+ssh://git@ssh.github.com:443/Scanex/Authentication.git",
     "scanex-translations": "git+https://github.com/Scanex/Translations.git",
+    "scanex-float-panel": "git+https://github.com/Scanex/FloatingPanel.git",
     "underscore": "^1.9.1"
   }
 }
