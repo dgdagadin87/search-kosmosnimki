@@ -6,11 +6,18 @@ import Application from './core/Application';
 import CatalogResourceServerService from './services/catalogResourceServer/CatalogResourceServerService';
 import GmxResourceServerService from './services/gmxResourceServer/GmxResourceServerService';
 
+import AuthWidgetComponent from './components/authWIdget/AuthWidgetComponent';
+
 
 const application = new Application({
 
     // components
-    components: [],
+    components: [
+        {
+            index: 'authWidget',
+            constructor: AuthWidgetComponent
+        }
+    ],
 
     // services
     services: [

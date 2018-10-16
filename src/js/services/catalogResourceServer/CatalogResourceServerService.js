@@ -17,8 +17,7 @@ export default class AuthManagerService {
 
     _getAuthBaseUrl() {
 
-        //return `${location.protocol}//${location.host}${location.pathname.substr(0, location.pathname.lastIndexOf('/'))}`;
-        return `http://localhost/catalog/${location.pathname.substr(0, location.pathname.lastIndexOf('/'))}`;
+        return `${location.protocol}//${location.host}${location.pathname.substr(0, location.pathname.lastIndexOf('/'))}`;
     }
 
     getAuthManager() {

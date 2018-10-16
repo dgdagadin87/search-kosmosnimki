@@ -14,12 +14,16 @@ import DataStore from './DataStore';
 
 import MapComponent from './Map';
 
+import Events from './Events';
+
 
 class Application {
 
     constructor(config) {
 
         this._config = config;
+
+        this._events = new Events();
     }
 
     async start() {
@@ -33,6 +37,8 @@ class Application {
         await this._loadCommonData();
 
         await this._initMap();
+
+        this._addComponents();
 
     }
 
@@ -149,6 +155,26 @@ class Application {
         this._mapComponent = mapComponent;
     }
 
+    _addComponents() {
+
+        const {components = []} = this._config;
+
+        this._components = {};
+
+        for (let i = 0; i < components.length; i++ ) {
+
+            const currentComponent = components[i];
+            const {index, constructor} = currentComponent;
+
+            this._components[index] = new constructor({
+                application: this,
+                map: this.getMap()
+            });
+
+            this._components[index].init();
+        }
+    }
+
     _errorHandle(e) {
 
         window.console.error(e);
@@ -157,6 +183,11 @@ class Application {
     getService(index) {
 
         return this._services[index];
+    }
+
+    getComponent(index) {
+
+        return this._components[index];
     }
 
     getStore() {
@@ -177,6 +208,11 @@ class Application {
     getMapComponent() {
 
         return this._mapComponent;
+    }
+
+    getAppEvents() {
+
+        return this._events;
     }
 
 }
