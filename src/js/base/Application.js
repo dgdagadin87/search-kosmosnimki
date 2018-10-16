@@ -12,6 +12,8 @@ import {
 
 import DataStore from './DataStore';
 
+import MapComponent from './Map';
+
 
 class Application {
 
@@ -30,27 +32,16 @@ class Application {
 
         await this._loadCommonData();
 
-    }
+        await this._initMap();
 
-    _initStore() {
-
-        const {store} = this._config;
-
-        const dataStore = new DataStore(store);
-        this._dataStore = dataStore;
-    }
-
-    _setLocale() {
-
-        const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);  
-        const viewState = JSON.parse (storedState) || {};
-        Translations.setLanguage (viewState.lang || DEFAULT_LANGUAGE);
-        L.gmxLocale.setLanguage(viewState.lang || DEFAULT_LANGUAGE);
     }
 
     async _initMap() {
 
-        console.log('Map!');
+        const mapComponent = new MapComponent();
+        await mapComponent.loadMap();
+
+        this._mapComponent = mapComponent;
     }
 
     async _loadCommonData() {
@@ -125,6 +116,29 @@ class Application {
         store.setConstantData('about', text);
     }
 
+    _errorHandle(e) {
+
+        window.console.error(e);
+    }
+
+    _initStore() {
+
+        const {store} = this._config;
+
+        const dataStore = new DataStore(store);
+        this._dataStore = dataStore;
+    }
+
+    _setLocale() {
+
+        const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);  
+        const viewState = JSON.parse (storedState) || {};
+        Translations.setLanguage (viewState.lang || DEFAULT_LANGUAGE);
+        L.gmxLocale.setLanguage(viewState.lang || DEFAULT_LANGUAGE);
+    }
+
+    
+
     _addServices() {
 
         const {services = []} = this._config;
@@ -142,11 +156,6 @@ class Application {
         }
     }
 
-    _errorHandle(e) {
-
-        window.console.error(e);
-    }
-
     getService(index) {
 
         return this._services[index];
@@ -155,6 +164,21 @@ class Application {
     getStore() {
 
         return this._dataStore;
+    }
+
+    getMap() {
+
+        return this._mapComponent.getMap();
+    }
+
+    getMapContainer() {
+
+        return this._mapComponent.getMapContainer()
+    }
+
+    getMapComponent() {
+
+        return this._mapComponent;
     }
 
 }
