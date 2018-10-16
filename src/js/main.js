@@ -1,7 +1,7 @@
 import './cssEntry/cssEntry';
 import './config/translations/common';
 
-import Application from './base/Application';
+import Application from './core/Application';
 
 import CatalogResourceServerService from './services/catalogResourceServer/CatalogResourceServerService';
 import GmxResourceServerService from './services/gmxResourceServer/GmxResourceServerService';

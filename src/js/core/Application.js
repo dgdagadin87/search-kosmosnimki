@@ -36,12 +36,37 @@ class Application {
 
     }
 
-    async _initMap() {
+    _initStore() {
 
-        const mapComponent = new MapComponent();
-        await mapComponent.loadMap();
+        const {store} = this._config;
 
-        this._mapComponent = mapComponent;
+        const dataStore = new DataStore(store);
+        this._dataStore = dataStore;
+    }
+
+    _setLocale() {
+
+        const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);  
+        const viewState = JSON.parse (storedState) || {};
+        Translations.setLanguage (viewState.lang || DEFAULT_LANGUAGE);
+        L.gmxLocale.setLanguage(viewState.lang || DEFAULT_LANGUAGE);
+    }
+
+    _addServices() {
+
+        const {services = []} = this._config;
+
+        this._services = {};
+
+        for (let i = 0; i < services.length; i++ ) {
+
+            const currentService = services[i];
+            const {index, constructor} = currentService;
+
+            this._services[index] = new constructor({
+                application: this
+            });
+        }
     }
 
     async _loadCommonData() {
@@ -116,44 +141,17 @@ class Application {
         store.setConstantData('about', text);
     }
 
+    async _initMap() {
+
+        const mapComponent = new MapComponent();
+        await mapComponent.loadMap();
+
+        this._mapComponent = mapComponent;
+    }
+
     _errorHandle(e) {
 
         window.console.error(e);
-    }
-
-    _initStore() {
-
-        const {store} = this._config;
-
-        const dataStore = new DataStore(store);
-        this._dataStore = dataStore;
-    }
-
-    _setLocale() {
-
-        const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);  
-        const viewState = JSON.parse (storedState) || {};
-        Translations.setLanguage (viewState.lang || DEFAULT_LANGUAGE);
-        L.gmxLocale.setLanguage(viewState.lang || DEFAULT_LANGUAGE);
-    }
-
-    
-
-    _addServices() {
-
-        const {services = []} = this._config;
-
-        this._services = {};
-
-        for (let i = 0; i < services.length; i++ ) {
-
-            const currentService = services[i];
-            const {index, constructor} = currentService;
-
-            this._services[index] = new constructor({
-                application: this
-            });
-        }
     }
 
     getService(index) {
