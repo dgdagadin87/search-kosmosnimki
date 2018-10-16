@@ -15,4 +15,9 @@ export default class GmxResourceServerService {
         return this._gmxResourceService;
     }
 
+    getLayerId(params = {}) {
+
+        return this._gmxResourceService.sendGetRequest('Layer/GetLayerInfo.ashx', params);
+    }
+
 }

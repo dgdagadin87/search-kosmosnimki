@@ -1,3 +1,6 @@
+const ACCESS_LAYER_ID = '9077D16CFE374967A8C57C78095F34EA';
+const ACCESS_USER_ROLE = 'scanex';
+
 const LOCAL_STORAGE_KEY = 'view_state';
 
 const RESULT_MAX_COUNT = 1000;
@@ -18,10 +21,14 @@ const DEFAULT_LANGUAGE = 'rus';
 const NON_EDIT_LINE_STYLE = {
     fill: false,
     weight: 2,
-    opacity: 1,
+    opacity: 1
 };
 
+const VERSION_PATH = 'dist/version-';
+
 export {
+    ACCESS_LAYER_ID,
+    ACCESS_USER_ROLE,
     LOCAL_STORAGE_KEY,
     RESULT_MAX_COUNT,
     RESULT_MAX_COUNT_PLUS_ONE,
@@ -31,5 +38,6 @@ export {
     VERSION, VERSION_DATE,
     LAYER_ID,
     DEFAULT_LANGUAGE,
-    NON_EDIT_LINE_STYLE
+    NON_EDIT_LINE_STYLE,
+    VERSION_PATH
 };

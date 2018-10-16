@@ -4,7 +4,10 @@ import Translations from 'scanex-translations';
 
 import {
     DEFAULT_LANGUAGE,
-    LOCAL_STORAGE_KEY
+    LOCAL_STORAGE_KEY,
+    ACCESS_LAYER_ID,
+    ACCESS_USER_ROLE,
+    VERSION_PATH
 } from '../config/constants/constants';
 
 import DataStore from './DataStore';
@@ -45,19 +48,81 @@ class Application {
         L.gmxLocale.setLanguage(viewState.lang || DEFAULT_LANGUAGE);
     }
 
+    async _initMap() {
+
+        console.log('Map!');
+    }
+
     async _loadCommonData() {
+
+        await this._getUserInfo();
+
+        await this._checkAccess();
+
+        await this._loadVersion();
+    }
+
+    async _getUserInfo() {
 
         const catalogService = this.getService('catalogServer');
 
+        let userInfo = {};
         try {
-            const userData = await catalogService.getUserInfo();
-            console.log(userData);
+            const response = await catalogService.getUserInfo();
+            const { ID, FullName, Email, Phone, Organization } = response.Result;
+            userInfo = {
+                IsAuthenticated: true,
+                ID: ID,
+                FullName: FullName,
+                Email: Email,
+                Phone: Phone,
+                Organization: Organization,
+            };
         }
         catch(e) {
             console.log('userInfoExcept', e);
-            const store = this.getStore();
-            store.setConstantData('userInfo', { IsAuthenticated: false });
+            userInfo = { IsAuthenticated: false };
         }
+
+        const store = this.getStore();
+        store.setConstantData('userInfo', userInfo);
+    }
+
+    async _checkAccess() {
+
+        const store = this.getStore();
+        const userInfo = store.getConstantData('userInfo');
+
+        const gmxService = this.getService('gmxServer');
+
+        try {
+            const response = await gmxService.getLayerId({
+                layerID: ACCESS_LAYER_ID
+            });
+            const {Status, Result = {}} = response;
+            const {LayerID} = Result;
+
+            if (Status === 'ok' && Result && LayerID === ACCESS_LAYER_ID) {
+                userInfo['Role'] = ACCESS_USER_ROLE;
+                store.setConstantData('userInfo', userInfo);
+            }
+        }
+        catch(e) {
+            console.log('checkAccessExcept', e);
+        }
+    }
+
+    async _loadVersion() {
+
+        const language = Translations.getLanguage();
+        const versionPath = VERSION_PATH + language + '.txt';
+
+        const response = await fetch(versionPath);
+
+        const text = await response.text();
+        
+        const store = this.getStore();
+        store.setConstantData('about', text);
     }
 
     _addServices() {

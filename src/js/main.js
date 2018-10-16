@@ -28,7 +28,8 @@ const application = new Application({
     store: {
         'name': 'searchStore',
         'constant': [
-            'userInfo'
+            'userInfo',
+            'about'
         ]
     }
 
