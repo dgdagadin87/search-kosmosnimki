@@ -19,7 +19,10 @@ export default class AboutDialogComponent extends BaseComponent {
         const store = application.getStore();
         const aboutText = store.getConstantData('about');
 
-        this._component = new About(this._container, {text: aboutText});
+        this._component = new About(this._container, {
+            text: aboutText,
+            events: this.events
+        });
         this._component.hide();
 
         this._bindEvents();
@@ -30,14 +33,16 @@ export default class AboutDialogComponent extends BaseComponent {
         const application = this.getApplication();
         const appEvents = application.getAppEvents();
 
+        const { events: localEvents } = this;
+
         appEvents.on('helpButton:click', () => {
             this._component.show();
         });
 
-        /*this._component.addEventListener('logout', () => {
-            //localStorage.setItem('view_state', JSON.stringify(get_state()));
-            window.location.reload(true);
-        });*/
+        localEvents.on('click', () => {
+            window.open ('https://scanex.github.io/Documentation/Catalog/index.html', '_blank');
+            this._component.hide();
+        });
     }
 
 }
