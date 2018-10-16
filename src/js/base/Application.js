@@ -1,3 +1,5 @@
+import "@babel/polyfill";
+
 import Translations from 'scanex-translations';
 
 import {
@@ -15,32 +17,47 @@ class Application {
         this._config = config;
     }
 
-    start() {
+    async start() {
 
         this._addServices();
 
         this._initStore();
 
-        this._loadLocale();
-    }
+        this._setLocale();
 
-    _addComponent(component) {
+        await this._loadCommonData();
 
-        //console.log(component);
     }
 
     _initStore() {
 
-        const dataStore = new DataStore();
+        const {store} = this._config;
+
+        const dataStore = new DataStore(store);
         this._dataStore = dataStore;
     }
 
-    _loadLocale() {
+    _setLocale() {
 
         const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);  
         const viewState = JSON.parse (storedState) || {};
         Translations.setLanguage (viewState.lang || DEFAULT_LANGUAGE);
         L.gmxLocale.setLanguage(viewState.lang || DEFAULT_LANGUAGE);
+    }
+
+    async _loadCommonData() {
+
+        const catalogService = this.getService('catalogServer');
+
+        try {
+            const userData = await catalogService.getUserInfo();
+            console.log(userData);
+        }
+        catch(e) {
+            console.log('userInfoExcept', e);
+            const store = this.getStore();
+            store.setConstantData('userInfo', { IsAuthenticated: false });
+        }
     }
 
     _addServices() {
@@ -49,12 +66,30 @@ class Application {
 
         this._services = {};
 
-        services.forEach(service => this._addService(service));
+        for (let i = 0; i < services.length; i++ ) {
+
+            const currentService = services[i];
+            const {index, constructor} = currentService;
+
+            this._services[index] = new constructor({
+                application: this
+            });
+        }
     }
 
-    _addService(service) {
+    _errorHandle(e) {
 
-        //console.log(service);
+        window.console.error(e);
+    }
+
+    getService(index) {
+
+        return this._services[index];
+    }
+
+    getStore() {
+
+        return this._dataStore;
     }
 
 }

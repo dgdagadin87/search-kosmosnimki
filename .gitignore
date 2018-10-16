@@ -59,3 +59,14 @@ typings/
 
 # dist
 dist
+
+# asp
+*.ashx
+*.asax
+as.config
+cs.config
+web.config
+packages.config
+crossdomain.xml
+bin
+App_Code
