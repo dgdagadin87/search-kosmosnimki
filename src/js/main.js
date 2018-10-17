@@ -10,7 +10,9 @@ import GmxResourceServerService from './services/gmxResourceServer/GmxResourceSe
 import HelpButtonComponent from './components/helpButton/HelpButtonComponent';
 import AuthWidgetComponent from './components/authWIdget/AuthWidgetComponent';
 import LangWidgetComponent from './components/langWIdget/LangWidgetComponent';
-import AboutComponent from './components/aboutDialog/AboutDialogComponent';
+import MapControlsComponent from './components/mapControls/MapControlsComponent';
+
+import AboutDialogComponent from './components/aboutDialog/AboutDialogComponent';
 
 
 const application = new Application({
@@ -29,11 +31,15 @@ const application = new Application({
             index: 'langWidget',
             constructor: LangWidgetComponent
         },
+        {
+            index: 'mapControls',
+            constructor: MapControlsComponent
+        },
 
         // dialogs
         {
             index: 'about',
-            constructor: AboutComponent
+            constructor: AboutDialogComponent
         }
     ],
 

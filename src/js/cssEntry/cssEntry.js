@@ -16,3 +16,6 @@ import 'scanex-float-panel/dist/scanex-float-panel.css';
 
 // scanex-lang-widget
 import 'scanex-lang-widget/dist/scanex-lang-widget.css';
+
+// leaflet-iconlayers
+import 'leaflet-iconlayers/dist/iconLayers.css';
