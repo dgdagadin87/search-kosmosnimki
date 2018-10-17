@@ -4,7 +4,7 @@ import IconLayers from 'leaflet-iconlayers';
 import BaseComponent from '../../../../base/BaseComponent';
 
 
-export default class BaseLayesrComponent extends BaseComponent {
+export default class BaseLayersComponent extends BaseComponent {
 
 
     constructor(props) {
