@@ -1,5 +1,8 @@
 import BaseComponent from '../../base/BaseComponent';
 
+import { isMobile } from '../../miskUtils/utils';
+
+import DrawingsControlComponent from './components/drawingsControl/DrawingsControlComponent';
 import BaseLayersComponent from './components/baseLayers/BaseLayersComponent';
 import ZoomComponent from './components/zoom/ZoomComponent';
 import BoxZoomComponent from './components/boxZoom/BoxZoomComponent';
@@ -13,16 +16,20 @@ export default class MapControlsComponent extends BaseComponent {
 
         this._mapControlsPrepare();
 
+        this._drawingsControlComponent = new DrawingsControlComponent(props);
         this._baseLayersComponent = new BaseLayersComponent(props);
         this._zoomComponent = new ZoomComponent(props);
-        this._boxZoomComponent = new BoxZoomComponent(props);
+
+        this._boxZoomComponent = isMobile() ? false : new BoxZoomComponent(props);
     }
 
     init() {
 
+        this._drawingsControlComponent.init();
         this._baseLayersComponent.init();
         this._zoomComponent.init();
-        this._boxZoomComponent.init();
+
+        !isMobile() && this._boxZoomComponent.init();
     }
 
     _mapControlsPrepare() {
@@ -42,7 +49,7 @@ export default class MapControlsComponent extends BaseComponent {
 
     getBaseLayersComponent() {
 
-        return this._baseLayersComponent ;
+        return this._baseLayersComponent;
     }
 
 }

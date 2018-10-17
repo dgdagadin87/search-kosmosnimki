@@ -9,7 +9,9 @@ import  {
 
 export default class Map {
 
-    constructor() {
+    constructor(config) {
+
+        const {application} = config;
 
         const mapContainer = document.getElementById(MAP_CONTAINER_ID);
 
@@ -19,6 +21,8 @@ export default class Map {
 
         this._mapContainer = mapContainer;
         this._map = map;
+
+        this._application = application;
 
         this._resizeMap();
 

@@ -149,7 +149,9 @@ class Application {
 
     async _initMap() {
 
-        const mapComponent = new MapComponent();
+        const mapComponent = new MapComponent({
+            application: this
+        });
         await mapComponent.loadMap();
 
         this._mapComponent = mapComponent;
