@@ -9,6 +9,7 @@ import GmxResourceServerService from './services/gmxResourceServer/GmxResourceSe
 
 import HelpButtonComponent from './components/helpButton/HelpButtonComponent';
 import AuthWidgetComponent from './components/authWIdget/AuthWidgetComponent';
+import LangWidgetComponent from './components/langWIdget/LangWidgetComponent';
 import AboutComponent from './components/aboutDialog/AboutDialogComponent';
 
 
@@ -23,6 +24,10 @@ const application = new Application({
         {
             index: 'authWidget',
             constructor: AuthWidgetComponent
+        },
+        {
+            index: 'langWidget',
+            constructor: LangWidgetComponent
         },
 
         // dialogs
