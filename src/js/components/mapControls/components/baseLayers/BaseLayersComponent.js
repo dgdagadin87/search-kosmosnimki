@@ -32,7 +32,8 @@ export default class BaseLayesrComponent extends BaseComponent {
 
     _bindEvents() {
 
-        const globalEvents = this.getAppEvents();
+        const application = this.getApplication();
+        const globalEvents = application.getAppEvents();
 
         globalEvents.on('sideBar:open', () => this._shiftControl());
         globalEvents.on('sideBar:change', () => this._shiftControl());

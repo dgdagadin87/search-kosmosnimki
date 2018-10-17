@@ -1,6 +1,7 @@
 import BaseComponent from '../../base/BaseComponent';
 
 import BaseLayersComponent from './components/baseLayers/BaseLayersComponent';
+import ZoomComponent from './components/zoom/ZoomComponent';
 
 
 export default class MapControlsComponent extends BaseComponent {
@@ -10,11 +11,13 @@ export default class MapControlsComponent extends BaseComponent {
         super(props);
 
         this._baseLayersComponent = new BaseLayersComponent(props);
+        this._zoomComponent = new ZoomComponent(props);
     }
 
     init() {
 
         this._baseLayersComponent.init();
+        this._zoomComponent.init();
     }
 
     getBaseLayersComponent() {
