@@ -10,7 +10,6 @@ import BoxZoomComponent from './components/boxZoom/BoxZoomComponent';
 
 export default class MapControlsComponent extends BaseComponent {
 
-
     constructor(props) {
         super(props);
 
@@ -37,7 +36,8 @@ export default class MapControlsComponent extends BaseComponent {
         const map = this.getMap();
 
         map._controlCorners.searchControls = document.querySelector('#search-controls');                
-        map._controlCorners.drawControls = document.querySelector('#draw-controls');    
+        map._controlCorners.drawControls = document.querySelector('#draw-controls');
+
         map.gmxControlsManager.init({
             gmxHide: null,
             gmxLogo: null,

@@ -13,7 +13,7 @@ export default class DrawingsControlComponent extends BaseComponent {
 
         this._activeIcon = null;
 
-        const drawControlNames = isMobile() ? ['point'] : ['point','polyline','polygon','rectangle'];
+        const drawControlNames = isMobile() ? ['point'] : ['point', 'polyline', 'polygon', 'rectangle'];
 
         const drawControls = drawControlNames.map(controlName => {
 
@@ -127,3 +127,4 @@ export default class DrawingsControlComponent extends BaseComponent {
     }
 
 }
+// TODO - разделить на компоненты!!!

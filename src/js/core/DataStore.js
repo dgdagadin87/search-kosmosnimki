@@ -1,23 +1,29 @@
+import Events from './Events';
+
+
 export default class DataStore {
 
     constructor(config = {}) {
 
         this._data = {
-            'constant': [],
-            'dynamic': []
+            'constantable': [],
+            'changeable': []
         };
+
+        this._events = new Events();
 
         this._applyConfig(config);
     }
 
     _applyConfig(config) {
 
-        const {name, constant, dynamic} = config;
+        const {name, constantable, changeable} = config;
 
         this._setName(name);
 
-        this._setConstant(constant);
+        this._createConstantable(constantable);
 
+        this._createChangeable(changeable);
     }
 
     _setName(name) {
@@ -25,27 +31,59 @@ export default class DataStore {
         this._name = name;
     }
 
-    _setConstant(constant = []) {
+    _createConstantable(constantable = []) {
 
-        constant.forEach(key => this._setConstantSegment(key));
+        constantable.forEach(key => this._setConstantableSegment(key));
     }
 
-    _setConstantSegment(key) {
+    _createConstantableSegment(key) {
 
-        this._data['constant'][key] = {};
+        this._data['constantable'][key] = {};
     }
 
-    getConstantData(key) {
+    _createChangeable(changeable = []) {
 
-        const {constant} = this._data;
-        const keyData = constant[key] || {};
+        changeable.forEach(key => this._createChangeableSegment(key));
+    }
+
+    _createChangeableSegment(key) {
+
+        this._data['changeable'][key] = {};
+    }
+
+    getConstantableData(key) {
+
+        const {constantable} = this._data;
+        const keyData = constantable[key] || {};
 
         return keyData;
     }
 
-    setConstantData(key, data) {
+    setConstantableData(key, data) {
         
-        this._data['constant'][key] = data;
+        this._data['constantable'][key] = data;
+    }
+
+    getChangeableData(key, options = {}) {
+
+        const {changeable} = this._data;
+        const keyData = changeable[key] || {};
+
+        return keyData;
+    }
+
+    setChangeableData(key, data, options = {}) {
+
+        const changeEventName = `${key}:change`;
+
+        this._data['constantable'][key] = data;
+
+        this._events.trigger(changeEventName);
+    }
+
+    on(...argList) {
+
+        this._events.on(...argList);
     }
 
 }

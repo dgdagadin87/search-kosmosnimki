@@ -107,13 +107,13 @@ class Application {
         }
 
         const store = this.getStore();
-        store.setConstantData('userInfo', userInfo);
+        store.setConstantableData('userInfo', userInfo);
     }
 
     async _checkAccess() {
 
         const store = this.getStore();
-        const userInfo = store.getConstantData('userInfo');
+        const userInfo = store.getConstantableData('userInfo');
 
         const gmxService = this.getService('gmxServer');
 
@@ -126,7 +126,7 @@ class Application {
 
             if (Status === 'ok' && Result && LayerID === ACCESS_LAYER_ID) {
                 userInfo['Role'] = ACCESS_USER_ROLE;
-                store.setConstantData('userInfo', userInfo);
+                store.setConstantableData('userInfo', userInfo);
             }
         }
         catch(e) {
@@ -144,7 +144,7 @@ class Application {
         const text = await response.text();
         
         const store = this.getStore();
-        store.setConstantData('about', text);
+        store.setConstantableData('about', text);
     }
 
     async _initMap() {
