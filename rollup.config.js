@@ -5,6 +5,7 @@ import css from 'rollup-plugin-css-porter';
 import cpy from 'rollup-plugin-cpy';
 import pkg from './package.json';
 import serve from 'rollup-plugin-serve';
+import { uglify } from "rollup-plugin-uglify";
 import livereload from 'rollup-plugin-livereload';
 
 export default [
@@ -36,6 +37,7 @@ export default [
                 { files: 'src/img/*.*', dest: 'dist/img' },
             ]),
             babel(),
+            //uglify(),
             serve({
                 contentBase:['', 'dist'],
                 host: 'localhost',
