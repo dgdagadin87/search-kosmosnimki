@@ -97,7 +97,9 @@ export default class DataStore {
             events = []
         } = options;
 
-        const {isTable} = this._data[key]['config'];
+        const {isTable} = this._data['changeable'][key]['config'];
+
+        const {indexByValue} = rowOptions;
 
         // set value
         if (mode === 'full') {
@@ -118,15 +120,13 @@ export default class DataStore {
         }
         else if (mode === 'row') {
 
-            const {indexByValue} = rowOptions;
-
             if (operation === 'update') {
                 
                 this._data['changeable'][key]['data'][indexByValue] = data;
             }
             else if (operation === 'delete') {
 
-                delete this._data[key]['data'][indexByValue];
+                delete this._data['changeable'][key]['data'][indexByValue];
             }
             else if (operation === 'add') {
 

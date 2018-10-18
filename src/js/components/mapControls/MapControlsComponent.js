@@ -1,6 +1,6 @@
 import BaseComponent from '../../base/BaseComponent';
 
-import { isMobile } from '../../miskUtils/utils';
+import { isMobile } from '../../utils/commonUtils';
 
 import DrawingsControlComponent from './components/drawingsControl/DrawingsControlComponent';
 import BaseLayersComponent from './components/baseLayers/BaseLayersComponent';

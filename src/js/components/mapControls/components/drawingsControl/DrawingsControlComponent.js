@@ -2,7 +2,7 @@ import Translations from 'scanex-translations';
 
 import BaseComponent from '../../../../base/BaseComponent';
 
-import { isMobile } from '../../../../miskUtils/utils';
+import { isMobile } from '../../../../utils/commonUtils';
 
 
 export default class DrawingsControlComponent extends BaseComponent {

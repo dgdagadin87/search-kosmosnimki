@@ -6,6 +6,8 @@ import  {
     LOAD_MAP_PARAMS
 } from '../config/map/map';
 
+import DrawingLayerManager from './layersManagers/DrawingsLayerManager';
+
 
 export default class Map {
 
@@ -23,6 +25,12 @@ export default class Map {
         this._map = map;
 
         this._application = application;
+
+        this._drawingLayerManager = new DrawingLayerManager({
+            map: this._map,
+            application: this._application,
+            store: this._application.getStore()
+        });
 
         this._resizeMap();
 

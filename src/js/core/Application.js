@@ -12,7 +12,7 @@ import {
 
 import DataStore from './DataStore';
 
-import MapComponent from './Map';
+import MapComponent from '../map/Map';
 
 import Events from './Events';
 

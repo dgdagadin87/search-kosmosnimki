@@ -2,7 +2,7 @@ import FloatingPanel from 'scanex-float-panel';
 
 import Translations from 'scanex-translations';
 
-import { getWindowCenter } from '../../../miskUtils/utils';
+import { getWindowCenter } from '../../../utils/commonUtils';
 import { VERSION, VERSION_DATE } from '../../../config/constants/constants';
 
 

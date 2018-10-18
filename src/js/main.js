@@ -1,6 +1,7 @@
 import './cssEntry/cssEntry';
 import './config/translations/common';
 import './config/translations/about';
+import './config/translations/drawnObjects';
 
 import Application from './core/Application';
 
@@ -72,4 +73,5 @@ const application = new Application({
     }
 
 });
+
 application.start();
