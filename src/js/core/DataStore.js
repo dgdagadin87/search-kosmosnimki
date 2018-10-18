@@ -93,13 +93,12 @@ export default class DataStore {
         const {
             mode = 'full',
             operation = 'update',
-            rowOptions = {},
             events = []
         } = options;
 
         const {isTable} = this._data['changeable'][key]['config'];
 
-        const {indexByValue} = rowOptions;
+        const {indexByValue} = options;
 
         // set value
         if (mode === 'full') {
@@ -115,7 +114,7 @@ export default class DataStore {
             }
             else if (operation === 'add') {
 
-                // ...
+                this._data['changeable'][key]['data'] = data;
             }
         }
         else if (mode === 'row') {
@@ -136,7 +135,6 @@ export default class DataStore {
 
         // event firing
         if(events.length < 1) {
-
             return;
         }
         else {
@@ -147,9 +145,23 @@ export default class DataStore {
                 const eventOptions = mode === 'row' ? {rowId: indexByValue} : {};
 
                 this._events.trigger(finalEventName, eventOptions);
+
                 window.console.log(`Event ${finalEventName} was triggered`);
             });
         }
+    }
+
+    // короткая запись get<Changeable|Constantable>Data
+    getData(key, rowId = false, mode = 'changeable') {
+
+        if (mode === 'constantable') {
+            return this.getConstantableData(key);
+        }
+
+        return this.getChangeableData(key, {
+            mode: rowId === false ? 'full' : 'row',
+            rowId: rowId
+        });
     }
 
     on(...argList) {

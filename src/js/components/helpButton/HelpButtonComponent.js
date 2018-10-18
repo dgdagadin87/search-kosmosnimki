@@ -23,10 +23,6 @@ export default class HelpButtonComponent extends BaseComponent {
     _bindEvents() {
 
         this._container.addEventListener('click', this._onClickHandler.bind(this));
-
-        this.getApplication().getStore().on('drawings:row:add:ui', () => {
-            console.log('qqqqqqqqqqqqqqq');
-        });
     }
 
     _onClickHandler() {

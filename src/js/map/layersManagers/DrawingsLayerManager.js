@@ -16,14 +16,16 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
     _bindEvents() {
 
-        this._map.gmxDrawing.on('drawstop', this._onDrawStopHandler.bind(this));
+        const {gmxDrawing} = this._map;
 
-        this._map.gmxDrawing.on('editstop', this._onEditStopHandler.bind(this));
+        gmxDrawing.on('drawstop', this._addDrawingOnList.bind(this));
 
-        this._map.gmxDrawing.on('dragend', this._onDragEndHandler.bind(this));
+        gmxDrawing.on('editstop', this._editDrawingOnList.bind(this));
+
+        gmxDrawing.on('dragend', this._onDragEndHandler.bind(this));
     }
 
-    _onDrawStopHandler(rawItem) {
+    _addDrawingOnList(rawItem) {
 
         const {object, geoJSON} = rawItem;
 
@@ -61,7 +63,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
                 color,
                 visible: true,
             });
-            
+
             /* event name: <drawings:row:add:ui> */
             store.setChangeableData(
                 'drawings',
@@ -76,15 +78,28 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         }
     }
 
-    _onEditStopHandler() {
+    _editDrawingOnList(rawItem) {
 
-        console.log('editstop');
-        console.log(arguments);
+        const {object} = rawItem;
+
+        const drawingId = object.options.uuid;
+
+        const store = this.getStore();
+
+        const drawing = store.getChangeableData('drawings', {
+            mode: 'row',
+            rowId: drawingId
+        });
+
+        if(drawing){
+            console.log('drawing exists');
+            console.log(drawing);
+        }
     }
 
     _onDragEndHandler() {
 
-        console.log(arguments);
+        //console.log(arguments);
     }
 
 }

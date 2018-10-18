@@ -13,6 +13,8 @@ import AuthWidgetComponent from './components/authWIdget/AuthWidgetComponent';
 import LangWidgetComponent from './components/langWIdget/LangWidgetComponent';
 import MapControlsComponent from './components/mapControls/MapControlsComponent';
 
+import DrawingObjectsComponent from './components/drawingObjects/DrawingObjectsComponent';
+
 import AboutDialogComponent from './components/aboutDialog/AboutDialogComponent';
 
 
@@ -35,6 +37,10 @@ const application = new Application({
         {
             index: 'mapControls',
             constructor: MapControlsComponent
+        },
+        {
+            index: 'drawingObjects',
+            constructor: DrawingObjectsComponent
         },
 
         // dialogs
