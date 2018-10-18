@@ -58,9 +58,16 @@ const application = new Application({
     //store
     store: {
         'name': 'searchStore',
-        'constant': [
+        'constantable': [
             'userInfo',
             'about'
+        ],
+        'changeable': [
+            {
+                'key': 'drawings',
+                'isTable': true,
+                'indexBy': 'id'
+            }
         ]
     }
 

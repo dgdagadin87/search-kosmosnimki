@@ -33,7 +33,7 @@ export default class DataStore {
 
     _createConstantable(constantable = []) {
 
-        constantable.forEach(key => this._setConstantableSegment(key));
+        constantable.forEach(key => this._createConstantableSegment(key));
     }
 
     _createConstantableSegment(key) {
@@ -43,12 +43,20 @@ export default class DataStore {
 
     _createChangeable(changeable = []) {
 
-        changeable.forEach(key => this._createChangeableSegment(key));
+        changeable.forEach(segment => this._createChangeableSegment(segment));
     }
 
-    _createChangeableSegment(key) {
+    _createChangeableSegment(segment) {
 
-        this._data['changeable'][key] = {};
+        const {key, isTable = false, indexBy = ''} = segment;
+
+        this._data['changeable'][key] = {
+            data: isTable ? {} : null,
+            config:{
+                indexBy,
+                isTable
+            }
+        };
     }
 
     getConstantableData(key) {
@@ -67,18 +75,81 @@ export default class DataStore {
     getChangeableData(key, options = {}) {
 
         const {changeable} = this._data;
-        const keyData = changeable[key] || {};
+        const keySegment = changeable[key] || {};
+        const {data} = keySegment;
 
-        return keyData;
+        const { mode = 'full', rowId = null } = options;
+
+        if (mode === 'full') {
+            return data;
+        }
+        else {
+            return data[rowId];
+        }
     }
 
     setChangeableData(key, data, options = {}) {
 
-        const changeEventName = `${key}:change`;
+        const {
+            mode = 'full',
+            operation = 'update',
+            rowOptions = {},
+            events = []
+        } = options;
 
-        this._data['constantable'][key] = data;
+        const {isTable} = this._data[key]['config'];
 
-        this._events.trigger(changeEventName);
+        // set value
+        if (mode === 'full') {
+
+            if (operation === 'update') {
+
+                this._data['changeable'][key]['data'] = data;
+            }
+            else if (operation === 'delete') {
+
+                const emptyValue = isTable ? {} : null;
+                this._data['changeable'][key]['data'] = emptyValue;
+            }
+            else if (operation === 'add') {
+
+                // ...
+            }
+        }
+        else if (mode === 'row') {
+
+            const {indexByValue} = rowOptions;
+
+            if (operation === 'update') {
+                
+                this._data['changeable'][key]['data'][indexByValue] = data;
+            }
+            else if (operation === 'delete') {
+
+                delete this._data[key]['data'][indexByValue];
+            }
+            else if (operation === 'add') {
+
+                this._data['changeable'][key]['data'][indexByValue] = data;
+            }
+        }
+
+        // event firing
+        if(events.length < 1) {
+
+            return;
+        }
+        else {
+
+            events.forEach(eventName => {
+
+                const finalEventName = `${key}:${mode}:${operation}:${eventName}`;
+                const eventOptions = mode === 'row' ? {rowId: indexByValue} : {};
+
+                this._events.trigger(finalEventName, eventOptions);
+                window.console.log(`Event ${finalEventName} was triggered`);
+            });
+        }
     }
 
     on(...argList) {
