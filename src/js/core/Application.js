@@ -14,6 +14,8 @@ import DataStore from './DataStore';
 
 import MapComponent from '../map/Map';
 
+import GatewayBetweenMapAndUI from './GatewayBetweenMapAndUI';
+
 import Events from './Events';
 
 
@@ -37,6 +39,8 @@ class Application {
         await this._loadCommonData();
 
         await this._initMap();
+
+        this._initGateway();
 
         this._addComponents();
 
@@ -123,7 +127,8 @@ class Application {
                 layerID: ACCESS_LAYER_ID
             });
             const {Status, Result = {}} = response;
-            const {LayerID} = Result;
+
+            const LayerID = Result === null ? null : Result['LayerID'];
 
             if (Status === 'ok' && Result && LayerID === ACCESS_LAYER_ID) {
                 userInfo['Role'] = ACCESS_USER_ROLE;
@@ -156,6 +161,13 @@ class Application {
         await mapComponent.loadMap();
 
         this._mapComponent = mapComponent;
+    }
+
+    _initGateway() {
+
+        this._gateway = new GatewayBetweenMapAndUI({
+            application: this
+        });
     }
 
     _addComponents() {
@@ -216,6 +228,11 @@ class Application {
     getAppEvents() {
 
         return this._events;
+    }
+
+    getGateway() {
+
+        return this._gateway;
     }
 
 }
