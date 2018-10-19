@@ -1,6 +1,6 @@
 import BaseLayerManager from '../../base/BaseLayerManager';
 
-import { getDrawingObject } from '../../utils/layersUtils';
+import { getDrawingObject, getDrawingObjectArea } from '../../utils/layersUtils';
 
 
 export default class DrawingsLayerManager extends BaseLayerManager {
@@ -18,11 +18,37 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
         const {gmxDrawing} = this._map;
 
+        const store = this.getStore();
+
         gmxDrawing.on('drawstop', this._addDrawingOnList.bind(this));
-
         gmxDrawing.on('editstop', this._editDrawingOnList.bind(this));
+        gmxDrawing.on('dragend', this._editDrawingOnList.bind(this));
 
-        gmxDrawing.on('dragend', this._onDragEndHandler.bind(this));
+        store.on('drawings:row:update:mapToggleDrawing', this._toggleDrawingOnMap.bind(this));
+    }
+
+    _toggleDrawingOnMap({ rowId }) {
+
+        if (rowId) {
+
+            const store = this.getStore();
+
+            const currentDrawing = store.getData('drawings', rowId);
+            const { visible, drawing } = currentDrawing;
+
+            if (visible) {
+                if (drawing) {
+                    drawing.bringToBack();
+                    drawing.visible = true;
+                }
+            }
+            else {
+                if(currentDrawing.drawing) {
+                    currentDrawing.drawing.remove();
+                    currentDrawing.drawing = null;
+                }
+            }
+        }
     }
 
     _addDrawingOnList(rawItem) {
@@ -63,17 +89,12 @@ export default class DrawingsLayerManager extends BaseLayerManager {
                 color,
                 visible: true,
             });
+            drawingObject['drawing'] = object;
 
             /* event name: <drawings:row:add:ui> */
             store.setChangeableData(
-                'drawings',
-                drawingObject,
-                {
-                    mode: 'row',
-                    operation: 'add',
-                    indexByValue: drawingId,
-                    events: ['ui']
-                }
+                'drawings', drawingObject,
+                { mode: 'row', operation: 'add', indexByValue: drawingId, events: ['ui'] }
             );
         }
     }
@@ -86,20 +107,41 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
         const store = this.getStore();
 
-        const drawing = store.getChangeableData('drawings', {
-            mode: 'row',
-            rowId: drawingId
-        });
+        let currentDrawing = store.getData('drawings', drawingId);
 
-        if(drawing){
-            console.log('drawing exists');
-            console.log(drawing);
+        if(currentDrawing){
+            
+            const geoJSON = object.toGeoJSON();
+
+            let { geometry } = geoJSON;
+            let { coordinates } = geometry;
+
+            if (typeof coordinates !== 'undefined') {
+
+                currentDrawing.drawing = object;
+                currentDrawing.geoJSON = geoJSON;
+                currentDrawing.area = getDrawingObjectArea(geoJSON);
+
+                /* event name: <drawings:row:update:ui> */
+                store.setChangeableData(
+                    'drawings', currentDrawing,
+                    { mode: 'row', operation: 'update', indexByValue: drawingId, events: ['ui'] }
+                );
+            }
+            else {
+
+                if (currentDrawing.drawing) {
+                    currentDrawing.drawing.remove();
+                    currentDrawing.drawing = null;
+
+                    /* event name: <drawings:row:delete:ui> */
+                    store.setChangeableData(
+                        'drawings', currentDrawing,
+                        { mode: 'row', operation: 'delete', indexByValue: drawingId, events: ['ui'] }
+                    );
+                }
+            }
         }
-    }
-
-    _onDragEndHandler() {
-
-        //console.log(arguments);
     }
 
 }

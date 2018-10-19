@@ -146,7 +146,7 @@ export default class DataStore {
 
                 this._events.trigger(finalEventName, eventOptions);
 
-                window.console.log(`Event ${finalEventName} was triggered`);
+                //window.console.log(`Event ${finalEventName} was triggered`);
             });
         }
     }

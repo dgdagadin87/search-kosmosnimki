@@ -21,6 +21,9 @@ function get_area_text(area){
 class DrawnObjects extends EventTarget {
     constructor (container, { color = '#0000FF'}){        
         super();
+
+        this._commonVisible = true;
+
         this._count = 0;
         this._container = container;
         this._container.style.display = 'none';
@@ -131,7 +134,7 @@ class DrawnObjects extends EventTarget {
             cell.querySelector('.table-list-color').style.borderColor = e.detail.hex;
 
             let event = document.createEvent('Event');
-            event.initEvent('edit', false, false);
+            event.initEvent('editDrawing', false, false);
             event.detail = item;
             this.dispatchEvent(event);            
         }
@@ -156,7 +159,7 @@ class DrawnObjects extends EventTarget {
                 const id = item[this._indexBy];
                 this._grid.redrawRow(id, item);
                 
-                event.initEvent('check', false, false);
+                event.initEvent('toggleDrawing', false, false);
                 event.detail = item;
                 this.dispatchEvent(event);
 
@@ -174,12 +177,12 @@ class DrawnObjects extends EventTarget {
                 }
                 break;            
             case 'delete':                
-                event.initEvent('delete', false, false);
+                event.initEvent('deleteDrawing', false, false);
                 event.detail = item;
                 this.dispatchEvent(event);
                 break;
             default:                                          
-                event.initEvent('fit', false, false);
+                event.initEvent('zoomToObject', false, false);
                 event.detail = item;
                 this.dispatchEvent(event);
                 break;
@@ -188,7 +191,7 @@ class DrawnObjects extends EventTarget {
     _onCellEdit (e){
         let {item} = e.detail;
         let event = document.createEvent('Event');
-        event.initEvent('edit', false, false);
+        event.initEvent('editDrawing', false, false);
         event.detail = item;
         this.dispatchEvent(event);
     }   
@@ -197,7 +200,9 @@ class DrawnObjects extends EventTarget {
         let event = document.createEvent('Event');
         switch (name) {
             case 'visible':                
-                let state = !col.querySelector('i').classList.contains('drawn-objects-visible');
+                //let state = !col.querySelector('i').classList.contains('drawn-objects-visible');
+                let state = !this._commonVisible;
+                this._commonVisible = state;
                 this._grid.items.forEach(item => item.visible = state);
                 this._grid.refresh();
                 let btn = this._grid.getCol(name).querySelector('i');
@@ -210,12 +215,12 @@ class DrawnObjects extends EventTarget {
                     btn.classList.remove('drawn-objects-visible');                   
                 }
                 
-                event.initEvent('show:all', false, false);
+                event.initEvent('toggleAllDrawings', false, false);
                 event.detail = state;
                 this.dispatchEvent(event);
                 break;
             case 'delete':                
-                event.initEvent('delete:all', false, false);
+                event.initEvent('deleteAllDrawings', false, false);
                 this.dispatchEvent(event);
                 break;
             default:

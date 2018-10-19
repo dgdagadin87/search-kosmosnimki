@@ -191,5 +191,6 @@ function getRefLon (coordinates) {
 
 export {
     getDrawingObject,
+    getDrawingObjectArea,
     splitOn180
 };

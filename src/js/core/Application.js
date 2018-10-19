@@ -48,6 +48,7 @@ class Application {
 
         const dataStore = new DataStore(store);
         this._dataStore = dataStore;
+        window.CatalogStore = dataStore;
     }
 
     _setLocale() {
