@@ -49,10 +49,14 @@ function flatten (arr, swap) {
     return acc;
 }
 
+function getTotalHeight (parts) {
+    return parts.reduce((a, x) => a + document.body.querySelector(x).getBoundingClientRect().height, 0);
+};
+
 function uppercaseFirstLetter(stringValue) {
 
     if (typeof stringValue !== 'string') return ''
     return stringValue.charAt(0).toUpperCase() + stringValue.slice(1)
 }
 
-export {createContainer, getWindowCenter, isMobile, flatten};
+export {createContainer, getWindowCenter, isMobile, flatten, getTotalHeight, uppercaseFirstLetter};

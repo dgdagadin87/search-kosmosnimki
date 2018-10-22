@@ -47,6 +47,7 @@
     "scanex-color-picker": "git+https://github.com/Scanex/ColorPicker.git",
     "scanex-datagrid": "git+https://github.com/Scanex/DataGrid.git",
     "scanex-event-target": "git+https://github.com/Scanex/EventTarget.git",
+    "scanex-leaflet-sidebar": "git+https://github.com/Scanex/Leaflet.Sidebar.git",
     "underscore": "^1.9.1"
   }
 }

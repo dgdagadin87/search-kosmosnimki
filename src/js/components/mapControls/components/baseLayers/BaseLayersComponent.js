@@ -24,8 +24,6 @@ export default class BaseLayersComponent extends BaseComponent {
         });
         map.gmxControlsManager.add(baseLayersControl);
         map.addControl(baseLayersControl);
-    
-        this._shiftControl();
 
         this._bindEvents();
     }
@@ -34,6 +32,8 @@ export default class BaseLayersComponent extends BaseComponent {
 
         const application = this.getApplication();
         const globalEvents = application.getAppEvents();
+
+        globalEvents.on('components:created', () => this._shiftControl());
 
         globalEvents.on('sideBar:open', () => this._shiftControl());
         globalEvents.on('sideBar:change', () => this._shiftControl());
@@ -71,8 +71,11 @@ export default class BaseLayersComponent extends BaseComponent {
     _shiftControl() {
 
         const map = this.getMap();
-        //const { width } = window.Catalog.searchSidebar.getContainer().getBoundingClientRect();
-        const width = 0;
+
+        const application = this.getApplication();
+        const sideBarComponent = application.getComponent('sidebar');
+
+        const { width } = sideBarComponent._component.getContainer().getBoundingClientRect();
 
         map.gmxControlsManager.get('iconLayers').getContainer().style.left = `${width + 30}px`;
     }

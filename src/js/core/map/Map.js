@@ -32,8 +32,6 @@ export default class Map {
             store: this._application.getStore()
         });
 
-        this._resizeMap();
-
         this._bindEvents();
     }
 
@@ -51,6 +49,11 @@ export default class Map {
     }
 
     _bindEvents() {
+
+        const application = this._application;
+        const globalEvents = application.getAppEvents();
+
+        globalEvents.on('components:created', () => this._resizeMap());
 
         window.addEventListener('resize', () => this._resizeMap());
     }

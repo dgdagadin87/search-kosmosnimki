@@ -15,6 +15,8 @@ import MapControlsComponent from './components/mapControls/MapControlsComponent'
 
 import DrawingObjectsComponent from './components/drawingObjects/DrawingObjectsComponent';
 
+import SidebarComponent from './components/sidebar/SidebarComponent';
+
 import AboutDialogComponent from './components/aboutDialog/AboutDialogComponent';
 
 
@@ -41,6 +43,10 @@ const application = new Application({
         {
             index: 'drawingObjects',
             constructor: DrawingObjectsComponent
+        },
+        {
+            index: 'sidebar',
+            constructor: SidebarComponent
         },
 
         // dialogs

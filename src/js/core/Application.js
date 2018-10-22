@@ -189,6 +189,10 @@ class Application {
 
             this._components[index].init();
         }
+
+        const appEvents = this.getAppEvents();
+
+        appEvents.trigger('components:created');
     }
 
     _errorHandle(e) {
