@@ -14,4 +14,9 @@ export default class BaseLayerManager {
         return this._store;
     }
 
+    getApplication() {
+
+        return this._application;
+    }
+
 }

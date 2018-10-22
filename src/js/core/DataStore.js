@@ -141,10 +141,10 @@ export default class DataStore {
 
             events.forEach(eventName => {
 
-                const finalEventName = `${key}:${mode}:${operation}:${eventName}`;
+                //const finalEventName = `${key}:${mode}:${operation}:${eventName}`;
                 const eventOptions = mode === 'row' ? {rowId: indexByValue} : {};
 
-                this._events.trigger(finalEventName, eventOptions);
+                this._events.trigger(eventName, eventOptions);
 
                 //window.console.log(`Event ${finalEventName} was triggered`);
             });

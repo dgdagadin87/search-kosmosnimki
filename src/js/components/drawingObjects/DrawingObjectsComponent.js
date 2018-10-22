@@ -2,6 +2,8 @@ import BaseComponent from '../../base/BaseComponent';
 
 import { DrawnObjectsControl } from './components/DrawnObjects';
 
+import { getDrawingObject, getDrawingObjectArea } from '../../utils/layersUtils';
+
 
 export default class DrawingObjectsComponent extends BaseComponent {
 
@@ -25,14 +27,16 @@ export default class DrawingObjectsComponent extends BaseComponent {
 
         const app = this.getApplication();
         const store = app.getStore();
+        const appEvents = app.getAppEvents();
 
         const componentWidget = this._component.widget;
         
-        store.on('drawings:row:add:ui', this._updateList.bind(this));
+        appEvents.on('drawingObjects:updateList', this._updateList.bind(this));
+        appEvents.on('drawingObjects:addDrawingOnList', this._addDrawingOnList.bind(this));
+        appEvents.on('drawingObjects:editDrawingOnList', this._editDrawingOnList.bind(this));
+
         store.on('drawings:row:update:ui', this._updateList.bind(this));
         store.on('drawings:row:delete:ui', this._updateList.bind(this));
-
-        store.on('drawings:row:update:uiUpdateList', this._updateList.bind(this));
 
         componentWidget.addEventListener('editDrawing', (e) => this._editDrawing(e));
         componentWidget.addEventListener('zoomToObject', (e) => this._zoomToObjectOnMap(e));
@@ -43,175 +47,132 @@ export default class DrawingObjectsComponent extends BaseComponent {
         componentWidget.addEventListener('deleteAllDrawings', (e, mode = 'all') => this._deleteDrawings(e, mode));
     }
 
-    _zoomToObjectOnMap(e) {
+    _addDrawingOnList(rawItem) {
 
-        const map = this.getMap();
-        const store = this.getApplication().getStore();
+        const {object, geoJSON} = rawItem;
 
-        const {id, visible} = e.detail;
+        const drawingId = object.options.uuid || L.gmxUtil.newId();
 
-        let item = store.getData('drawings', id);
+        const app = this.getApplication();
+        const store = app.getStore();
 
-        if (visible && item) {
-            let {type, coordinates} = item.geoJSON.geometry;
-            if (type === 'Point') {
-                let center = L.latLng(coordinates[1],coordinates[0]);
-                map.setView(center);
-                // this._map.invalidateSize();
+        const drawing = store.getChangeableData('drawings', {
+            mode: 'row',
+            rowId: drawingId
+        });
+
+        if (!drawing) {
+
+            object.options.uuid = drawingId;
+
+            let color = L.GmxDrawing.utils.defaultStyles.lineStyle.color;
+
+            switch (object.options.type) {
+                case 'Polygon':
+                case 'Polyline':
+                case 'Rectangle':
+                    color = object.options.lineStyle.color;
+                    break;
+                default:
+                    break;
+            }
+
+            const GeoJSON = geoJSON || object.toGeoJSON();
+
+            const drawingObject = getDrawingObject({
+                id: object.options.uuid,                
+                name: null,
+                geoJSON: GeoJSON, 
+                color,
+                visible: true,
+            });
+            drawingObject['drawing'] = object;
+
+            store.setChangeableData(
+                'drawings', drawingObject,
+                { mode: 'row', operation: 'add', indexByValue: drawingId, events: [] }
+            );
+
+            this._updateList();
+        }
+    }
+
+    _editDrawingOnList(rawItem) {
+
+        const {object} = rawItem;
+
+        const drawingId = object.options.uuid;
+
+        const app = this.getApplication();
+        const store = app.getStore();
+
+        let currentDrawing = store.getData('drawings', drawingId);
+
+        if(currentDrawing){
+            
+            const geoJSON = object.toGeoJSON();
+
+            let { geometry } = geoJSON;
+            let { coordinates } = geometry;
+
+            if (typeof coordinates !== 'undefined') {
+
+                currentDrawing.drawing = object;
+                currentDrawing.geoJSON = geoJSON;
+                currentDrawing.area = getDrawingObjectArea(geoJSON);
+
+                store.setChangeableData(
+                    'drawings', currentDrawing,
+                    { mode: 'row', operation: 'update', indexByValue: drawingId, events: [] }
+                );
             }
             else {
-                const bounds = item.drawing.getBounds();
-                map.fitBounds(bounds, { animate: false });
-                // this._map.invalidateSize();
+
+                if (currentDrawing.drawing) {
+                    currentDrawing.drawing.remove();
+                    currentDrawing.drawing = null;
+
+                    store.setChangeableData(
+                        'drawings', currentDrawing,
+                        { mode: 'row', operation: 'delete', indexByValue: drawingId, events: [] }
+                    );
+                }
             }
         }
+
+        this._updateList();
+    }
+
+    _zoomToObjectOnMap(e) {
+
+        const app = this.getApplication();
+        const appEvents = app.getAppEvents();
+
+        appEvents.trigger('drawingObjects:zoomToObjectOnMap', e);
     }
 
     _editDrawing(e) {
 
-        const store = this.getApplication().getStore();
+        const application = this.getApplication();
+        const mapAndUiGateway = application.getGateway();
 
-        const { id: drawingId, name: drawingName, color: drawingColor } = e.detail;
-
-        let currentDrawing = store.getData('drawings', drawingId);
-        let { drawing } = currentDrawing;
-
-        currentDrawing['name'] = drawingName;
-        currentDrawing['color'] = drawingColor;
-
-        let options = {
-            lineStyle: {
-                fill: false,
-                weight: 2,
-                opacity: 1,
-                color: drawingColor,
-            },
-            pointStyle: {color: drawingColor}
-        };
-        if (drawing) {
-            if (drawing.options.editable) {
-                drawing.setOptions(options);
-            }
-            else {
-                drawing.enableEdit();
-                options.className = 'osm-layer';
-                drawing.setOptions(options);
-                drawing.disableEdit();
-            }
-        }
-
-        currentDrawing['drawing'] = drawing;
-
-        /* event name: <drawings:row:update:ui> */
-        store.setChangeableData(
-            'drawings', currentDrawing,
-            { mode: 'row', operation: 'update', indexByValue: drawingId, events: ['ui'] }
-        );
+        mapAndUiGateway.editDrawingOnListAndMap(e);
     }
 
     _deleteDrawings(e, mode) {
 
-        const deleteDrawingFromMap = drawing => {
+        const application = this.getApplication();
+        const mapAndUiGateway = application.getGateway();
 
-            if (drawing) {
-                drawing.remove();
-            } 
-        }
-
-        const app = this.getApplication();
-        const store = app.getStore();
-
-        let drawnObjects;
-
-        if (mode === 'row') {
-
-            const { id: drawingId } = e.detail;
-
-            drawnObjects = [store.getData('drawings', drawingId)];
-        }
-        else {
-
-            const rawDrawnObjects = store.getData('drawings');
-            drawnObjects = Object.keys(rawDrawnObjects).map(id => rawDrawnObjects[id]);
-        }
-
-        drawnObjects.forEach(currentDrawn => {
-
-            let { drawing: drawingObject, id: drawingId } = currentDrawn;
-
-            deleteDrawingFromMap(drawingObject);
-
-            /* event name: no event */
-            store.setChangeableData(
-                'drawings', currentDrawn,
-                { mode: 'row', operation: 'delete', indexByValue: drawingId, events: [] }
-            );
-        });
-
-        this._updateList();
+        mapAndUiGateway.deleteDrawingsOnMapAndUi(e, mode);
     }
 
     _toggleDrawings(e, mode) {
         
-        const map = this.getMap();
+        const application = this.getApplication();
+        const mapAndUiGateway = application.getGateway();
 
-        const app = this.getApplication();
-        const store = app.getStore();
-
-        const commonVisible = mode === 'all' ? e.detail : e.detail.visible;
-
-        let drawnObjects;
-
-        if (mode === 'row') {
-
-            const { id: drawingId } = e.detail;
-            drawnObjects = [store.getData('drawings', drawingId)];
-        }
-        else {
-
-            const rawDrawnObjects = store.getData('drawings');
-            drawnObjects = Object.keys(rawDrawnObjects).map(id => rawDrawnObjects[id]);
-        }
-
-        drawnObjects.forEach(currentDrawing => {
-
-            const { id: drawingId } = currentDrawing;
-
-            if (commonVisible) {
-
-                // getting drawing from currentDrawing
-                let drawingOptions = {};
-
-                drawingOptions['color'] = currentDrawing.color;
-                drawingOptions['editable'] = typeof currentDrawing.geoJSON.properties.editable === 'undefined' ? true : currentDrawing.geoJSON.properties.editable;
-                drawingOptions['lineStyle'] = { fill: false, weight: 2, opacity: 1, color: currentDrawing.color };
-                drawingOptions['pointStyle'] = { color: currentDrawing.color };
-    
-                let [drawing] = map.gmxDrawing.addGeoJSON(currentDrawing.geoJSON, drawingOptions);
-    
-                if (!drawingOptions['editable']) {
-    
-                    drawingOptions['className'] = 'osm-layer';
-                    drawing.setOptions(drawingOptions);
-                }
-    
-                drawing.options.uuid = drawingId;
-                currentDrawing.drawing = drawing;
-
-                currentDrawing.visible = true;
-            }
-            else {
-                currentDrawing.visible = false;
-            }
-
-            /* event name: <drawings:row:update:mapToggleDrawing> */
-            store.setChangeableData(
-                'drawings', currentDrawing,
-                { mode: 'row', operation: 'update', indexByValue: drawingId, events: ['mapToggleDrawing'] }
-            );
-        })
-
-        this._updateList();
+        mapAndUiGateway.toggleDrawingsOnMapAndUi(e, mode);
     }
 
     _updateList() {

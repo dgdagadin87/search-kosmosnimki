@@ -166,7 +166,8 @@ class Application {
     _initGateway() {
 
         this._gateway = new GatewayBetweenMapAndUI({
-            application: this
+            application: this,
+            map: this.getMap()
         });
     }
 
