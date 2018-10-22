@@ -27,7 +27,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
     _zoomToObjectOnMap(e) {
 
-        const map = this.getMap();
+        const map = this._map;
         const store = this.getApplication().getStore();
 
         const {id, visible} = e.detail;
