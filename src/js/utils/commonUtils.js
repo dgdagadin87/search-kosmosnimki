@@ -49,4 +49,10 @@ function flatten (arr, swap) {
     return acc;
 }
 
+function uppercaseFirstLetter(stringValue) {
+
+    if (typeof stringValue !== 'string') return ''
+    return stringValue.charAt(0).toUpperCase() + stringValue.slice(1)
+}
+
 export {createContainer, getWindowCenter, isMobile, flatten};

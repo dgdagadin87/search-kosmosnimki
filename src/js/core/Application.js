@@ -12,7 +12,7 @@ import {
 
 import DataStore from './DataStore';
 
-import MapComponent from '../map/Map';
+import MapComponent from './map/Map';
 
 import GatewayBetweenMapAndUI from './GatewayBetweenMapAndUI';
 

@@ -1,4 +1,4 @@
-import BaseComponent from '../../base/BaseComponent';
+import BaseCompositedComponent from '../../base/BaseCompositedComponent';
 
 import { isMobile } from '../../utils/commonUtils';
 
@@ -8,7 +8,7 @@ import ZoomComponent from './components/zoom/ZoomComponent';
 import BoxZoomComponent from './components/boxZoom/BoxZoomComponent';
 
 
-export default class MapControlsComponent extends BaseComponent {
+export default class MapControlsComponent extends BaseCompositedComponent {
 
     constructor(props) {
         super(props);
@@ -45,11 +45,6 @@ export default class MapControlsComponent extends BaseComponent {
             gmxDrawing: null,
             svgSprite: false,
         });
-    }
-
-    getBaseLayersComponent() {
-
-        return this._baseLayersComponent;
     }
 
 }
