@@ -1,6 +1,6 @@
 import BaseComponent from '../../base/BaseComponent';
 
-import About from './components/About';
+import About from './_inner/About';
 
 import { createContainer } from '../../utils/commonUtils';
 

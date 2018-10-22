@@ -1,6 +1,6 @@
 import BaseComponent from '../../base/BaseComponent';
 
-import { DrawnObjectsControl } from './components/DrawnObjects';
+import { DrawnObjectsControl } from './_inner/DrawnObjects';
 
 import { getDrawingObject, getDrawingObjectArea } from '../../utils/layersUtils';
 

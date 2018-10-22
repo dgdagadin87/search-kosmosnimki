@@ -4,7 +4,7 @@ import  {
     MAP_SVG_SPRITE,
     LOAD_MAP_ID,
     LOAD_MAP_PARAMS
-} from '../config/map/map';
+} from '../../config/map/Map';
 
 import DrawingLayerManager from './layersManagers/DrawingsLayerManager';
 

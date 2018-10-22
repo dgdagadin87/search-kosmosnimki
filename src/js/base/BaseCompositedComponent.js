@@ -1,7 +1,5 @@
 import Events from '../core/Events';
 
-import { uppercaseFirstLetter } from '../utils/commonUtils';
-
 
 export default class BaseCompositedComponent {
 

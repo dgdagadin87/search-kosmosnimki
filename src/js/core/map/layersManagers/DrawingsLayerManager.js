@@ -1,4 +1,4 @@
-import BaseLayerManager from '../../base/BaseLayerManager';
+import BaseLayerManager from '../../../base/BaseLayerManager';
 
 
 export default class DrawingsLayerManager extends BaseLayerManager {
