@@ -47,6 +47,8 @@ export default class SidebarComponent extends BaseCompositedComponent {
         gmxDrawing.on('drawstop', () => this._setCurrentSearchTab());
 
         window.addEventListener('resize', () => this._resizeSidebar());
+
+        this._component.on('change', e => globalEvents.trigger('sidebar:tab:change', e));
     }
 
     _setCurrentSearchTab() {

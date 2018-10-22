@@ -60,6 +60,7 @@ export default class SearchWidgetComponent extends BaseComponent {
 
         return [
             application.getSearchProvider('crdProvider').getMain(),
+            application.getSearchProvider('gmxProvider').getMain(),
             application.getSearchProvider('osmProvider').getMain(),
         ];
     }

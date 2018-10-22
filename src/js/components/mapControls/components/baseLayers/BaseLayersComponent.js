@@ -12,7 +12,6 @@ export default class BaseLayersComponent extends BaseComponent {
 
         this._setLanguage();
         this._setLayers();
-        
     }
 
     init() {
@@ -35,9 +34,7 @@ export default class BaseLayersComponent extends BaseComponent {
 
         globalEvents.on('components:created', () => this._shiftControl());
 
-        globalEvents.on('sideBar:open', () => this._shiftControl());
-        globalEvents.on('sideBar:change', () => this._shiftControl());
-        globalEvents.on('sideBar:close', () => this._shiftControl());
+        globalEvents.on('sidebar:tab:change', () => this._shiftControl());
     }
 
     _setLanguage() {

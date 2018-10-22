@@ -7,6 +7,7 @@ import Application from './core/Application';
 
 import CrdSearchProvider from './searchProviders/crdProvider/CrdSearchProvider';
 import OsmSearchProvider from './searchProviders/osmProvider/OsmSearchProvider';
+import GmxSearchProvider from './searchProviders/gmxProvider/GmxSearchProvider';
 
 import CatalogResourceServerService from './services/catalogResourceServer/CatalogResourceServerService';
 import GmxResourceServerService from './services/gmxResourceServer/GmxResourceServerService';
@@ -34,6 +35,10 @@ const application = new Application({
         {
             index: 'osmProvider',
             constructor: OsmSearchProvider
+        },
+        {
+            index: 'gmxProvider',
+            constructor: GmxSearchProvider
         }
     ],
 
