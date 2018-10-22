@@ -42,6 +42,8 @@ class Application {
 
         this._initGateway();
 
+        this._addSearchProviders();
+
         this._addComponents();
 
     }
@@ -171,6 +173,24 @@ class Application {
         });
     }
 
+    _addSearchProviders() {
+
+        const {searchProviders = []} = this._config;
+
+        this._searchProviders = {};
+
+        for (let i = 0; i < searchProviders.length; i++ ) {
+
+            const currentProvider = searchProviders[i];
+            const {index, constructor} = currentProvider;
+
+            this._searchProviders[index] = new constructor({
+                application: this,
+                map: this.getMap()
+            });
+        }
+    }
+
     _addComponents() {
 
         const {components = []} = this._config;
@@ -203,6 +223,11 @@ class Application {
     getService(index) {
 
         return this._services[index];
+    }
+
+    getSearchProvider(index) {
+
+        return this._searchProviders[index];
     }
 
     getComponent(index) {

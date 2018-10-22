@@ -11,6 +11,9 @@ import '../../css/about.css';
 // drawn Objects
 import '../../css/drawnObjects.css';
 
+// search Options
+import '../../css/searchOptions.css';
+
 // scanex-auth
 import 'scanex-auth/dist/scanex-auth.css';
 
@@ -28,3 +31,6 @@ import 'scanex-datagrid/dist/scanex-datagrid.css';
 
 // scanex-color-picker
 import 'scanex-color-picker/dist/scanex-color-picker.css';
+
+// scanex-search-input
+import 'scanex-search-input/dist/scanex-search-input.css';

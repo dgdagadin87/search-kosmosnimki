@@ -1,3 +1,8 @@
+function isNumber(n) {
+
+    return !isNaN (new Number(n));
+}
+
 function createContainer () {
 
     const container = document.createElement('div');
@@ -59,4 +64,28 @@ function uppercaseFirstLetter(stringValue) {
     return stringValue.charAt(0).toUpperCase() + stringValue.slice(1)
 }
 
-export {createContainer, getWindowCenter, isMobile, flatten, getTotalHeight, uppercaseFirstLetter};
+function makeCloseTo (lng, x) {
+    let dist = (a,b) => Math.abs (a - b);
+    let {p} = [x - 360, x, x + 360]
+    .map(p => {
+        return {p, d: dist (lng, p)};
+    })
+    .reduce((a,{p,d}) => {
+        if (a === null || d < a.d) {
+            a = {d, p};
+        }
+        return a;
+    }, null);
+    return p;
+}
+
+export {
+    isNumber,
+    createContainer,
+    getWindowCenter,
+    isMobile,
+    flatten,
+    getTotalHeight,
+    uppercaseFirstLetter,
+    makeCloseTo
+};

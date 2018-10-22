@@ -8,6 +8,12 @@ export default class GatewayBetweenMapAndInterface {
         this._map = map;
     }
 
+    addDrawingObjectOnMapAndUi(item) {
+
+        console.log('on addeDDDD!!!');
+        console.log(item);
+    }
+
     editDrawingOnListAndMap(e) {
 
         const store = this.getApplication().getStore();

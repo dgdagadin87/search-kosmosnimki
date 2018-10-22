@@ -9,6 +9,10 @@ export default class BaseCompositedComponent {
 
         this._application = config['application'];
         this._map = config['map'];
+
+        this._parent = config['parent'];
+
+        this._props = config;
     }
 
     getMap() {
@@ -24,6 +28,16 @@ export default class BaseCompositedComponent {
     getChildComponent(componentName) {
 
         return this['_' + componentName + 'Component'];
+    }
+
+    getParentComponent() {
+
+        return this['_parent'];
+    }
+
+    getProps() {
+
+        return this._props;
     }
 
 }

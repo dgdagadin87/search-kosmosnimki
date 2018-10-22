@@ -7,8 +7,12 @@ export default class BaseComponent {
 
         this.events = new Events();
 
+        this._props = config;
+
         this._application = config['application'];
         this._map = config['map'];
+
+        this._parent = config['parent'];
     }
 
     getMap() {
@@ -19,6 +23,16 @@ export default class BaseComponent {
     getApplication() {
 
         return this._application;
+    }
+
+    getParentComponent() {
+
+        return this['_parent'];
+    }
+
+    getProps() {
+
+        return this._props;
     }
 
 }

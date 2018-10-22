@@ -1,6 +1,6 @@
 import Translations from 'scanex-translations';
 
-import {flatten} from './commonUtils';
+import {flatten, isNumber, makeCloseTo} from './commonUtils';
 
 
 const EAST_HEMISPHERE = L.bounds(
@@ -158,14 +158,14 @@ function normalizeGeometry (geometry, lng) {
         case 'POLYGON':
             return {type, coordinates: normalizePolygon(x, coordinates)};
         case 'MULTIPOLYGON':
-            return {type, coordinates: coordinates.map(normalize_polygon.bind(null, x))};
+            return {type, coordinates: coordinates.map(normalizePolygon.bind(null, x))};
         default:
             return geometry;
     }
 }
 
 function normalizePoint (lng, [x,y]) {
-    return [make_close_to(lng, x),y];
+    return [makeCloseTo(lng, x),y];
 }
 
 function normalizeRing (lng, coordinates) {
@@ -192,5 +192,6 @@ function getRefLon (coordinates) {
 export {
     getDrawingObject,
     getDrawingObjectArea,
-    splitOn180
+    splitOn180,
+    normalizeGeometry
 };

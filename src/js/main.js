@@ -5,6 +5,9 @@ import './config/translations/drawnObjects';
 
 import Application from './core/Application';
 
+import CrdSearchProvider from './searchProviders/crdProvider/CrdSearchProvider';
+import OsmSearchProvider from './searchProviders/osmProvider/OsmSearchProvider';
+
 import CatalogResourceServerService from './services/catalogResourceServer/CatalogResourceServerService';
 import GmxResourceServerService from './services/gmxResourceServer/GmxResourceServerService';
 
@@ -21,6 +24,18 @@ import AboutDialogComponent from './components/aboutDialog/AboutDialogComponent'
 
 
 const application = new Application({
+
+    // search providers
+    searchProviders: [
+        {
+            index: 'crdProvider',
+            constructor: CrdSearchProvider
+        },
+        {
+            index: 'osmProvider',
+            constructor: OsmSearchProvider
+        }
+    ],
 
     // components
     components: [

@@ -61,8 +61,6 @@ export default class DrawingsControlComponent extends BaseComponent {
         const {object} = e;
 
         this._setActiveIcon(object, false);
-
-        //...sideBar -> setSearchPanel by default
     }
 
     _handleStateChange(e) {

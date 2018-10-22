@@ -1,10 +1,10 @@
-import Translations from 'scanex-translations';
-
 import BaseCompositedComponent from '../../base/BaseCompositedComponent';
 
 import SidebarControl from  'scanex-leaflet-sidebar';
 
 import {getTotalHeight} from '../../utils/commonUtils';
+
+import SearchTabComponent from './components/searchTab/SearchTabComponent';
 
 
 export default class SidebarComponent extends BaseCompositedComponent {
@@ -14,6 +14,11 @@ export default class SidebarComponent extends BaseCompositedComponent {
         super(props);
 
         this._component = new SidebarControl({position: 'topleft'});
+
+        this._searchTabComponent = new SearchTabComponent({
+            ...props,
+            parent: this
+        });
     }
 
     init() {
@@ -24,7 +29,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         this._component.getContainer().classList.add('noselect');
 
-        this._addTabs();
+        this._searchTabComponent.init();
     
         this._bindEvents();
     }
@@ -34,7 +39,23 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const globalEvents = application.getAppEvents();
 
+        const map = application.getMap();
+        const {gmxDrawing} = map;
+
         globalEvents.on('components:created', () => this._resizeSidebar());
+        
+        gmxDrawing.on('drawstop', () => this._setCurrentSearchTab());
+
+        window.addEventListener('resize', () => this._resizeSidebar());
+    }
+
+    _setCurrentSearchTab() {
+
+        const searchSidebar = this._component;
+
+        if (!searchSidebar.getCurrent()) {               
+            searchSidebar.setCurrent('search');
+        }
     }
 
     _addTabs() {
@@ -44,22 +65,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
     _addSearchTab() {
 
-        this._searchTabContainer = this._component.addTab({
-            id: 'search',            
-            icon: 'sidebar-search',
-            opened: 'sidebar-search-opened',
-            closed: 'sidebar-search-closed',
-            tooltip: Translations.getText('search.title'),            
-        });
-
-        this._searchTabContainer.innerHTML = 
-        `<div class="search-pane"></div>
-        <div class="no-select search-options-pane"></div>
-        <div class="search-options-footer">
-            <button class="search-options-search-button" type="button">
-                <span>${Translations.getText('search.action')}</span>
-            </button>
-        </div>`;
+        
     }
 
     _resizeSidebar() {
