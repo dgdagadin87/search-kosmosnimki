@@ -49,6 +49,9 @@
     "scanex-event-target": "git+https://github.com/Scanex/EventTarget.git",
     "scanex-leaflet-sidebar": "git+https://github.com/Scanex/Leaflet.Sidebar.git",
     "scanex-search-input": "git+https://github.com/Scanex/SearchInput.git",
-    "underscore": "^1.9.1"
+    "scanex-slider-widget": "git+https://github.com/Scanex/SliderWidget.git",
+    "scanex-tristate": "git+https://github.com/Scanex/TristateCheckbox.git",
+    "underscore": "^1.9.1",
+    "pikaday": "^1.7.0"
   }
 }

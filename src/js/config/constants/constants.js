@@ -24,6 +24,8 @@ const NON_EDIT_LINE_STYLE = {
     opacity: 1
 };
 
+const TAB_SEARCH_NAME = 'search';
+
 const VERSION_PATH = 'dist/version-';
 
 export {
@@ -39,5 +41,6 @@ export {
     LAYER_ID,
     DEFAULT_LANGUAGE,
     NON_EDIT_LINE_STYLE,
-    VERSION_PATH
+    VERSION_PATH,
+    TAB_SEARCH_NAME
 };

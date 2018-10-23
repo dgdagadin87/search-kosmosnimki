@@ -2,6 +2,7 @@ import './cssEntry/cssEntry';
 import './config/translations/common';
 import './config/translations/about';
 import './config/translations/drawnObjects';
+import './config/translations/searchOptions';
 
 import Application from './core/Application';
 
@@ -85,6 +86,10 @@ const application = new Application({
                 'key': 'drawings',
                 'isTable': true,
                 'indexBy': 'id'
+            },
+            {
+                'key': 'searchCriteria',
+                'isTable': false
             }
         ]
     }

@@ -3,6 +3,7 @@ import Translations from 'scanex-translations';
 import BaseCompositedComponent from '../../../../base/BaseCompositedComponent';
 
 import SearchWidgetComponent from './components/searchWidget/SearchWidgetComponent';
+import SearchOptionsComponent from './components/searchOptions/SearchOptionsComponent';
 
 
 export default class SearchTabComponent extends BaseCompositedComponent {
@@ -12,8 +13,10 @@ export default class SearchTabComponent extends BaseCompositedComponent {
         this._addTabToSidebar();
 
         this._searchWidgetComponent = new SearchWidgetComponent(this.getConfig());
+        this._searchOptionsComponent = new SearchOptionsComponent(this.getConfig());
 
         this._searchWidgetComponent.init();
+        this._searchOptionsComponent.init();
     }
 
     _addTabToSidebar() {

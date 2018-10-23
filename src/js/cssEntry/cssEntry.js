@@ -14,6 +14,12 @@ import '../../css/drawnObjects.css';
 // search Options
 import '../../css/searchOptions.css';
 
+// satellites
+import '../../css/satellites.css';
+
+// satellites info
+import '../../css/info.css';
+
 // scanex-auth
 import 'scanex-auth/dist/scanex-auth.css';
 
@@ -34,3 +40,9 @@ import 'scanex-color-picker/dist/scanex-color-picker.css';
 
 // scanex-search-input
 import 'scanex-search-input/dist/scanex-search-input.css';
+
+// scanex-slider-widget
+import 'scanex-slider-widget/dist/scanex-slider-widget.css';
+
+// pikaday
+import 'pikaday/css/pikaday.css';

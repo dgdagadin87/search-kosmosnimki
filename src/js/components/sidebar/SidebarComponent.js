@@ -4,12 +4,16 @@ import SidebarControl from  'scanex-leaflet-sidebar';
 
 import {getTotalHeight} from '../../utils/commonUtils';
 
+import { satellites } from '../../config/satellites/satellites';
+
 import SearchTabComponent from './components/searchTab/SearchTabComponent';
 
 
 export default class SidebarComponent extends BaseCompositedComponent {
 
     init() {
+
+        this._setDefaultCriteria();
 
         const map = this.getMap();
 
@@ -25,7 +29,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         this.getView().getContainer().classList.add('noselect');
 
         this._searchTabComponent.init();
-    
+
         this._bindEvents();
     }
 
@@ -55,14 +59,31 @@ export default class SidebarComponent extends BaseCompositedComponent {
         }
     }
 
-    _addTabs() {
+    _setDefaultCriteria() {
 
-        this._addSearchTab();
-    }
+        const application = this.getApplication();
+        const store = application.getStore();
 
-    _addSearchTab() {
+        const now = new Date();
 
-        
+        const dateStart = new Date(now.getFullYear(), 0, 1);
+        const dateEnd = now;
+
+        const defaultCriteria = {
+            date: [ dateStart, dateEnd ],
+            annually: false,
+            clouds: [0, 100],
+            angle: [0, 60],
+            resolution: [0.3, 20],
+            satellites: satellites,
+            stereo: false,
+        };
+
+        store.setChangeableData(
+            'searchCriteria',
+            defaultCriteria,
+            { mode: 'full' }
+        )
     }
 
     _resizeSidebar() {

@@ -185,3 +185,35 @@ Translations.addText('eng', {
         points: `there are more than ${MAX_UPLOAD_OBJECTS} objects or/and more than ${MAX_UPLOAD_POINTS} points in the file`
     }
 });
+
+Translations.addText('rus', {
+    operator: {
+        dg: 'Digital Globe, США',
+        airbus: 'Airbus Defence & Space, Франция',
+        siis: 'SI Imaging Services (SIIS), Южная Корея',
+        ge: 'GeoEye, США',
+        iinv: 'ImageSat International, N.V., Израиль',
+        spaceview: 'Beijing Space View Technology Co., Ltd (Space View), КНР',
+        vniiem: 'ФГУП "НПП ВНИИЭМ", Беларусь',
+        blackbridge: 'BlackBridge AG, ФРГ',
+        usgs: 'United States Geological Survey, США',
+        roskosmos: 'Роскосмос',
+        twentyfirst: 'Twenty First Century AT, China'
+    }
+});
+
+Translations.addText('eng', {
+    operator: {
+        dg: 'Digital Globe, USA',
+        airbus: 'Airbus Defence & Space, France',
+        siis: 'SI Imaging Services (SIIS), South Korea',
+        ge: 'GeoEye, USA',
+        iinv: 'ImageSat International, N.V., Israel',
+        spaceview: 'Beijing Space View Technology Co., Ltd (Space View), China',
+        vniiem: 'ФГУП "НПП ВНИИЭМ", Belarus',
+        blackbridge: 'BlackBridge AG, Germany',
+        usgs: 'United States Geological Survey, USA',
+        roskosmos: 'Roskosmos',
+        twentyfirst: 'Twenty First Century AT, China'
+    }
+});
