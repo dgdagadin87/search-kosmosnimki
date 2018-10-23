@@ -12,6 +12,11 @@ export default class DrawingsControlComponent extends BaseComponent {
         super(props);
 
         this._activeIcon = null;
+    }
+
+    init() {
+
+        const map = this.getMap();
 
         const drawControlNames = isMobile() ? ['point'] : ['point', 'polyline', 'polygon', 'rectangle'];
 
@@ -32,21 +37,14 @@ export default class DrawingsControlComponent extends BaseComponent {
             return currentControl;
         });
 
-        this._component = drawControls;
-
-        this._bindEvents();
-    }
-
-    init() {
-
-        const map = this.getMap();
-        const drawControls = this._component;
+        this._view = drawControls;
 
         drawControls.forEach(control => {
-
             map.gmxControlsManager.add(control);
             map.addControl(control);
         });
+
+        this._bindEvents();
     }
 
     _bindEvents() {
@@ -82,7 +80,7 @@ export default class DrawingsControlComponent extends BaseComponent {
 
     _setActiveIcon (control, isActive) {
 
-        const drawControls = this._component;
+        const drawControls = this.getView();
 
         this._activeIcon = null;
 

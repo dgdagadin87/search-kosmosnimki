@@ -28,8 +28,8 @@ export default class Map {
 
         this._drawingLayerManager = new DrawingLayerManager({
             map: this._map,
-            application: this._application,
-            store: this._application.getStore()
+            application: this.getApplication(),
+            store: this.getApplication().getStore()
         });
 
         this._bindEvents();
@@ -50,7 +50,7 @@ export default class Map {
 
     _bindEvents() {
 
-        const application = this._application;
+        const application = this.getApplication();
         const globalEvents = application.getAppEvents();
 
         globalEvents.on('components:created', () => this._resizeMap());
@@ -89,6 +89,11 @@ export default class Map {
 
         this._mapContainer.style.height = `${heightDiff}px`;
         this._map.invalidateSize();
+    }
+
+    getApplication() {
+
+        return this._application;
     }
 
     getMap() {

@@ -5,9 +5,7 @@ import BaseComponent from '../../../../base/BaseComponent';
 
 export default class BoxZoomComponent extends BaseComponent {
 
-
-    constructor(props) {
-        super(props);
+    init() {
 
         const map = this.getMap();
 
@@ -29,7 +27,10 @@ export default class BoxZoomComponent extends BaseComponent {
             }
         });
 
-        this._component = zoomControl;
+        this._view = zoomControl;
+
+        map.gmxControlsManager.add(this.getView());
+        map.addControl(this.getView());
     }
 
     _onAddHandler(control) {
@@ -52,14 +53,6 @@ export default class BoxZoomComponent extends BaseComponent {
             map.boxZoom.removeHooks();
             control.setActive(false);
         });
-    }
-
-    init() {
-
-        const map = this.getMap();
-
-        map.gmxControlsManager.add(this._component);
-        map.addControl(this._component);
     }
 
 }

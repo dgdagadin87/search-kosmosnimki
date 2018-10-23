@@ -3,22 +3,17 @@ import BaseComponent from '../../../../base/BaseComponent';
 
 export default class BaseLayesrComponent extends BaseComponent {
 
-
-    constructor(props) {
-        super(props);
-
-        const zoomControl = L.control.gmxZoom ({
-            position: 'bottomright'
-        });
-        this._component = zoomControl;
-    }
-
     init() {
 
         const map = this.getMap();
 
-        map.gmxControlsManager.add(this._component);
-        map.addControl(this._component);
+        const zoomControl = L.control.gmxZoom ({
+            position: 'bottomright'
+        });
+        this._view = zoomControl;
+
+        map.gmxControlsManager.add(this.getView());
+        map.addControl(this.getView());
     }
 
 }

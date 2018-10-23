@@ -30,7 +30,7 @@ export default class GatewayBetweenMapAndInterface {
             const drawingId = L.gmxUtil.newId();
             const editable = typeof geoJSON.properties.editable === 'undefined' ? true : geoJSON.properties.editable;
 
-            const currentDrawing = getDrawingObject({ drawingId, name, geoJSON, color, visible, editable });
+            const currentDrawing = getDrawingObject({ id: drawingId, name, geoJSON, color, visible, editable });
 
             // add drawing on list
             store.setChangeableData(

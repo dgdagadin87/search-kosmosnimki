@@ -7,16 +7,11 @@ import BaseComponent from '../../../../../../base/BaseComponent';
 
 export default class SearchWidgetComponent extends BaseComponent {
 
-    constructor(props) {
-
-        super(props);
-
-        this._searchContainer = this.getParentComponent()._component._container;
-    }
-
     init() {
 
-        this._component = new SearchWidget(
+        this._searchContainer = this.getParentComponent().getView()._container;
+
+        this._view = new SearchWidget(
             this._searchContainer.querySelector('.search-pane'),
             {
                 placeHolder: Translations.getText('controls.search'),
@@ -48,7 +43,7 @@ export default class SearchWidgetComponent extends BaseComponent {
 
         const map = this.getMap();
 
-        const searchControl = this._component;
+        const searchControl = this.getView();
 
         map.on ('click', searchControl.results.hide.bind(searchControl.results));
         map.on ('dragstart', searchControl.results.hide.bind(searchControl.results));

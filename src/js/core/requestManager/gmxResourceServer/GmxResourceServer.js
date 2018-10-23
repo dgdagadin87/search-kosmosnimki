@@ -20,4 +20,9 @@ export default class GmxResourceServerService {
         return this._gmxResourceService.sendGetRequest('Layer/GetLayerInfo.ashx', params);
     }
 
+    vectorLayerSearch(params = {}) {
+
+        return this._gmxResourceService.sendPostRequest('VectorLayer/Search.ashx', params);
+    }
+
 }

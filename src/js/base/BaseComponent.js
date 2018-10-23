@@ -30,9 +30,19 @@ export default class BaseComponent {
         return this['_parent'];
     }
 
-    getProps() {
+    getConfig() {
 
         return this._props;
+    }
+
+    isSimple() {
+
+        return true;
+    }
+
+    getView() {
+
+        return this._view;
     }
 
 }

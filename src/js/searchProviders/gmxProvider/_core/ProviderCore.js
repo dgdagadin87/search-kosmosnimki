@@ -1,9 +1,11 @@
 import EventTarget from 'scanex-event-target';
 
+import {LAYER_ID} from '../../../config/constants/constants'
+
 
 class GmxLayerDataProvider extends EventTarget {
 
-    constructor ({gmxResourceServer, map}) {
+    constructor ({application, map}) {
 
         super();
 
@@ -12,9 +14,7 @@ class GmxLayerDataProvider extends EventTarget {
         this.showOnSelect = false;
         this.showOnEnter = true;
 
-        this._rsGmx = gmxResourceServer;
-
-        this._map = map;        
+        this._application = application;
     }
 
     _toGeoJSON (fields, values) {
@@ -41,16 +41,19 @@ class GmxLayerDataProvider extends EventTarget {
 
         var query = value.split(/[\s,]+/).map(x => "(sceneid = '" + x + "')").join(' OR ');
 
+        var application = this.getApplication();
+        var requestManager = application.getRequestManager();
+
         return new Promise((resolve, reject) => {
             var rq = {
-                layer: window.LAYER_ID,
+                layer: LAYER_ID,
                 geometry: true,
                 pagesize: 0,
                 query: query,
                 out_cs: 'EPSG:3857',
             };
 
-            this._rsGmx.sendPostRequest('VectorLayer/Search.ashx', rq)
+            requestManager.requestVectorLayerSearch(rq)
                 .then(response => {
                     if (response.Status == 'ok') {
                         var rs = response.Result.values.map(values => {
@@ -77,6 +80,12 @@ class GmxLayerDataProvider extends EventTarget {
                 });
         });
     }
+
+    getApplication() {
+
+        return this._application;
+    }
+
 }
 
 export default GmxLayerDataProvider;

@@ -10,6 +10,8 @@ import {
     VERSION_PATH
 } from '../config/constants/constants';
 
+import RequestManager from './requestManager/RequestManager';
+
 import DataStore from './DataStore';
 
 import MapComponent from './map/Map';
@@ -30,7 +32,7 @@ class Application {
 
     async start() {
 
-        this._addServices();
+        this._initRequestManager();
 
         this._initStore();
 
@@ -65,21 +67,11 @@ class Application {
         L.gmxLocale.setLanguage(viewState.lang || DEFAULT_LANGUAGE);
     }
 
-    _addServices() {
+    _initRequestManager() {
 
-        const {services = []} = this._config;
-
-        this._services = {};
-
-        for (let i = 0; i < services.length; i++ ) {
-
-            const currentService = services[i];
-            const {index, constructor} = currentService;
-
-            this._services[index] = new constructor({
-                application: this
-            });
-        }
+        this._requestManager = new RequestManager({
+            application: this
+        });
     }
 
     async _loadCommonData() {
@@ -93,11 +85,11 @@ class Application {
 
     async _getUserInfo() {
 
-        const catalogService = this.getService('catalogServer');
+        const requestManager = this.getRequestManager();
 
         let userInfo = {};
         try {
-            const response = await catalogService.getUserInfo();
+            const response = await requestManager.requestGetUserInfo();
             const { ID, FullName, Email, Phone, Organization } = response.Result;
             userInfo = {
                 IsAuthenticated: true,
@@ -122,10 +114,10 @@ class Application {
         const store = this.getStore();
         const userInfo = store.getConstantableData('userInfo');
 
-        const gmxService = this.getService('gmxServer');
+        const requestManager = this.getRequestManager();
 
         try {
-            const response = await gmxService.getLayerId({
+            const response = await requestManager.requestGetLayerId({
                 layerID: ACCESS_LAYER_ID
             });
             const {Status, Result = {}} = response;
@@ -220,9 +212,9 @@ class Application {
         window.console.error(e);
     }
 
-    getService(index) {
+    getRequestManager() {
 
-        return this._services[index];
+        return this._requestManager;
     }
 
     getSearchProvider(index) {

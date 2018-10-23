@@ -9,25 +9,20 @@ import SearchTabComponent from './components/searchTab/SearchTabComponent';
 
 export default class SidebarComponent extends BaseCompositedComponent {
 
-    constructor(props) {
-
-        super(props);
-
-        this._component = new SidebarControl({position: 'topleft'});
-
-        this._searchTabComponent = new SearchTabComponent({
-            ...props,
-            parent: this
-        });
-    }
-
     init() {
 
         const map = this.getMap();
 
-        map.addControl(this._component);
+        this._view = new SidebarControl({position: 'topleft'});
 
-        this._component.getContainer().classList.add('noselect');
+        this._searchTabComponent = new SearchTabComponent({
+            ...this.getConfig(),
+            parent: this
+        });
+
+        map.addControl(this.getView());
+
+        this.getView().getContainer().classList.add('noselect');
 
         this._searchTabComponent.init();
     
@@ -48,12 +43,12 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         window.addEventListener('resize', () => this._resizeSidebar());
 
-        this._component.on('change', e => globalEvents.trigger('sidebar:tab:change', e));
+        this.getView().on('change', e => globalEvents.trigger('sidebar:tab:change', e));
     }
 
     _setCurrentSearchTab() {
 
-        const searchSidebar = this._component;
+        const searchSidebar = this.getView();
 
         if (!searchSidebar.getCurrent()) {               
             searchSidebar.setCurrent('search');
@@ -74,7 +69,6 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         const height = getTotalHeight([ '#header', '.leaflet-gmx-copyright' ]);
         document.body.querySelector('.scanex-sidebar').style.height = `${document.body.getBoundingClientRect().height - height}px`;
-        return height;
     }
 
 }

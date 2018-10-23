@@ -6,21 +6,19 @@ import BaseComponent from '../../../../base/BaseComponent';
 
 export default class BaseLayersComponent extends BaseComponent {
 
-
-    constructor(props) {
-        super(props);
-
-        this._setLanguage();
-        this._setLayers();
-    }
-
     init() {
 
         const map = this.getMap();
 
+        this._setLanguage();
+        this._setLayers();
+
         const baseLayersControl = new IconLayers(this._layers, {
             id: 'iconLayers'
         });
+
+        this._view = baseLayersControl;
+
         map.gmxControlsManager.add(baseLayersControl);
         map.addControl(baseLayersControl);
 
@@ -72,7 +70,7 @@ export default class BaseLayersComponent extends BaseComponent {
         const application = this.getApplication();
         const sideBarComponent = application.getComponent('sidebar');
 
-        const { width } = sideBarComponent._component.getContainer().getBoundingClientRect();
+        const { width } = sideBarComponent.getView().getContainer().getBoundingClientRect();
 
         map.gmxControlsManager.get('iconLayers').getContainer().style.left = `${width + 30}px`;
     }

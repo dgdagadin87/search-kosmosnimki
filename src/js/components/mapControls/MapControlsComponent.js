@@ -10,19 +10,15 @@ import BoxZoomComponent from './components/boxZoom/BoxZoomComponent';
 
 export default class MapControlsComponent extends BaseCompositedComponent {
 
-    constructor(props) {
-        super(props);
+    init() {
 
         this._mapControlsPrepare();
 
-        this._drawingsControlComponent = new DrawingsControlComponent(props);
-        this._baseLayersComponent = new BaseLayersComponent(props);
-        this._zoomComponent = new ZoomComponent(props);
+        this._drawingsControlComponent = new DrawingsControlComponent(this._props);
+        this._baseLayersComponent = new BaseLayersComponent(this._props);
+        this._zoomComponent = new ZoomComponent(this._props);
 
-        this._boxZoomComponent = isMobile() ? false : new BoxZoomComponent(props);
-    }
-
-    init() {
+        this._boxZoomComponent = isMobile() ? false : new BoxZoomComponent(this._props);
 
         this._drawingsControlComponent.init();
         this._baseLayersComponent.init();

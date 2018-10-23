@@ -9,9 +9,6 @@ import CrdSearchProvider from './searchProviders/crdProvider/CrdSearchProvider';
 import OsmSearchProvider from './searchProviders/osmProvider/OsmSearchProvider';
 import GmxSearchProvider from './searchProviders/gmxProvider/GmxSearchProvider';
 
-import CatalogResourceServerService from './services/catalogResourceServer/CatalogResourceServerService';
-import GmxResourceServerService from './services/gmxResourceServer/GmxResourceServerService';
-
 import HelpButtonComponent from './components/helpButton/HelpButtonComponent';
 import AuthWidgetComponent from './components/authWIdget/AuthWidgetComponent';
 import LangWidgetComponent from './components/langWIdget/LangWidgetComponent';
@@ -73,18 +70,6 @@ const application = new Application({
         {
             index: 'about',
             constructor: AboutDialogComponent
-        }
-    ],
-
-    // services
-    services: [
-        {
-            index: 'catalogServer',
-            constructor: CatalogResourceServerService
-        },
-        {
-            index: 'gmxServer',
-            constructor: GmxResourceServerService
         }
     ],
 

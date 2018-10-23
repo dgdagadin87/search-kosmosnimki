@@ -12,11 +12,11 @@ export default class GmxSearchProvider extends BaseSearchProvider {
         const map = this.getMap();
 
         const application = this.getApplication();
-        const gmxService = application.getService('gmxServer');
+        const requestManager = application.getRequestManager();
 
         this._provider = new GmxDataProvider({
             map,
-            gmxResourceServer: gmxService
+            gmxResourceServer: requestManager.getGmxResourceServer()
         });
 
         this._bindEvents();

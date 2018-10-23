@@ -5,17 +5,13 @@ import { createContainer } from '../../utils/commonUtils';
 
 export default class HelpButtonComponent extends BaseComponent {
 
-    constructor(props){
-        super(props);
-
-        this._container = document.getElementById('help');
-    }
-
     init() {
 
-        this._component = createContainer();
-        this._component.classList.add('help-button');
-        this._container.appendChild(this._component);
+        this._container = document.getElementById('help');
+
+        this._view = createContainer();
+        this._view.classList.add('help-button');
+        this._container.appendChild(this._view);
 
         this._bindEvents();
     }

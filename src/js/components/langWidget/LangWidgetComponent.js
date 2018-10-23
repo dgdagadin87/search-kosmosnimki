@@ -7,21 +7,17 @@ import BaseComponent from '../../base/BaseComponent';
 
 export default class LangWidgetComponent extends BaseComponent {
 
-    constructor(props){
-        super(props);
-
-        this._container = document.getElementById('lang');
-    }
-
     init() {
 
-        this._component = new LanguageWidget(this._container, {
+        this._container = document.getElementById('lang');
+
+        this._view = new LanguageWidget(this._container, {
             languages: {
                 'eng': 'EN',
                 'rus': 'RU'
             },
         });
-        this._component.currentLanguage = Translations.getLanguage();
+        this.getView().currentLanguage = Translations.getLanguage();
 
         this._bindEvents();
     }
@@ -29,7 +25,7 @@ export default class LangWidgetComponent extends BaseComponent {
     _bindEvents() {
 
         // localEvents.on(...)
-        this._component.addEventListener('change', e => {
+        this.getView().addEventListener('change', e => {
 
             const {detail: currentLanguage} = e;
 

@@ -7,25 +7,18 @@ import SearchWidgetComponent from './components/searchWidget/SearchWidgetCompone
 
 export default class SearchTabComponent extends BaseCompositedComponent {
 
-    constructor(props) {
-
-        super(props);
-
-        this._component = null;
-    }
-
     init() {
 
         this._addTabToSidebar();
 
-        this._searchWidgetComponent = new SearchWidgetComponent(this.getProps());
+        this._searchWidgetComponent = new SearchWidgetComponent(this.getConfig());
 
         this._searchWidgetComponent.init();
     }
 
     _addTabToSidebar() {
 
-        this._component = this.getParentComponent()._component.addTab({
+        this._view = this.getParentComponent().getView().addTab({
             id: 'search',
             icon: 'sidebar-search',
             opened: 'sidebar-search-opened',
@@ -33,7 +26,7 @@ export default class SearchTabComponent extends BaseCompositedComponent {
             tooltip: Translations.getText('search.title'), 
         })
 
-        this._component.innerHTML = 
+        this.getView().innerHTML = 
         `<div class="search-pane"></div>
         <div class="no-select search-options-pane"></div>
         <div class="search-options-footer">

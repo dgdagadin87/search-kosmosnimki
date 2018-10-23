@@ -1,26 +1,21 @@
 import BaseComponent from '../../base/BaseComponent';
 
-import { DrawnObjectsControl } from './_inner/DrawnObjects';
+import { DrawnObjectsControl } from './view/DrawnObjects';
 
 import { getDrawingObject, getDrawingObjectArea } from '../../utils/layersUtils';
 
 
 export default class DrawingObjectsComponent extends BaseComponent {
 
-    constructor(props) {
-
-        super(props);
-
-        this._component = new DrawnObjectsControl({position: 'topright'});
-    }
-
     init() {
 
         const map = this.getMap();
 
-        map.addControl(this._component);
+        this._view = new DrawnObjectsControl({position: 'topright'});
 
-        this._bindEvents(); // TODO - incorrect
+        map.addControl(this.getView());
+
+        this._bindEvents();
     }
 
     _bindEvents() {
@@ -29,7 +24,7 @@ export default class DrawingObjectsComponent extends BaseComponent {
         const store = app.getStore();
         const appEvents = app.getAppEvents();
 
-        const componentWidget = this._component.widget;
+        const componentWidget = this.getView().widget;
         
         appEvents.on('drawingObjects:updateList', this._updateList.bind(this));
         appEvents.on('drawingObjects:addDrawingOnList', this._addDrawingOnList.bind(this));
@@ -183,7 +178,7 @@ export default class DrawingObjectsComponent extends BaseComponent {
 
         const drawingObjectsItems = store.getData('drawings');
         const arr = Object.keys(drawingObjectsItems).map(id => drawingObjectsItems[id]);
-        this._component.widget.items = arr;
+        this.getView().widget.items = arr;
 
         this._resizeWidget();
     }
@@ -193,7 +188,7 @@ export default class DrawingObjectsComponent extends BaseComponent {
         const app = this.getApplication();
 
         const { height } =  app.getMapContainer().getBoundingClientRect();
-        this._component.widget.resize(height - 150);
+        this.getView().widget.resize(height - 150);
     }
 
 }

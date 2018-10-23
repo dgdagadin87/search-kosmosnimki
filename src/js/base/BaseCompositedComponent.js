@@ -1,28 +1,15 @@
 import Events from '../core/Events';
 
+import BaseComponent from './BaseComponent';
 
-export default class BaseCompositedComponent {
 
-    constructor(config = {}) {
+export default class BaseCompositedComponent extends BaseComponent {
 
-        this.events = new Events();
+    constructor(props) {
 
-        this._application = config['application'];
-        this._map = config['map'];
+        super(props);
 
-        this._parent = config['parent'];
-
-        this._props = config;
-    }
-
-    getMap() {
-
-        return this._map;
-    }
-
-    getApplication() {
-
-        return this._application;
+        this._name = props['name'] || null;
     }
 
     getChildComponent(componentName) {
@@ -35,9 +22,9 @@ export default class BaseCompositedComponent {
         return this['_parent'];
     }
 
-    getProps() {
+    isSimple() {
 
-        return this._props;
+        return false;
     }
 
 }
