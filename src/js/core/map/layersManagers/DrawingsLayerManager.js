@@ -23,12 +23,71 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         gmxDrawing.on('dragend', this._editDrawingOnList.bind(this));
 
         appEvents.on('drawingObjects:zoomToObjectOnMap', this._zoomToObjectOnMap.bind(this));
+        appEvents.on('drawingObjects:showDrawingOnMap', this._showDrawingOnMap.bind(this));
+    }
+
+    _showDrawingOnMap(drawingId, visible) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        let object = store.getData('drawings', drawingId);
+
+        if (visible) {
+            let color = object.color;
+            let editable = typeof object.geoJSON.properties.editable === 'undefined' ? true : object.geoJSON.properties.editable;
+            let options = {
+                editable,
+                lineStyle: {
+                    fill: false,
+                    weight: 2,
+                    opacity: 1,
+                    color,
+                },
+                pointStyle: {
+                    color,
+                }
+            };
+            let [drawing] = this._map.gmxDrawing.addGeoJSON(object.geoJSON, options);
+            if (!editable) {
+                options.className = 'osm-layer';
+                // drawing.enableEdit();
+                drawing.setOptions({
+                    editable,
+                    lineStyle: {
+                        fill: false,
+                        weight: 2,
+                        opacity: 1,
+                        color,
+                    },
+                    pointStyle: {color}
+                });
+                // drawing.disableEdit();
+            }
+            drawing.options.uuid = drawingId;
+            object.drawing = drawing;
+            drawing.bringToBack();
+            drawing.visible = true;
+        }
+        else {
+            if(object.drawing) {
+                let drawing = object.drawing;
+                drawing.remove();
+                object.drawing = null;
+            }
+        }
+
+        store.setChangeableData(
+            'drawings', object,
+            { mode: 'row', operation: 'update', indexByValue: drawingId, events: [] }
+        );
     }
 
     _zoomToObjectOnMap(e) {
 
         const map = this._map;
-        const store = this.getApplication().getStore();
+        const application = this.getApplication();
+        const store = application.getStore();
 
         const {id, visible} = e.detail;
 
@@ -39,12 +98,10 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             if (type === 'Point') {
                 let center = L.latLng(coordinates[1],coordinates[0]);
                 map.setView(center);
-                // this._map.invalidateSize();
             }
             else {
                 const bounds = item.drawing.getBounds();
                 map.fitBounds(bounds, { animate: false });
-                // this._map.invalidateSize();
             }
         }
     }

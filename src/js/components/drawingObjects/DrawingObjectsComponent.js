@@ -35,6 +35,7 @@ export default class DrawingObjectsComponent extends BaseComponent {
         appEvents.on('drawingObjects:addDrawingOnList', this._addDrawingOnList.bind(this));
         appEvents.on('drawingObjects:editDrawingOnList', this._editDrawingOnList.bind(this));
 
+        store.on('drawings:row:add:ui', this._updateList.bind(this));
         store.on('drawings:row:update:ui', this._updateList.bind(this));
         store.on('drawings:row:delete:ui', this._updateList.bind(this));
 

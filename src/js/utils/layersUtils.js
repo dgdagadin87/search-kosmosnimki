@@ -148,6 +148,38 @@ function splitOn180 (geometry) {
     return geometries;
 }
 
+function isGeometry(obj) {
+
+    const {type} = obj;
+
+    switch (type) {
+        case 'Point':
+        case 'MultiPoint':
+        case 'LineString':
+        case 'MultiLineString':
+        case 'Polygon':
+        case 'MultiPolygon':
+        case 'GeometryCollection':
+            return true;
+        default:
+            return false;
+    }    
+}
+
+function isGeojsonFeature (obj) {
+
+    let {type, geometry, properties} = obj;
+    if(type !== 'Feature') {
+        console.log('geojson feature test failed: provided type is not a "Feature" object', obj);
+        return false;
+    }
+    if(!isGeometry(geometry)) {
+        console.log('geojson feature test failed: geometry is of wrong type', geometry);
+        return false;
+    }
+    return true;
+}
+
 function normalizeGeometry (geometry, lng) {
 
     let {type, coordinates} = geometry;
@@ -193,5 +225,7 @@ export {
     getDrawingObject,
     getDrawingObjectArea,
     splitOn180,
-    normalizeGeometry
+    normalizeGeometry,
+    isGeojsonFeature,
+    isGeometry
 };

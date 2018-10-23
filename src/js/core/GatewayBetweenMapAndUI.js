@@ -1,3 +1,12 @@
+import {
+    isGeojsonFeature,
+    getDrawingObject,
+    normalizeGeometry
+} from '../utils/layersUtils';
+
+import {NON_EDIT_LINE_STYLE} from '../config/constants/constants';
+
+
 export default class GatewayBetweenMapAndInterface {
 
     constructor(config) {
@@ -10,21 +19,94 @@ export default class GatewayBetweenMapAndInterface {
 
     addDrawingObjectOnMapAndUi(item) {
 
-        console.log('on addeDDDD!!!');
-        console.log(item);
+        const application = this.getApplication();
+        const store = application.getStore();
+        const appEvents = application.getAppEvents();
+
+        const { name, color, geoJSON, visible } = item;
+
+        if(isGeojsonFeature(geoJSON)) {
+
+            const drawingId = L.gmxUtil.newId();
+            const editable = typeof geoJSON.properties.editable === 'undefined' ? true : geoJSON.properties.editable;
+
+            const currentDrawing = getDrawingObject({ drawingId, name, geoJSON, color, visible, editable });
+
+            // add drawing on list
+            store.setChangeableData(
+                'drawings', currentDrawing,
+                { mode: 'row', operation: 'add', indexByValue: drawingId, events: ['drawings:row:add:ui'] }
+            );
+
+            // add drawing on map
+            appEvents.trigger('drawingObjects:showDrawingOnMap', drawingId, visible);
+        }
+        else {
+            return null;
+        }
+    }
+
+    addDrawingObjectOnListAndMapFromOsm(results = []) {
+
+        const map = this.getMap();
+
+        const application = this.getApplication();
+        const appEvents = application.getAppEvents();
+
+        const features = results.map(x => {
+            x.feature.properties.editable = false;
+            x.feature.properties.name = x.feature.properties.ObjName;
+            return x.feature;
+        });
+
+        const {fill, weight, opacity} = NON_EDIT_LINE_STYLE;
+
+        if (features && features.length) {
+
+            features.map(geoJSON => {
+
+                // create map drawing object
+                normalizeGeometry(geoJSON.geometry);
+
+                let [object] = map.gmxDrawing.addGeoJSON(
+                    geoJSON,
+                    {
+                        editable: false,
+                        lineStyle: { fill, weight, opacity },
+                        className: 'osm-layer'
+                    }
+                );
+
+                // show drawing on map
+                object.bringToBack();
+
+                // adding drawing object on list
+                appEvents.trigger('drawingObjects:addDrawingOnList', {object, geoJSON});
+            });
+
+            // zooming ??? !!!
+            const json = features.reduce((a, geojson) => {
+                a.addData(geojson.geometry);
+                return a;
+            }, L.geoJson());
+
+            const bounds = json.getBounds();
+
+            map.fitBounds(bounds);
+        }
     }
 
     editDrawingOnListAndMap(e) {
 
-        const store = this.getApplication().getStore();
+        const application = this.getApplication();
+        const store = application.getStore();
 
         const { id: drawingId, name: drawingName, color: drawingColor } = e.detail;
 
         let currentDrawing = store.getData('drawings', drawingId);
-        let { drawing } = currentDrawing;
 
-        currentDrawing['name'] = drawingName;
-        currentDrawing['color'] = drawingColor;
+        // editing drawing object on map
+        let { drawing } = currentDrawing;
 
         let options = {
             lineStyle: {
@@ -47,8 +129,12 @@ export default class GatewayBetweenMapAndInterface {
             }
         }
 
+        // editing drawing object on list
+        currentDrawing['name'] = drawingName;
+        currentDrawing['color'] = drawingColor;
         currentDrawing['drawing'] = drawing;
 
+        // setting drawing object in store
         store.setChangeableData(
             'drawings', currentDrawing,
             { mode: 'row', operation: 'update', indexByValue: drawingId, events: ['drawings:row:update:ui'] }

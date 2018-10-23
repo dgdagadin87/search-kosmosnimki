@@ -37,10 +37,8 @@ export default class CrdSearchProvider extends BaseSearchProvider {
         const gatewayBetweenMapAndUI = application.getGateway();
         
         gatewayBetweenMapAndUI.addDrawingObjectOnMapAndUi(item);
-        //const drawing = window.Catalog.resultsController.addDrawing (item);
 
         map.setView(center, 14);
-        // map.invalidateSize();
     }
 
 }

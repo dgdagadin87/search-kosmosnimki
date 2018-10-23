@@ -29,24 +29,24 @@ export default class GmxSearchProvider extends BaseSearchProvider {
 
     _onFetchHandler(e) {
 
-        let {fields, values, types} = e.detail;
-            const count = values.length;                            
-            if (count === 0) {
-                // window.Catalog.searchSidebar.enable ('results', false);
-                window.Catalog.searchSidebar.disable ('results');
-                update_results_number(0);
-                window.Catalog.notificationWidget.content.innerText = T.getText('alerts.nothing');
-                window.Catalog.notificationWidget.show();
-            }
-            else {
-                window.Catalog.resultsController.clear();
-                // window.Catalog.searchSidebar.enable ('results', true);
-                // window.Catalog.searchSidebar.open('results');
-                window.Catalog.searchSidebar.enable ('results');
-                window.Catalog.searchSidebar.setCurrent('results');
-                window.Catalog.resultsController.setLayer({fields,values,types});
-                update_results_number(count);
-            }
+        /*let {fields, values, types} = e.detail;
+        const count = values.length;                            
+        if (count === 0) {
+            // window.Catalog.searchSidebar.enable ('results', false);
+            window.Catalog.searchSidebar.disable ('results');
+            update_results_number(0);
+            window.Catalog.notificationWidget.content.innerText = T.getText('alerts.nothing');
+            window.Catalog.notificationWidget.show();
+        }
+        else {
+            window.Catalog.resultsController.clear();
+            // window.Catalog.searchSidebar.enable ('results', true);
+            // window.Catalog.searchSidebar.open('results');
+            window.Catalog.searchSidebar.enable ('results');
+            window.Catalog.searchSidebar.setCurrent('results');
+            window.Catalog.resultsController.setLayer({fields,values,types});
+            update_results_number(count);
+        }*/
     }
 
 }
