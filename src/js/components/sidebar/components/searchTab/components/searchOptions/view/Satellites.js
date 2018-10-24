@@ -2,7 +2,7 @@ import EventTarget from 'scanex-event-target';
 import Translations from 'scanex-translations';
 import Tristate from 'scanex-tristate';
 import Info from './Info.js';
-import { createContainer } from '../../../../../../../../utils/commonUtils';
+import { createContainer } from '../../../../../../../utils/commonUtils';
 
 
 const SATELLITE_COLS = 2;

@@ -38,16 +38,14 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const globalEvents = application.getAppEvents();
         const map = application.getMap();
-
-        const view = this.getView();
         const searchTabComponent = this.getChildComponent('searchTab');
+
+        this.getView().on('change', e => globalEvents.trigger('sidebar:tab:change', e));
 
         map.gmxDrawing.on('drawstop', () => this._setCurrentSearchTab());
 
         globalEvents.on('system:window:resize', () => this._resizeSidebar());
         globalEvents.on('system:components:created', () => this._resizeSidebar());
-
-        view.on('change', e => globalEvents.trigger('sidebar:tab:change', e));
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
     }
@@ -56,6 +54,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
+        const requestManager = application.getRequestManager();
 
         const searchCriteria = store.getData('searchCriteria');
         const {satellites: {pc = [], ms = []}} = searchCriteria;
@@ -73,6 +72,12 @@ export default class SidebarComponent extends BaseCompositedComponent {
         // clear result items (_result_index = false)
 
         // clear download cache
+
+        requestManager.requestSearchSnapshots(1000)
+        .then((result) => {
+            application.showLoader(false);
+            console.log(result);
+        });
     }
 
     _setCurrentSearchTab() {
@@ -131,8 +136,14 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
     _resizeSidebar() {
 
+        const application = this.getApplication();
+        const appEvents = application.getAppEvents();
+
         const height = getTotalHeight([ '#header', '.leaflet-gmx-copyright' ]);
+
         document.body.querySelector('.scanex-sidebar').style.height = `${document.body.getBoundingClientRect().height - height}px`;
+
+        appEvents.trigger('sidebar:tab:resize');
     }
 
 }

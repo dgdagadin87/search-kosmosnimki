@@ -1,5 +1,6 @@
 import CatalogResourceServer from './catalogResourceServer/CatalogResourceServer';
 import GmxResourceServer from './gmxResourceServer/GmxResourceServer';
+import RequestAdapter from './requestAdapter/RequestAdapter';
 
 
 export default class RequestManager {
@@ -18,12 +19,22 @@ export default class RequestManager {
         this._gmxResourceComponent = new GmxResourceServer({
             application
         });
+
+        this._requestAdapterComponent = new RequestAdapter({
+            application,
+            gmxResourceServer: this.getGmxResourceServer()
+        });
     }
 
     // request methods
     requestGetUserInfo() {
 
         return this._catalogResourceComponent.getUserInfo();
+    }
+
+    requestSearchSnapshots(limit = 0) {
+
+        return this._requestAdapterComponent.searchSnapshots(limit);
     }
 
     requestVectorLayerSearch(params = {}) {

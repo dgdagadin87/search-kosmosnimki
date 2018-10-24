@@ -1,3 +1,6 @@
+import { tileRange } from './layersUtils';
+
+
 function isNumber(n) {
 
     return !isNaN (new Number(n));
@@ -79,6 +82,26 @@ function makeCloseTo (lng, x) {
     return p;
 }
 
+function stRange (start, end, boxes) {            
+    let rng = [];
+    let lo = getQuarters (start);
+    let hi = getQuarters (end);
+    for (let i = lo; i <= hi; i++) {
+        boxes.forEach (box => {
+            tileRange (i, box).forEach (n => rng.push(n));
+        });        
+    }
+    return rng;
+}
+
+function toQuery (range) {    
+    return `${range.length > 0 ? `stidx IN (${range.join(',')})` : '' }`;
+}
+
+function getQuarters (date) {
+    return (date.getFullYear() - 1970) * 4 + Math.ceil ((date.getMonth() + 1) / 3);
+}
+
 export {
     isNumber,
     createContainer,
@@ -87,5 +110,8 @@ export {
     flatten,
     getTotalHeight,
     uppercaseFirstLetter,
-    makeCloseTo
+    makeCloseTo,
+    stRange,
+    toQuery,
+    getQuarters
 };

@@ -58,6 +58,13 @@ class Application {
         window.addEventListener('resize', () => events.trigger('system:window:resize'));
     }
 
+    _initRequestManager() {
+
+        this._requestManager = new RequestManager({
+            application: this
+        });
+    }
+
     _initStore() {
 
         const {store} = this._config;
@@ -71,15 +78,9 @@ class Application {
 
         const storedState = localStorage.getItem(LOCAL_STORAGE_KEY);  
         const viewState = JSON.parse (storedState) || {};
+
         Translations.setLanguage (viewState.lang || DEFAULT_LANGUAGE);
         L.gmxLocale.setLanguage(viewState.lang || DEFAULT_LANGUAGE);
-    }
-
-    _initRequestManager() {
-
-        this._requestManager = new RequestManager({
-            application: this
-        });
     }
 
     async _loadCommonData() {

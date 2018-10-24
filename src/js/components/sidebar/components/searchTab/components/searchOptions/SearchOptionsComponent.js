@@ -41,7 +41,7 @@ export default class SearchOptionsComponent extends BaseComponent {
 
         const view = this.getView();
 
-        appEvents.on('system:window:resize', () => this._resizeSearchOptions());
+        appEvents.on('sidebar:tab:resize', (e) => this._resizeSearchOptions(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
 
         view.addEventListener('change', (e) => this._onViewChangeSearchCriteria(e));

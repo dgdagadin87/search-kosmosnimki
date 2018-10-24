@@ -1,6 +1,6 @@
 import { RangeWidget } from 'scanex-slider-widget';
 
-import Satellites from './Satellites/Satellites.js';
+import Satellites from './Satellites.js';
 import EventTarget from 'scanex-event-target';
 import Translations from 'scanex-translations';
 
@@ -103,7 +103,15 @@ class SearchOptions extends EventTarget {
     };
   }  
   _initAnnually(){
-    this._annually = this._container.querySelector('.search-options-period-annually-value');    
+    this._annually = this._container.querySelector('.search-options-period-annually-value');
+    
+    this._annually.addEventListener('change', () => {
+
+      let event = document.createEvent('Event');
+      event.detail = this.criteria;
+      event.initEvent('change', false, false);
+      this.dispatchEvent(event);
+    })
   } 
   _initDatePickers() {
     this._dateFormat = 'dd.mm.yy';

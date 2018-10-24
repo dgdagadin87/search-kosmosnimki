@@ -221,11 +221,99 @@ function getRefLon (coordinates) {
     return x;    
 }
 
+function getBbox (geometry) {
+    let {type, coordinates} = geometry;
+    let lon = 0, lat = 0;
+    let sorter = (a,b)=> {
+        if (a > b) {
+            return 1;
+        }
+        if (a < b) {
+            return -1;
+        }            
+        return 0;
+    };
+    let rings = coords => {
+        let {xs, ys} = coords.reduce((a, [x, y]) => {        
+            a.xs.push (x);
+            a.ys.push (y);
+            return a;
+        }, {xs:[],ys:[]});        
+        xs = xs.sort(sorter);
+        ys = ys.sort(sorter);
+        let xmin = xs[0];
+        let xmax = xs[xs.length - 1];
+        let ymin = ys[0];
+        let ymax = ys[ys.length - 1];
+        return [[xmin,ymax],[xmax,ymax],[xmax,ymin],[xmin,ymin]];
+    };
+    switch (type.toUpperCase()) {
+        case 'POINT':
+            [lon, lat] = coordinates;
+            return [[lon,lat],[lon,lat],[lon,lat],[lon,lat]];
+        case 'MULTIPOINT':
+        case 'LINESTRING':
+            return rings (coordinates);
+        case 'POLYGON':
+        case 'MULTILINESTRING':
+            return rings (coordinates[0]);        
+        case 'MULTIPOLYGON':
+            let {xs, ys} = coordinates.reduce ((a, coords) => {
+                let [[x1,y1],[x2,y2],[x3,y3],[x4,y4]] = rings (coords[0]);
+                a.xs.push (x1);
+                a.xs.push (x2);
+                a.xs.push (x3);
+                a.xs.push (x4);
+                a.ys.push (y1);
+                a.ys.push (y2);
+                a.ys.push (y3);
+                a.ys.push (y4);
+                return a;
+            }, {xs: [], ys: []});
+            xs = xs.sort(sorter);
+            ys = ys.sort(sorter);
+            let xmin = xs[0];
+            let xmax = xs[xs.length - 1];
+            let ymin = ys[0];
+            let ymax = ys[ys.length - 1];
+            return [[xmin,ymax],[xmax,ymax],[xmax,ymin],[xmin,ymin]];                        
+        default:
+            return null;
+    }
+}
+
+function sti (period, lon, lat) {
+    return 65536 * period + 256 * Math.round(256 * (90 - lat) / 180) + Math.round(256 * (lon + 180) / 360);
+}
+
+function step  (lat) {
+    return lat < 50 ? 1 : (50 <= lat && lat <= 70 ? 2 : 3);
+}
+
+function tileRange (period, [[x1, y1], [x2, y2], [x3, y3], [x4, y4]]) {        
+    
+    let nw = sti (period, x1, y1) - (step (Math.abs(y1)) + 512);
+    let ne = sti (period, x2, y2) + (step (Math.abs(y2)) - 512);
+    let se = sti (period, x3, y3) + (step (Math.abs(y3)) + 512);
+    let sw = sti (period, x4, y4) - (step (Math.abs(y4)) - 512);
+
+    let rng = [];    
+    for (let lo = nw, hi = ne; hi <= se; lo += 256, hi += 256) {
+        let k = lo;
+        while (k <= hi) {
+            rng.push(k++);
+        }        
+    }
+    return rng;
+}
+
 export {
     getDrawingObject,
     getDrawingObjectArea,
     splitOn180,
     normalizeGeometry,
     isGeojsonFeature,
-    isGeometry
+    isGeometry,
+    getBbox,
+    tileRange
 };
