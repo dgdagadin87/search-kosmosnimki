@@ -96,7 +96,7 @@ export default class GatewayBetweenMapAndInterface {
         }
     }
 
-    editDrawingOnListAndMap(e) {
+    editDrawingOnMapAndUi(e) {
 
         const application = this.getApplication();
         const store = application.getStore();

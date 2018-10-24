@@ -48,6 +48,14 @@ class Application {
 
         this._addComponents();
 
+        this._bindEvents();
+    }
+
+    _bindEvents() {
+
+        const events = this.getAppEvents();
+
+        window.addEventListener('resize', () => events.trigger('system:window:resize'));
     }
 
     _initStore() {
@@ -204,12 +212,19 @@ class Application {
 
         const appEvents = this.getAppEvents();
 
-        appEvents.trigger('components:created');
+        appEvents.trigger('system:components:created');
     }
 
     _errorHandle(e) {
 
         window.console.error(e);
+    }
+
+    showLoader(state = false) {
+
+        const loaderWidget = this.getComponent('loaderWidget');
+
+        loaderWidget.show(state);
     }
 
     getRequestManager() {

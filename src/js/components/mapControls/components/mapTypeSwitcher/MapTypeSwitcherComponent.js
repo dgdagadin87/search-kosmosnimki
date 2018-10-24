@@ -30,7 +30,7 @@ export default class BaseLayersComponent extends BaseComponent {
         const application = this.getApplication();
         const globalEvents = application.getAppEvents();
 
-        globalEvents.on('components:created', () => this._shiftControl());
+        globalEvents.on('system:components:created', () => this._shiftControl());
 
         globalEvents.on('sidebar:tab:change', () => this._shiftControl());
     }

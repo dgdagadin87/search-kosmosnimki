@@ -53,9 +53,9 @@ export default class Map {
         const application = this.getApplication();
         const globalEvents = application.getAppEvents();
 
-        globalEvents.on('components:created', () => this._resizeMap());
-
-        window.addEventListener('resize', () => this._resizeMap());
+        globalEvents.on('system:components:created', () => this._resizeMap());
+        globalEvents.on('system:components:created', () => this._setMapPaggingTop());
+        globalEvents.on('system:window:resize', () => this._resizeMap());
     }
 
     async _initBaseLayerManager() {
@@ -89,6 +89,17 @@ export default class Map {
 
         this._mapContainer.style.height = `${heightDiff}px`;
         this._map.invalidateSize();
+    }
+
+    _setMapPaggingTop() {
+
+        const application = this.getApplication();
+        const sideBarComponent = application.getComponent('sidebar');
+        const sidebarView = sideBarComponent.getView();
+        const sidebarContainer = sidebarView.getContainer();
+
+        const sidebarWidth = sidebarContainer.getBoundingClientRect().width;                
+        this._map.options.paddingTopLeft = [sidebarWidth, 0];
     }
 
     getApplication() {

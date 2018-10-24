@@ -17,6 +17,27 @@ export default class SearchTabComponent extends BaseCompositedComponent {
 
         this._searchWidgetComponent.init();
         this._searchOptionsComponent.init();
+
+        this._bindEvents();
+    }
+
+    _bindEvents() {
+
+        const application = this.getApplication();
+        const appEvents = application.getAppEvents();
+        const store = application.getStore();
+
+        const searchButton = this._getSearchButton();
+
+        appEvents.on('system:components:created', this._enableSearchButton.bind(this));
+        store.on('store:searchCriteria:full:update', this._enableSearchButton.bind(this));
+
+        searchButton.addEventListener('click', this._onSearchButtonClick.bind(this));
+    }
+
+    _onSearchButtonClick() {
+
+        this.events.trigger('searchButton:click');
     }
 
     _addTabToSidebar() {
@@ -37,6 +58,44 @@ export default class SearchTabComponent extends BaseCompositedComponent {
                 <span>${Translations.getText('search.action')}</span>
             </button>
         </div>`;
+    }
+
+    _getSearchButton() {
+
+        const sidebarComponent = this.getParentComponent();
+        const sidebarView = sidebarComponent.getView();
+        const sidebarContainer = sidebarView.getContainer();
+
+        const searchButton = sidebarContainer.querySelector('.search-options-search-button');
+
+        return searchButton;
+    }
+
+    _enableSearchButton() {
+
+        const searchButton = this._getSearchButton();
+        
+        const isSomeSatellitesChecked = this._isSomeSatellitesChecked();
+
+        if (isSomeSatellitesChecked) {
+            searchButton.classList.remove('search-options-search-button-passive');        
+            searchButton.classList.add('search-options-search-button-active');
+        }
+        else {
+            searchButton.classList.remove('search-options-search-button-active');        
+            searchButton.classList.add('search-options-search-button-passive');
+        }
+    }
+
+    _isSomeSatellitesChecked() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        const searchCriteria = store.getData('searchCriteria');
+        const {satellites: {pc = [], ms = []}} = searchCriteria;
+
+        return ms.some(x => x.checked) || pc.some(x => x.checked);
     }
 
 }

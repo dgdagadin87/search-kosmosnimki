@@ -152,7 +152,7 @@ export default class DrawingObjectsComponent extends BaseComponent {
         const application = this.getApplication();
         const mapAndUiGateway = application.getGateway();
 
-        mapAndUiGateway.editDrawingOnListAndMap(e);
+        mapAndUiGateway.editDrawingOnMapAndUi(e);
     }
 
     _deleteDrawings(e, mode) {
@@ -173,8 +173,8 @@ export default class DrawingObjectsComponent extends BaseComponent {
 
     _updateList() {
 
-        const app = this.getApplication();
-        const store = app.getStore();
+        const application = this.getApplication();
+        const store = application.getStore();
 
         const drawingObjectsItems = store.getData('drawings');
         const arr = Object.keys(drawingObjectsItems).map(id => drawingObjectsItems[id]);

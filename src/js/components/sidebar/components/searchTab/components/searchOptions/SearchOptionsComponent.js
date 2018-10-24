@@ -41,11 +41,10 @@ export default class SearchOptionsComponent extends BaseComponent {
 
         const view = this.getView();
 
-        window.addEventListener('resize', () => this._resizeSearchOptions());
-
+        appEvents.on('system:window:resize', () => this._resizeSearchOptions());
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
 
-        view.addEventListener('change', (e) => console.log(e));
+        view.addEventListener('change', (e) => this._onViewChangeSearchCriteria(e));
     }
 
     _onTabChangeHandler(e) {
@@ -66,6 +65,20 @@ export default class SearchOptionsComponent extends BaseComponent {
         const total = height - getTotalHeight(['.search-pane', '.search-options-footer' ]) - 11;
 
         this.getView().resize(total);
+    }
+
+    _onViewChangeSearchCriteria(e) {
+
+        const {detail: changedSearchCriteria} = e;
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        store.setChangeableData(
+            'searchCriteria',
+            changedSearchCriteria,
+            {mode: 'full', operation: 'update', events:['store:searchCriteria:full:update']}
+        );
     }
 
 }

@@ -134,25 +134,38 @@ class SearchOptions extends EventTarget {
     const endDate = new Date();    
     const startDate = new Date(endDate.getFullYear(), 0, 1);
     
+    const startDateField = this._container.querySelector('.search-options-period-from-value');
+    const endDateField = this._container.querySelector('.search-options-period-to-value');
+
     this._startDate = new Pikaday ({
-      field: this._container.querySelector('.search-options-period-from-value'),
+      field: startDateField,
       // format: 'L', 
       format: 'DD.MM.YYYY',
       yearRange: 20,
       i18n: i18n,
       keyboardInput: false,
-      blurFieldOnSelect: false,
-    });    
+      blurFieldOnSelect: false
+    });
     
     this._endDate = new Pikaday ({
-      field: this._container.querySelector('.search-options-period-to-value'),
+      field: endDateField,
       // format: 'L', 
       format: 'DD.MM.YYYY',
       yearRange: 20,
       i18n: i18n,
       keyboardInput: false,
       blurFieldOnSelect: false,
-    });  
+    });
+
+    const onChangeDatesHandler = () => {
+      let event = document.createEvent('Event');
+      event.detail = this.criteria;
+      event.initEvent('change', false, false);
+      this.dispatchEvent(event);
+    }
+
+    startDateField.addEventListener('change', onChangeDatesHandler);
+    endDateField.addEventListener('change', onChangeDatesHandler);
 
   }
   _initArchive (restricted) {
@@ -166,14 +179,36 @@ class SearchOptions extends EventTarget {
     this._cloudSlider = new RangeWidget(this._container.querySelector('.search-options-clouds-value'), {min: 0, max: 100});
     this._cloudSlider.values = [0, 100];   
 
+    this._cloudSlider.addEventListener('stop', e => { 
+
+      let event = document.createEvent('Event');
+      event.detail = this.criteria;
+      event.initEvent('change', false, false);
+      this.dispatchEvent(event);
+    });
+
     this._angleSlider = new RangeWidget( this._container.querySelector('.search-options-angle-value'), {min: 0, max: 60});
     this._angleSlider.values = [0, 60];
+
+    this._angleSlider.addEventListener('stop', e => { 
+
+      let event = document.createEvent('Event');
+      event.detail = this.criteria;
+      event.initEvent('change', false, false);
+      this.dispatchEvent(event);
+    });
 
     this._resolutionSlider = new RangeWidget(this._container.querySelector('.search-options-resolution-value'), {min: 0.3, max: 20, mode: 'float'});
     this._resolutionSlider.values = [0.3, 20];
     this._resolutionSlider.addEventListener('change', e => {      
       this._satellites.range = e.detail;
-    });    
+    });
+    this._resolutionSlider.addEventListener('stop', e => {      
+      let event = document.createEvent('Event');
+      event.detail = this.criteria;
+      event.initEvent('change', false, false);
+      this.dispatchEvent(event);
+    });
   }
   _initSatellites(restricted) {    
     this._satelliteNumber = this._container.querySelector('.search-options-satellites-number'); 
@@ -183,6 +218,7 @@ class SearchOptions extends EventTarget {
       this._updateSatelliteNumber();
 
       let event = document.createEvent('Event');
+      event.detail = this.criteria;
       event.initEvent('change', false, false);
       this.dispatchEvent(event);
 

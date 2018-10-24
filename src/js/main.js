@@ -10,6 +10,8 @@ import CrdSearchProvider from './searchProviders/crdProvider/CrdSearchProvider';
 import OsmSearchProvider from './searchProviders/osmProvider/OsmSearchProvider';
 import GmxSearchProvider from './searchProviders/gmxProvider/GmxSearchProvider';
 
+import LoaderWidgetComponent from './components/loaderWidget/LoaderWidgetComponent';
+
 import HelpButtonComponent from './components/helpButton/HelpButtonComponent';
 import AuthWidgetComponent from './components/authWIdget/AuthWidgetComponent';
 import LangWidgetComponent from './components/langWIdget/LangWidgetComponent';
@@ -42,6 +44,10 @@ const application = new Application({
 
     // components
     components: [
+        {
+            index: 'loaderWidget',
+            constructor: LoaderWidgetComponent
+        },
         {
             index: 'helpButton',
             constructor: HelpButtonComponent
@@ -89,6 +95,10 @@ const application = new Application({
             },
             {
                 'key': 'searchCriteria',
+                'isTable': false
+            },
+            {
+                'key': 'cancelLoading',
                 'isTable': false
             }
         ]
