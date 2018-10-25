@@ -5,7 +5,7 @@ import { NOTIFICATION_HIDE_TIMEOUT } from '../../config/constants/constants';
 import BaseComponent from '../../base/BaseComponent';
 
 
-export default class NotificationWidgetComponent extends BaseComponent {
+export default class PopupNotificationComponent extends BaseComponent {
 
     init() {
 

@@ -3,7 +3,7 @@ import BaseComponent from '../../base/BaseComponent';
 import { createContainer } from '../../utils/commonUtils';
 
 
-export default class HelpButtonComponent extends BaseComponent {
+export default class HelpingButtonComponent extends BaseComponent {
 
     init() {
 

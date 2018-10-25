@@ -3,11 +3,11 @@ import LoaderWidget from 'scanex-loader-widget';
 import BaseComponent from '../../base/BaseComponent';
 
 
-export default class LoaderWidgetComponent extends BaseComponent {
+export default class LoaderIndicatorComponent extends BaseComponent {
 
     init() {
 
-        this._view = new LoaderWidget ();
+        this._view = new LoaderWidget();
 
         this._bindEvents();
     }

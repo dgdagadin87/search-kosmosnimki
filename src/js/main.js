@@ -10,12 +10,12 @@ import CrdSearchProvider from './searchProviders/crdProvider/CrdSearchProvider';
 import OsmSearchProvider from './searchProviders/osmProvider/OsmSearchProvider';
 import GmxSearchProvider from './searchProviders/gmxProvider/GmxSearchProvider';
 
-import LoaderWidgetComponent from './components/loaderWidget/LoaderWidgetComponent';
-import NotificationWidgetComponent from './components/notificationWidget/NotificationWidgetComponent';
+import LoaderIndicatorComponent from './components/loaderIndicator/LoaderIndicatorComponent';
+import PopupNotificationComponent from './components/popupNotification/PopupNotificationComponent';
 
-import HelpButtonComponent from './components/helpButton/HelpButtonComponent';
-import AuthWidgetComponent from './components/authWIdget/AuthWidgetComponent';
-import LangWidgetComponent from './components/langWIdget/LangWidgetComponent';
+import HelpingButtonComponent from './components/helpingButton/HelpingButtonComponent';
+import UserInformationComponent from './components/userInformation/UserInformationComponent';
+import LanguageSelectComponent from './components/languageSelect/LanguageSelectComponent';
 import MapControlsComponent from './components/mapControls/MapControlsComponent';
 
 import DrawingObjectsComponent from './components/drawingObjects/DrawingObjectsComponent';
@@ -46,24 +46,24 @@ const application = new Application({
     // components
     components: [
         {
-            index: 'loaderWidget',
-            constructor: LoaderWidgetComponent
+            index: 'loaderIndicator',
+            constructor: LoaderIndicatorComponent
         },
         {
-            index: 'notificationWidget',
-            constructor: NotificationWidgetComponent
+            index: 'popupNotification',
+            constructor: PopupNotificationComponent
         },
         {
-            index: 'helpButton',
-            constructor: HelpButtonComponent
+            index: 'helpingButton',
+            constructor: HelpingButtonComponent
         },
         {
-            index: 'authWidget',
-            constructor: AuthWidgetComponent
+            index: 'userInformation',
+            constructor: UserInformationComponent
         },
         {
-            index: 'langWidget',
-            constructor: LangWidgetComponent
+            index: 'languageSelect',
+            constructor: LanguageSelectComponent
         },
         {
             index: 'mapControls',
@@ -77,8 +77,6 @@ const application = new Application({
             index: 'sidebar',
             constructor: SidebarComponent
         },
-
-        // dialogs
         {
             index: 'about',
             constructor: AboutDialogComponent

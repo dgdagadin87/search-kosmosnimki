@@ -3,7 +3,7 @@ import { AuthWidget } from 'scanex-auth';
 import BaseComponent from '../../base/BaseComponent';
 
 
-export default class AuthWidgetComponent extends BaseComponent {
+export default class UserInformationComponent extends BaseComponent {
 
     init() {
 
