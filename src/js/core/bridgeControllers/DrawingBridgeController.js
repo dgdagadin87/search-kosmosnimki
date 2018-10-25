@@ -3,19 +3,12 @@ import {
     getDrawingObject,
     normalizeGeometry,
     getDrawingObjectArea
-} from '../utils/layersUtils';
-import {
-    getCorrectIndex
-} from '../utils/commonUtils';
+} from '../../utils/layersUtils';
 
-import {NON_EDIT_LINE_STYLE} from '../config/constants/constants';
-import {
-    LAYER_ATTRIBUTES,
-    LAYER_ATTR_TYPES
-} from '../config/layers/layers';
+import {NON_EDIT_LINE_STYLE} from '../../config/constants/constants';
 
 
-export default class GatewayBetweenMapAndInterface {
+export default class DrawingBridgeController {
 
     constructor(config) {
 
@@ -24,39 +17,6 @@ export default class GatewayBetweenMapAndInterface {
         this._application = application;
         this._map = map;
     }
-
-    /*clearSnapShotsOnResults() {
-
-        const resultIndex = getCorrectIndex('result');
-        const cartIndex = getCorrectIndex('cart');
-
-        const application = this.getApplication();
-        const store = application.getStore();
-
-        const snapShotsData = store.getData('snapshots');
-        const keysToRemove = Object.keys(snapShotsData);
-        const dataToRemove = keysToRemove.reduce(
-            (data, gmxId) => {
-                const {properties} = snapShotsData[gmxId];
-                if (properties[cartIndex]) {
-                    properties[resultIndex] = false;
-                }
-                else {
-                    data.push([id]);
-                }            
-                return data;
-            }
-        );
-
-        this._vectorLayer.removeData(toRemove);
-        toRemove.forEach(([id]) => {
-            let {quicklook} = this._vectors[id];
-            if(quicklook) {
-                this._map.removeLayer(quicklook);
-            }
-            delete this._vectors[id];
-        });
-    }*/
 
     /* Add drawing start */
     addDrawingOnList(rawItem) {
@@ -160,8 +120,9 @@ export default class GatewayBetweenMapAndInterface {
                 // show drawing on map
                 object.bringToBack();
 
+
                 // adding drawing object on list
-                appEvents.trigger('drawingObjects:addDrawingOnList', {object, geoJSON});
+                this.addDrawingOnList({object, geoJSON});
             });
 
             // zooming ??? !!!

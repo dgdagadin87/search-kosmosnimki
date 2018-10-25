@@ -28,9 +28,9 @@ export default class OsmSearchProvider extends BaseSearchProvider {
         const results = e.detail;
 
         const application = this.getApplication();
-        const gatewayBetweenMapAndUI = application.getGateway();
-        
-        gatewayBetweenMapAndUI.addDrawingObjectOnListAndMapFromOsm(results);
+        const DrawingBridgeController = application.getBridgeController('drawing');
+
+        DrawingBridgeController.addDrawingOnMapAndListFromOsm(results);
     }
 
 }

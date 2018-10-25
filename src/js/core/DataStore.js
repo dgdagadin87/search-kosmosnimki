@@ -122,14 +122,20 @@ export default class DataStore {
 
     rewriteData(key, data = null, events = []) {
 
-        this._data[key]['data'] = data;
+        const {config: {isTable}} = this._data[key];
+
+        if (!isTable) {
+            this._data[key]['data'] = data;
+        }
+        else {
+            this.clear(key);
+            this.addData(key, data, events);
+        }
 
         this._fireEvents(events);
     }
 
     removeData(key, ids = [], events = []) {
-
-        const currentSegment = this._data[key] || {};
 
         let options;
 
@@ -164,66 +170,6 @@ export default class DataStore {
 
         this._fireEvents(events);
     }
-
-    /*setData(key, data, options = {}) {
-
-        const {
-            mode = 'full',
-            operation = 'update',
-            events = []
-        } = options;
-
-        const {isTable} = this._data['changeable'][key]['config'];
-
-        const {indexByValue} = options;
-
-        // set value
-        if (mode === 'full') {
-
-            if (operation === 'update') {
-
-                this._data[key]['data'] = data;
-            }
-            else if (operation === 'delete') {
-
-                const emptyValue = isTable ? {} : null;
-                this._data[key]['data'] = emptyValue;
-            }
-            else if (operation === 'add') {
-
-                this._data[key]['data'] = data;
-            }
-        }
-        else if (mode === 'row') {
-
-            if (operation === 'update') {
-                
-                this._data[key]['data'][indexByValue] = data;
-            }
-            else if (operation === 'delete') {
-
-                delete this._data[key]['data'][indexByValue];
-            }
-            else if (operation === 'add') {
-
-                this._data[key]['data'][indexByValue] = data;
-            }
-        }
-
-        // event firing
-        if(events.length < 1) {
-            return;
-        }
-        else {
-
-            events.forEach(eventName => {
-
-                const eventOptions = mode === 'row' ? {rowId: indexByValue} : {};
-
-                this._events.trigger(eventName, eventOptions);
-            });
-        }
-    }*/
 
     on(...argList) {
 

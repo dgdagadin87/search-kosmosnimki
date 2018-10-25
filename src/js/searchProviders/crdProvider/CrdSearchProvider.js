@@ -34,9 +34,9 @@ export default class CrdSearchProvider extends BaseSearchProvider {
         const center = L.GeoJSON.coordsToLatLng(geoJSON.geometry.coordinates);            
         const item = getDrawingObject({geoJSON, editable: geoJSON.properties.editable});
 
-        const gatewayBetweenMapAndUI = application.getGateway();
+        const DrawingBridgeController = application.getBridgeController('drawing');
         
-        gatewayBetweenMapAndUI.addDrawingObjectOnMapAndUi(item);
+        DrawingBridgeController.addDrawingOnMapAndList(item);
 
         map.setView(center, 14);
     }

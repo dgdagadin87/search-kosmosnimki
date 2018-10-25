@@ -101,6 +101,11 @@ const application = new Application({
                 'indexBy': 'id'
             },
             {
+                'key': 'snapshots',
+                'isTable': true,
+                'indexBy': 'gmx_id'
+            },
+            {
                 'key': 'searchCriteria',
                 'isTable': false
             },

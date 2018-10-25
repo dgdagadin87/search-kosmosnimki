@@ -16,7 +16,8 @@ import DataStore from './DataStore';
 
 import MapComponent from './map/Map';
 
-import GatewayBetweenMapAndUI from './GatewayBetweenMapAndUI';
+import DrawingBridgeController from './bridgeControllers/DrawingBridgeController';
+import SnapshotBridgeController from './bridgeControllers/SnapshotBridgeController';
 
 import Events from './Events';
 
@@ -42,7 +43,7 @@ class Application {
 
         await this._initMap();
 
-        this._initGateway();
+        this._initBridgeControllers();
 
         this._initLayersManagers();
 
@@ -168,9 +169,14 @@ class Application {
         this._mapComponent = mapComponent;
     }
 
-    _initGateway() {
+    _initBridgeControllers() {
 
-        this._gateway = new GatewayBetweenMapAndUI({
+        this._drawingBridgeController = new DrawingBridgeController({
+            application: this,
+            map: this.getMap()
+        });
+
+        this._snapshotBridgeController = new SnapshotBridgeController({
             application: this,
             map: this.getMap()
         });
@@ -230,15 +236,13 @@ class Application {
 
     showLoader(state = false) {
 
-        const loaderWidget = this.getComponent('loaderWidget');
-
+        const loaderWidget = this.getComponent('loaderIndicator');
         loaderWidget.show(state);
     }
 
     showNotification(message = '') {
 
-        const notificationWidget = this.getComponent('notificationWidget');
-
+        const notificationWidget = this.getComponent('popupNotification');
         notificationWidget.show(message);
     }
 
@@ -282,9 +286,9 @@ class Application {
         return this._events;
     }
 
-    getGateway() {
+    getBridgeController(name) {
 
-        return this._gateway;
+        return this['_' + name + 'BridgeController'];
     }
 
 }

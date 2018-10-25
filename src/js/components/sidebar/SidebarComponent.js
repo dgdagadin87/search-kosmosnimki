@@ -33,6 +33,8 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         this._searchTabComponent.init();
 
+        this._disableTabs();
+
         this._bindEvents();
     }
 
@@ -58,7 +60,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const store = application.getStore();
         const requestManager = application.getRequestManager();
-        const gatewayBetweenMapAndUI = application.getGateway();
+        const SnapshotBridgeController = application.getBridgeController('snapshot');
 
         const searchCriteria = store.getData('searchCriteria');
         const {satellites: {pc = [], ms = []}} = searchCriteria;
@@ -71,7 +73,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         application.showLoader(true);
 
-        gatewayBetweenMapAndUI.clearSnapShotsOnResults();
+        //SnapshotBridgeController.clearSnapShotsOnResults();
 
         requestManager.requestSearchSnapshots(RESULT_MAX_COUNT_PLUS_ONE)
         .then(this._setSnapshotsData.bind(this));
@@ -82,25 +84,28 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const store = application.getStore();
 
+        const SnapshotBridgeController = application.getBridgeController('snapshot');
+
         const isLoadingCancelled = store.getData('cancelLoading');
 
         if (!isLoadingCancelled) {
 
-            const {fields, values = [], types} = result;
+            const {values = []} = result;
             const resultLength = values.length;
 
-            if (valuesLength === 0) {
+            if (resultLength === 0) {
 
-
+                const alertNothingMessage = Translations.getText('alerts.nothing');
+                application.showNotification(alertNothingMessage);
             }
-            /*else if () {
+            else if (0 < resultLength && resultLength < RESULT_MAX_COUNT_PLUS_ONE) {
 
-
+                SnapshotBridgeController.addContoursOnMapAndList(result);
             }
             else {
-
-
-            }*/
+                application.showNotification('В разработке');
+                // if IsAuthenticated ? window.Catalog.dlgDownloadResult.show() : window.Catalog.dlgChangeResult.show()
+            }
         }
 
         application.showLoader(false);
@@ -168,6 +173,14 @@ export default class SidebarComponent extends BaseCompositedComponent {
         document.body.querySelector('.scanex-sidebar').style.height = `${document.body.getBoundingClientRect().height - height}px`;
 
         appEvents.trigger('sidebar:tab:resize');
+    }
+
+    _disableTabs() {
+
+        const view = this.getView();
+
+        view.disable('results');
+        view.disable('favourites');
     }
 
 }
