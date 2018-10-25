@@ -11,7 +11,7 @@ export default class AboutDialogComponent extends BaseComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const aboutText = store.getConstantableData('about');
+        const aboutText = store.getData('about');
 
         this._container = createContainer();
 

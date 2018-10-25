@@ -24,7 +24,7 @@ export default class LoaderWidgetComponent extends BaseComponent {
         const application = this.getApplication();
         const store = application.getStore();
 
-        store.setChangeableData('cancelLoading', true, {events: ['store:cancelLoading:full:update']});
+        store.rewriteData('cancelLoading', true, ['store:cancelLoading:full:update']);
     }
 
     show(state = false) {

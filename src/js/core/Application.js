@@ -44,6 +44,8 @@ class Application {
 
         this._initGateway();
 
+        this._initLayersManagers();
+
         this._addSearchProviders();
 
         this._addComponents();
@@ -115,13 +117,13 @@ class Application {
         }
 
         const store = this.getStore();
-        store.setConstantableData('userInfo', userInfo);
+        store.rewriteData('userInfo', userInfo);
     }
 
     async _checkAccess() {
 
         const store = this.getStore();
-        const userInfo = store.getConstantableData('userInfo');
+        const userInfo = store.getData('userInfo');
 
         const requestManager = this.getRequestManager();
 
@@ -135,7 +137,7 @@ class Application {
 
             if (Status === 'ok' && Result && LayerID === ACCESS_LAYER_ID) {
                 userInfo['Role'] = ACCESS_USER_ROLE;
-                store.setConstantableData('userInfo', userInfo);
+                store.rewriteData('userInfo', userInfo);
             }
         }
         catch(e) {
@@ -153,7 +155,7 @@ class Application {
         const text = await response.text();
         
         const store = this.getStore();
-        store.setConstantableData('about', text);
+        store.rewriteData('about', text);
     }
 
     async _initMap() {
@@ -172,6 +174,11 @@ class Application {
             application: this,
             map: this.getMap()
         });
+    }
+
+    _initLayersManagers() {
+
+        this._mapComponent.initLayersManagers();
     }
 
     _addSearchProviders() {
@@ -226,6 +233,13 @@ class Application {
         const loaderWidget = this.getComponent('loaderWidget');
 
         loaderWidget.show(state);
+    }
+
+    showNotification(message = '') {
+
+        const notificationWidget = this.getComponent('notificationWidget');
+
+        notificationWidget.show(message);
     }
 
     getRequestManager() {

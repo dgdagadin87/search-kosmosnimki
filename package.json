@@ -51,6 +51,7 @@
     "scanex-search-input": "git+https://github.com/Scanex/SearchInput.git",
     "scanex-slider-widget": "git+https://github.com/Scanex/SliderWidget.git",
     "scanex-loader-widget": "git+https://github.com/Scanex/LoaderWidget.git",
+    "scanex-notify-widget": "git+https://github.com/Scanex/NotificationWidget.git",
     "scanex-tristate": "git+https://github.com/Scanex/TristateCheckbox.git",
     "underscore": "^1.9.1",
     "pikaday": "^1.7.0"

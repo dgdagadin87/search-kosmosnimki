@@ -102,6 +102,11 @@ function getQuarters (date) {
     return (date.getFullYear() - 1970) * 4 + Math.ceil ((date.getMonth() + 1) / 3);
 }
 
+function getCorrectIndex() {
+
+
+}
+
 export {
     isNumber,
     createContainer,
@@ -113,5 +118,6 @@ export {
     makeCloseTo,
     stRange,
     toQuery,
-    getQuarters
+    getQuarters,
+    getCorrectIndex
 };

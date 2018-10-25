@@ -11,6 +11,7 @@ import OsmSearchProvider from './searchProviders/osmProvider/OsmSearchProvider';
 import GmxSearchProvider from './searchProviders/gmxProvider/GmxSearchProvider';
 
 import LoaderWidgetComponent from './components/loaderWidget/LoaderWidgetComponent';
+import NotificationWidgetComponent from './components/notificationWidget/NotificationWidgetComponent';
 
 import HelpButtonComponent from './components/helpButton/HelpButtonComponent';
 import AuthWidgetComponent from './components/authWIdget/AuthWidgetComponent';
@@ -49,6 +50,10 @@ const application = new Application({
             constructor: LoaderWidgetComponent
         },
         {
+            index: 'notificationWidget',
+            constructor: NotificationWidgetComponent
+        },
+        {
             index: 'helpButton',
             constructor: HelpButtonComponent
         },
@@ -83,11 +88,15 @@ const application = new Application({
     //store
     store: {
         'name': 'searchStore',
-        'constantable': [
-            'userInfo',
-            'about'
-        ],
-        'changeable': [
+        'data': [
+            {
+                'key': 'userInfo',
+                'isTable': false
+            },
+            {
+                'key': 'about',
+                'isTable': false
+            },
             {
                 'key': 'drawings',
                 'isTable': true,

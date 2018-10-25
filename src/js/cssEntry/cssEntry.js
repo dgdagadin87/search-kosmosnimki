@@ -47,5 +47,8 @@ import 'scanex-slider-widget/dist/scanex-slider-widget.css';
 // scanex-loader-widget
 import 'scanex-loader-widget/dist/scanex-loader-widget.css';
 
+// scanex-notify-widget
+import 'scanex-notify-widget/dist/scanex-notify-widget.css';
+
 // pikaday
 import 'pikaday/css/pikaday.css';

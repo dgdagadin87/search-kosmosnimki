@@ -28,6 +28,8 @@ const TAB_SEARCH_NAME = 'search';
 
 const VERSION_PATH = 'dist/version-';
 
+const NOTIFICATION_HIDE_TIMEOUT = 2000;
+
 export {
     ACCESS_LAYER_ID,
     ACCESS_USER_ROLE,
@@ -42,5 +44,6 @@ export {
     DEFAULT_LANGUAGE,
     NON_EDIT_LINE_STYLE,
     VERSION_PATH,
-    TAB_SEARCH_NAME
+    TAB_SEARCH_NAME,
+    NOTIFICATION_HIDE_TIMEOUT
 };

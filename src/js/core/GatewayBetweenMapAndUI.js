@@ -1,10 +1,18 @@
 import {
     isGeojsonFeature,
     getDrawingObject,
-    normalizeGeometry
+    normalizeGeometry,
+    getDrawingObjectArea
 } from '../utils/layersUtils';
+import {
+    getCorrectIndex
+} from '../utils/commonUtils';
 
 import {NON_EDIT_LINE_STYLE} from '../config/constants/constants';
+import {
+    LAYER_ATTRIBUTES,
+    LAYER_ATTR_TYPES
+} from '../config/layers/layers';
 
 
 export default class GatewayBetweenMapAndInterface {
@@ -17,11 +25,86 @@ export default class GatewayBetweenMapAndInterface {
         this._map = map;
     }
 
-    addDrawingObjectOnMapAndUi(item) {
+    /*clearSnapShotsOnResults() {
+
+        const resultIndex = getCorrectIndex('result');
+        const cartIndex = getCorrectIndex('cart');
 
         const application = this.getApplication();
         const store = application.getStore();
-        const appEvents = application.getAppEvents();
+
+        const snapShotsData = store.getData('snapshots');
+        const keysToRemove = Object.keys(snapShotsData);
+        const dataToRemove = keysToRemove.reduce(
+            (data, gmxId) => {
+                const {properties} = snapShotsData[gmxId];
+                if (properties[cartIndex]) {
+                    properties[resultIndex] = false;
+                }
+                else {
+                    data.push([id]);
+                }            
+                return data;
+            }
+        );
+
+        this._vectorLayer.removeData(toRemove);
+        toRemove.forEach(([id]) => {
+            let {quicklook} = this._vectors[id];
+            if(quicklook) {
+                this._map.removeLayer(quicklook);
+            }
+            delete this._vectors[id];
+        });
+    }*/
+
+    /* Add drawing start */
+    addDrawingOnList(rawItem) {
+
+        const {object, geoJSON} = rawItem;
+
+        const drawingId = object.options.uuid || L.gmxUtil.newId();
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        const drawing = store.getData('drawings', drawingId);
+
+        if (!drawing) {
+
+            object.options.uuid = drawingId;
+
+            let color = L.GmxDrawing.utils.defaultStyles.lineStyle.color;
+
+            switch (object.options.type) {
+                case 'Polygon':
+                case 'Polyline':
+                case 'Rectangle':
+                    color = object.options.lineStyle.color;
+                    break;
+                default:
+                    break;
+            }
+
+            const GeoJSON = geoJSON || object.toGeoJSON();
+
+            const drawingObject = getDrawingObject({
+                id: object.options.uuid,                
+                name: null,
+                geoJSON: GeoJSON, 
+                color,
+                visible: true,
+            });
+            drawingObject['drawing'] = object;
+
+            store.addData('drawings', {id: drawingId, content: drawingObject}, ['drawings:updateList']);
+        }
+    }
+
+    addDrawingOnMapAndList(item) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
 
         const { name, color, geoJSON, visible } = item;
 
@@ -33,20 +116,17 @@ export default class GatewayBetweenMapAndInterface {
             const currentDrawing = getDrawingObject({ id: drawingId, name, geoJSON, color, visible, editable });
 
             // add drawing on list
-            store.setChangeableData(
-                'drawings', currentDrawing,
-                { mode: 'row', operation: 'add', indexByValue: drawingId, events: ['drawings:row:add:ui'] }
-            );
+            store.addData('drawings', {id: drawingId, content: currentDrawing}, ['drawings:updateList']);
 
             // add drawing on map
-            appEvents.trigger('drawingObjects:showDrawingOnMap', drawingId, visible);
+            this.toggleDrawingOnMap(drawingId, visible);
         }
         else {
             return null;
         }
     }
 
-    addDrawingObjectOnListAndMapFromOsm(results = []) {
+    addDrawingOnMapAndListFromOsm(results = []) {
 
         const map = this.getMap();
 
@@ -95,8 +175,48 @@ export default class GatewayBetweenMapAndInterface {
             map.fitBounds(bounds);
         }
     }
+    /* Add drawing end */
 
-    editDrawingOnMapAndUi(e) {
+    /* Edit drawing start */
+    editDrawingOnList(rawItem) {
+
+        const {object} = rawItem;
+
+        const drawingId = object.options.uuid;
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        let currentDrawing = store.getData('drawings', drawingId);
+
+        if(currentDrawing){
+            
+            const geoJSON = object.toGeoJSON();
+
+            let { geometry } = geoJSON;
+            let { coordinates } = geometry;
+
+            if (typeof coordinates !== 'undefined') {
+
+                currentDrawing.drawing = object;
+                currentDrawing.geoJSON = geoJSON;
+                currentDrawing.area = getDrawingObjectArea(geoJSON);
+
+                store.updateData('drawings', {id: drawingId, content: currentDrawing}, ['drawings:updateList']);
+            }
+            else {
+
+                if (currentDrawing.drawing) {
+                    currentDrawing.drawing.remove();
+                    currentDrawing.drawing = null;
+
+                    store.removeData('drawings', drawingId, ['drawings:updateList']);
+                }
+            }
+        }
+    }
+
+    editDrawingOnMapAndList(e) {
 
         const application = this.getApplication();
         const store = application.getStore();
@@ -135,57 +255,70 @@ export default class GatewayBetweenMapAndInterface {
         currentDrawing['drawing'] = drawing;
 
         // setting drawing object in store
-        store.setChangeableData(
-            'drawings', currentDrawing,
-            { mode: 'row', operation: 'update', indexByValue: drawingId, events: ['drawings:row:update:ui'] }
-        );
+        store.updateData('drawings', {id: drawingId, content: currentDrawing}, ['drawings:updateList']);
+    }
+    /* Edit drawing end */
+
+    /* Toggle drawing start */
+    toggleDrawingOnMap(drawingId, visible) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        let object = store.getData('drawings', drawingId);
+
+        if (visible) {
+            let color = object.color;
+            let editable = typeof object.geoJSON.properties.editable === 'undefined' ? true : object.geoJSON.properties.editable;
+            let options = {
+                editable,
+                lineStyle: {
+                    fill: false,
+                    weight: 2,
+                    opacity: 1,
+                    color,
+                },
+                pointStyle: {
+                    color,
+                }
+            };
+            let [drawing] = this._map.gmxDrawing.addGeoJSON(object.geoJSON, options);
+            if (!editable) {
+                options.className = 'osm-layer';
+                // drawing.enableEdit();
+                drawing.setOptions({
+                    editable,
+                    lineStyle: {
+                        fill: false,
+                        weight: 2,
+                        opacity: 1,
+                        color,
+                    },
+                    pointStyle: {color}
+                });
+                // drawing.disableEdit();
+            }
+            drawing.options.uuid = drawingId;
+            object.drawing = drawing;
+            drawing.bringToBack();
+            drawing.visible = true;
+        }
+        else {
+            if(object.drawing) {
+                let drawing = object.drawing;
+                drawing.remove();
+                object.drawing = null;
+            }
+        }
+
+        store.updateData('drawings', {id:drawingId, content:object});
     }
 
-    deleteDrawingsOnMapAndUi(e, mode) {
-
-            const deleteDrawingFromMap = drawing => {
-    
-                if (drawing) {
-                    drawing.remove();
-                } 
-            }
-    
-            const app = this.getApplication();
-            const store = app.getStore();
-    
-            let drawnObjects;
-    
-            if (mode === 'row') {
-    
-                const { id: drawingId } = e.detail;
-    
-                drawnObjects = [store.getData('drawings', drawingId)];
-            }
-            else {
-    
-                const rawDrawnObjects = store.getData('drawings');
-                drawnObjects = Object.keys(rawDrawnObjects).map(id => rawDrawnObjects[id]);
-            }
-    
-            drawnObjects.forEach(currentDrawn => {
-    
-                let { drawing: drawingObject, id: drawingId } = currentDrawn;
-    
-                deleteDrawingFromMap(drawingObject);
-    
-                store.setChangeableData(
-                    'drawings', currentDrawn,
-                    { mode: 'row', operation: 'delete', indexByValue: drawingId, events: ['drawings:row:delete:ui'] }
-                );
-            });
-    }
-
-    toggleDrawingsOnMapAndUi(e, mode) {
+    toggleDrawingsOnMapAndList(e, mode) {
 
         const map = this.getMap();
 
         const app = this.getApplication();
-        const appEvents = app.getAppEvents();
         const store = app.getStore();
 
         const commonVisible = mode === 'all' ? e.detail : e.detail.visible;
@@ -202,6 +335,8 @@ export default class GatewayBetweenMapAndInterface {
             const rawDrawnObjects = store.getData('drawings');
             drawnObjects = Object.keys(rawDrawnObjects).map(id => rawDrawnObjects[id]);
         }
+
+        let contentForStore = [];
 
         drawnObjects.forEach(currentDrawing => {
 
@@ -244,14 +379,75 @@ export default class GatewayBetweenMapAndInterface {
                 }
             }
 
-            store.setChangeableData(
-                'drawings', currentDrawing,
-                { mode: 'row', operation: 'update', indexByValue: drawingId, events: [] }
-            );
+            contentForStore.push({id:drawingId, content: currentDrawing});
         })
 
-        appEvents.trigger('drawingObjects:updateList');
+        store.updateData('drawings', contentForStore, ['drawings:updateList']);
     }
+    /* Toggle drawing end */
+
+    /* Delete drawing start */
+    deleteDrawingsOnMapAndList(e, mode) {
+
+            const deleteDrawingFromMap = drawing => {
+    
+                if (drawing) {
+                    drawing.remove();
+                } 
+            }
+    
+            const app = this.getApplication();
+            const store = app.getStore();
+    
+            let drawnObjects;
+    
+            if (mode === 'row') {
+    
+                const { id: drawingId } = e.detail;
+    
+                drawnObjects = [store.getData('drawings', drawingId)];
+            }
+            else {
+    
+                const rawDrawnObjects = store.getData('drawings');
+                drawnObjects = Object.keys(rawDrawnObjects).map(id => rawDrawnObjects[id]);
+            }
+    
+            drawnObjects.forEach(currentDrawn => {
+    
+                let { drawing: drawingObject } = currentDrawn;
+    
+                deleteDrawingFromMap(drawingObject);
+            });
+
+            store.clear('drawings', ['drawings:updateList']);
+    }
+    /* Delete drawing end */
+
+    /* Zoom to drawing start */
+    zoomToDrawingOnMap(e) {
+
+        const map = this._map;
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        const {id, visible} = e.detail;
+
+        let item = store.getData('drawings', id);
+
+        if (visible && item) {
+            let {type, coordinates} = item.geoJSON.geometry;
+            if (type === 'Point') {
+                let center = L.latLng(coordinates[1],coordinates[0]);
+                map.setView(center);
+            }
+            else {
+                const bounds = item.drawing.getBounds();
+                map.fitBounds(bounds, { animate: false });
+            }
+        }
+    }
+    /* Zoom to drawing end */
 
     getApplication() {
 

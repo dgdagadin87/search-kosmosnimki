@@ -17,7 +17,7 @@ export default class SearchOptionsComponent extends BaseComponent {
         const application = this.getApplication();
         const store = application.getStore();
 
-        const userInfo = store.getConstantableData('userInfo');
+        const userInfo = store.getData('userInfo');
         const restricted = userInfo['Role'] === ACCESS_USER_ROLE;
 
         this._searchContainer = this.getParentComponent().getView()._container;
@@ -74,11 +74,7 @@ export default class SearchOptionsComponent extends BaseComponent {
         const application = this.getApplication();
         const store = application.getStore();
 
-        store.setChangeableData(
-            'searchCriteria',
-            changedSearchCriteria,
-            {mode: 'full', operation: 'update', events:['store:searchCriteria:full:update']}
-        );
+        store.rewriteData('searchCriteria', changedSearchCriteria, ['store:searchCriteria:full:update']);
     }
 
 }

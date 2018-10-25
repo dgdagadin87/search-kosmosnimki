@@ -1,6 +1,9 @@
 import BaseCompositedComponent from '../../base/BaseCompositedComponent';
 
+import Translations from 'scanex-translations';
 import SidebarControl from  'scanex-leaflet-sidebar';
+
+import { RESULT_MAX_COUNT_PLUS_ONE } from '../../config/constants/constants';
 
 import {getTotalHeight} from '../../utils/commonUtils';
 
@@ -55,6 +58,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const store = application.getStore();
         const requestManager = application.getRequestManager();
+        const gatewayBetweenMapAndUI = application.getGateway();
 
         const searchCriteria = store.getData('searchCriteria');
         const {satellites: {pc = [], ms = []}} = searchCriteria;
@@ -65,19 +69,43 @@ export default class SidebarComponent extends BaseCompositedComponent {
             return false;
         }
 
-        // show preloader
         application.showLoader(true);
-        // set ignore results to false
 
-        // clear result items (_result_index = false)
+        gatewayBetweenMapAndUI.clearSnapShotsOnResults();
 
-        // clear download cache
+        requestManager.requestSearchSnapshots(RESULT_MAX_COUNT_PLUS_ONE)
+        .then(this._setSnapshotsData.bind(this));
+    }
 
-        requestManager.requestSearchSnapshots(1000)
-        .then((result) => {
-            application.showLoader(false);
-            console.log(result);
-        });
+    _setSnapshotsData(result = {}) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        const isLoadingCancelled = store.getData('cancelLoading');
+
+        if (!isLoadingCancelled) {
+
+            const {fields, values = [], types} = result;
+            const resultLength = values.length;
+
+            if (valuesLength === 0) {
+
+
+            }
+            /*else if () {
+
+
+            }
+            else {
+
+
+            }*/
+        }
+
+        application.showLoader(false);
+
+        store.rewriteData('cancelLoading', false);
     }
 
     _setCurrentSearchTab() {
@@ -127,11 +155,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
             stereo: false,
         };
 
-        store.setChangeableData(
-            'searchCriteria',
-            defaultCriteria,
-            { mode: 'full' }
-        )
+        store.rewriteData('searchCriteria', defaultCriteria);
     }
 
     _resizeSidebar() {

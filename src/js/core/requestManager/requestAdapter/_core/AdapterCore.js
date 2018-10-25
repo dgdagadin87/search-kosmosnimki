@@ -18,7 +18,7 @@ export default class AdapterCore {
     _getAuthorized() {
 
         const store = this._application.getStore();
-        const userInfo = store.getConstantableData('userInfo');
+        const userInfo = store.getData('userInfo');
 
         return userInfo['Role'] === ACCESS_USER_ROLE;
     }

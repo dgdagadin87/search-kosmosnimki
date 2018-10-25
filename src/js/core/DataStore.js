@@ -5,10 +5,7 @@ export default class DataStore {
 
     constructor(config = {}) {
 
-        this._data = {
-            'constantable': [],
-            'changeable': []
-        };
+        this._data = [];
 
         this._events = new Events();
 
@@ -17,13 +14,11 @@ export default class DataStore {
 
     _applyConfig(config) {
 
-        const {name, constantable, changeable} = config;
+        const {name, data} = config;
 
         this._setName(name);
 
-        this._createConstantable(constantable);
-
-        this._createChangeable(changeable);
+        this._createConainers(data);
     }
 
     _setName(name) {
@@ -31,26 +26,16 @@ export default class DataStore {
         this._name = name;
     }
 
-    _createConstantable(constantable = []) {
+    _createConainers(changeable = []) {
 
-        constantable.forEach(key => this._createConstantableSegment(key));
+        changeable.forEach(item => this._createContainer(item));
     }
 
-    _createConstantableSegment(key) {
+    _createContainer(item) {
 
-        this._data['constantable'][key] = {};
-    }
+        const {key, isTable = false, indexBy = ''} = item;
 
-    _createChangeable(changeable = []) {
-
-        changeable.forEach(segment => this._createChangeableSegment(segment));
-    }
-
-    _createChangeableSegment(segment) {
-
-        const {key, isTable = false, indexBy = ''} = segment;
-
-        this._data['changeable'][key] = {
+        this._data[key] = {
             data: isTable ? {} : null,
             config:{
                 indexBy,
@@ -59,28 +44,17 @@ export default class DataStore {
         };
     }
 
-    getConstantableData(key) {
+    _fireEvents(events = [], rowIds = []) {
 
-        const {constantable} = this._data;
-        const keyData = constantable[key] || {};
-
-        return keyData;
+        events.forEach(eventName => this._events.trigger(eventName, rowIds));
     }
 
-    setConstantableData(key, data) {
-        
-        this._data['constantable'][key] = data;
-    }
+    getData(key, rowId = false) {
 
-    getChangeableData(key, options = {}) {
-
-        const {changeable} = this._data;
-        const keySegment = changeable[key] || {};
+        const keySegment = this._data[key] || {};
         const {data} = keySegment;
 
-        const { mode = 'full', rowId = null } = options;
-
-        if (mode === 'full') {
+        if (!rowId) {
             return data;
         }
         else {
@@ -88,7 +62,110 @@ export default class DataStore {
         }
     }
 
-    setChangeableData(key, data, options = {}) {
+    addData(key, data = [], events = []) {
+
+        const currentSegment = this._data[key] || {};
+        const {data: prevData} = currentSegment;
+
+        let options;
+
+        if (Array.isArray(data)) {
+
+            options = [];
+
+            data.forEach(dataItem => {
+                const {id, content} = dataItem;
+                prevData[id] = content;
+                options.push(id);
+            });
+    
+            this._data[key]['data'] = prevData;
+        }
+        else {
+
+            const {id, content} = data;
+            prevData[id] = content;
+            options = id;
+        }
+
+        this._fireEvents(events, options);
+    }
+
+    updateData(key, data = [], events = []) {
+        
+        const currentSegment = this._data[key] || {};
+        const {data: prevData} = currentSegment;
+
+        let options;
+
+        if (Array.isArray(data)) {
+
+            options = [];
+
+            data.forEach(dataItem => {
+                const {id, content} = dataItem;
+                prevData[id] = content;
+                options.push(id);
+            });
+    
+            this._data[key]['data'] = prevData;
+        }
+        else {
+
+            const {id, content} = data;
+            prevData[id] = content;
+            options = id;
+        }
+
+        this._fireEvents(events, options);
+    }
+
+    rewriteData(key, data = null, events = []) {
+
+        this._data[key]['data'] = data;
+
+        this._fireEvents(events);
+    }
+
+    removeData(key, ids = [], events = []) {
+
+        const currentSegment = this._data[key] || {};
+
+        let options;
+
+        if (Array.isArray(ids)) {
+
+            options = [];
+
+            ids.forEach(id => {
+                delete this._data[key]['data'][id];
+                options.push(id);
+            });
+        }
+        else {
+
+            const id = ids;
+
+            delete this._data[key]['data'][id];
+            options = id;
+        }
+
+        this._fireEvents(events, options);
+    }
+
+    clear(key, events = []) {
+
+        const currentSegment = this._data[key] || {};
+        const {config: {isTable}} = currentSegment;
+
+        const emptyValue = isTable ? {} : null;
+
+        this._data[key]['data'] = emptyValue;
+
+        this._fireEvents(events);
+    }
+
+    /*setData(key, data, options = {}) {
 
         const {
             mode = 'full',
@@ -105,31 +182,31 @@ export default class DataStore {
 
             if (operation === 'update') {
 
-                this._data['changeable'][key]['data'] = data;
+                this._data[key]['data'] = data;
             }
             else if (operation === 'delete') {
 
                 const emptyValue = isTable ? {} : null;
-                this._data['changeable'][key]['data'] = emptyValue;
+                this._data[key]['data'] = emptyValue;
             }
             else if (operation === 'add') {
 
-                this._data['changeable'][key]['data'] = data;
+                this._data[key]['data'] = data;
             }
         }
         else if (mode === 'row') {
 
             if (operation === 'update') {
                 
-                this._data['changeable'][key]['data'][indexByValue] = data;
+                this._data[key]['data'][indexByValue] = data;
             }
             else if (operation === 'delete') {
 
-                delete this._data['changeable'][key]['data'][indexByValue];
+                delete this._data[key]['data'][indexByValue];
             }
             else if (operation === 'add') {
 
-                this._data['changeable'][key]['data'][indexByValue] = data;
+                this._data[key]['data'][indexByValue] = data;
             }
         }
 
@@ -141,32 +218,21 @@ export default class DataStore {
 
             events.forEach(eventName => {
 
-                //const finalEventName = `${key}:${mode}:${operation}:${eventName}`;
                 const eventOptions = mode === 'row' ? {rowId: indexByValue} : {};
 
                 this._events.trigger(eventName, eventOptions);
-
-                //window.console.log(`Event ${finalEventName} was triggered`);
             });
         }
-    }
-
-    // короткая запись get<Changeable|Constantable>Data
-    getData(key, rowId = false, mode = 'changeable') {
-
-        if (mode === 'constantable') {
-            return this.getConstantableData(key);
-        }
-
-        return this.getChangeableData(key, {
-            mode: rowId === false ? 'full' : 'row',
-            rowId: rowId
-        });
-    }
+    }*/
 
     on(...argList) {
 
         this._events.on(...argList);
+    }
+
+    trigger(...argList) {
+
+        this._events.trigger(...argList);
     }
 
 }

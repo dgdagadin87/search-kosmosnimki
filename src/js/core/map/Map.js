@@ -26,12 +26,6 @@ export default class Map {
 
         this._application = application;
 
-        this._drawingLayerManager = new DrawingLayerManager({
-            map: this._map,
-            application: this.getApplication(),
-            store: this.getApplication().getStore()
-        });
-
         this._bindEvents();
     }
 
@@ -46,6 +40,15 @@ export default class Map {
         await this._initBaseLayerManager();
 
         this._setActiveLayer();
+    }
+
+    initLayersManagers() {
+
+        this._drawingLayerManager = new DrawingLayerManager({
+            map: this._map,
+            application: this.getApplication(),
+            store: this.getApplication().getStore()
+        });
     }
 
     _bindEvents() {
