@@ -3,6 +3,7 @@ import './config/translations/common';
 import './config/translations/about';
 import './config/translations/drawnObjects';
 import './config/translations/searchOptions';
+import './config/translations/resultsList';
 
 import Application from './core/Application';
 

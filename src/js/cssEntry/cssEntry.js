@@ -20,6 +20,12 @@ import '../../css/satellites.css';
 // satellites info
 import '../../css/info.css';
 
+// results list
+import '../../css/resultsList.css';
+
+// image details
+import '../../css/imageDetails.css';
+
 // scanex-auth
 import 'scanex-auth/dist/scanex-auth.css';
 

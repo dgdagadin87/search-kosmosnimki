@@ -25,6 +25,7 @@ const NON_EDIT_LINE_STYLE = {
 };
 
 const TAB_SEARCH_NAME = 'search';
+const TAB_RESULTS_NAME = 'results';
 
 const VERSION_PATH = 'dist/version-';
 
@@ -45,5 +46,6 @@ export {
     NON_EDIT_LINE_STYLE,
     VERSION_PATH,
     TAB_SEARCH_NAME,
+    TAB_RESULTS_NAME,
     NOTIFICATION_HIDE_TIMEOUT
 };

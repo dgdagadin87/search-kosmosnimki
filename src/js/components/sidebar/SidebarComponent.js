@@ -10,6 +10,8 @@ import {getTotalHeight} from '../../utils/commonUtils';
 import { satellites } from '../../config/satellites/satellites';
 
 import SearchTabComponent from './components/searchTab/SearchTabComponent';
+import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';
+import ImageDetailsComponent from './components/imageDetails/ImageDetailsComponent';
 
 
 export default class SidebarComponent extends BaseCompositedComponent {
@@ -22,16 +24,17 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         this._view = new SidebarControl({position: 'topleft'});
 
-        this._searchTabComponent = new SearchTabComponent({
-            ...this.getConfig(),
-            parent: this
-        });
+        this._searchTabComponent = new SearchTabComponent({...this.getConfig(), parent: this});
+        this._resultsTabComponent = new ResultsTabComponent({...this.getConfig(), parent: this});
+        this._imageDetailsComponent = new ImageDetailsComponent({...this.getConfig(), parent: this});
 
         map.addControl(this.getView());
 
         this._endInitingSidebar();
 
         this._searchTabComponent.init();
+        this._resultsTabComponent.init();
+        this._imageDetailsComponent.init();
 
         this._disableTabs();
 
@@ -44,6 +47,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const globalEvents = application.getAppEvents();
         const map = application.getMap();
         const searchTabComponent = this.getChildComponent('searchTab');
+        const resultsTabComponent = this.getChildComponent('resultsTab');
 
         this.getView().on('change', e => globalEvents.trigger('sidebar:tab:change', e));
 
@@ -53,6 +57,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         globalEvents.on('system:components:created', () => this._resizeSidebar());
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
+        resultsTabComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
     }
 
     _searchResults() {
@@ -79,10 +84,17 @@ export default class SidebarComponent extends BaseCompositedComponent {
         .then(this._setSnapshotsData.bind(this));
     }
 
+    _showImageDetails(e, bBox) {
+
+        const imageDetailsComponent = this.getChildComponent('imageDetails');
+        imageDetailsComponent.toggle(e, bBox);
+    }
+
     _setSnapshotsData(result = {}) {
 
         const application = this.getApplication();
         const store = application.getStore();
+        const view = this.getView();
 
         const SnapshotBridgeController = application.getBridgeController('snapshot');
 
@@ -101,6 +113,8 @@ export default class SidebarComponent extends BaseCompositedComponent {
             else if (0 < resultLength && resultLength < RESULT_MAX_COUNT_PLUS_ONE) {
 
                 SnapshotBridgeController.addContoursOnMapAndList(result);
+                view.enable('results');
+                view.setCurrent('results');
             }
             else {
                 application.showNotification('В разработке');

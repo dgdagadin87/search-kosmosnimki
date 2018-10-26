@@ -109,19 +109,22 @@ export default class SnapshotBridgeController {
                             break;
                         case 'clip_coords':
                             contourData.push(clipCoords);
-                            break;                      
+                            break;
                         default:
                             contourData.push(properties[index]);
                             break;
                     }                   
                 } 
-                return contourData;               
+                return contourData;
             }, []);
+
             value.unshift(properties[gmxIdPosition]);            
             value.push(properties[propertiesLastIndex]);
-            preparedContours.push(value);            
+
+            preparedContours.push(value);
+
             return preparedContours;
-        },[]);        
+        },[]);
         
         const resultsForAdding = contours.map(item => {
 
@@ -129,7 +132,10 @@ export default class SnapshotBridgeController {
 
             return {
                 id: gmxId,
-                content: item
+                content: {
+                    properties:item,
+                    quicklook: null
+                }
             };
         });
 
@@ -139,7 +145,6 @@ export default class SnapshotBridgeController {
         this._vectorLayer.removeData();
         let items = serialize(this._vectors).map(({properties}) => properties);
         this._vectorLayer.addData(items);*/
-        console.log(store);
     }
 
     getApplication() {

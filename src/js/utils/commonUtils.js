@@ -1,3 +1,6 @@
+import { LAYER_ATTRIBUTES, LAYER_ATTR_TYPES } from '../config/layers/layers';
+import { satellites } from '../config/satellites/satellites';
+
 import { tileRange } from './layersUtils';
 
 
@@ -107,6 +110,57 @@ function getCorrectIndex() {
 
 }
 
+function propertiesToItem(properties) {
+
+    if (!properties) {
+        return null;
+    }
+
+    const lastPropertyIndex = properties ? properties.length - 1 : 0;
+
+    return properties.slice(1, lastPropertyIndex).reduce((propertyObject, value, index) => {
+        
+        let attrKey = LAYER_ATTRIBUTES[index];
+        
+        switch (LAYER_ATTR_TYPES[index]){
+            case 'date':
+                if (typeof value === 'string') {
+                    propertyObject[attrKey] = new Date(value);
+                }
+                else if (typeof value === 'number') {
+                    propertyObject[attrKey] = new Date(value * 1000);
+                }
+                break;                
+            default:
+                propertyObject[attrKey] = value;
+                break;
+        }           
+        return propertyObject;
+    },{});
+}
+
+function getSatelliteName (platform) {
+
+    const getName = (a, x) => {    
+        return x.platforms.reduce((b, y) => {
+            b[y] = x.name;
+            return b;
+        }, a);
+    };
+
+    let names = satellites.ms.reduce(getName, {});
+    names = satellites.pc.reduce(getName, names);
+
+    return names[platform];
+}
+
+function getPanelHeight (container, parts) {
+
+    return parts.reduce((a,x) => {
+        return a - container.querySelector(x).getBoundingClientRect().height;
+    }, container.getBoundingClientRect().height);
+}
+
 export {
     isNumber,
     createContainer,
@@ -119,5 +173,8 @@ export {
     stRange,
     toQuery,
     getQuarters,
-    getCorrectIndex
+    getCorrectIndex,
+    propertiesToItem,
+    getSatelliteName,
+    getPanelHeight
 };
