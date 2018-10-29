@@ -105,9 +105,9 @@ function getQuarters (date) {
     return (date.getFullYear() - 1970) * 4 + Math.ceil ((date.getMonth() + 1) / 3);
 }
 
-function getCorrectIndex() {
+function getCorrectIndex(index) {
 
-
+    return LAYER_ATTRIBUTES.indexOf(index) + 1;
 }
 
 function propertiesToItem(properties) {

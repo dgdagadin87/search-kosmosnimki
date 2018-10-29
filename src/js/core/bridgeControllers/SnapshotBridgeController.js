@@ -6,8 +6,7 @@ import {
 } from '../../utils/layersUtils';
 
 import {
-    LAYER_ATTRIBUTES,
-    LAYER_ATTR_TYPES
+    LAYER_ATTRIBUTES
 } from '../../config/layers/layers';
 
 
@@ -21,16 +20,63 @@ export default class SnapshotBridgeController {
         this._map = map;
     }
 
-    clearSnapShotsOnResults() {
+    hoverContourOnMap(e, state) {
 
-        const resultIndex = getCorrectIndex('result');
-        const cartIndex = getCorrectIndex('cart');
+        //console.log(e.detail);
+        //console.log('HOVERED', state);
+    }
+
+    zoomToContourOnMap(e) {
+
+        //console.log(e.detail);
+        //console.log('ZOOMED');
+    }
+
+    showQuicklookOmListAndMap(e) {
+
+        //console.log(e.detail);
+        //console.log('VISIBLED');
+    }
+
+    addToCartOnListAndMap(e) {
 
         const application = this.getApplication();
         const store = application.getStore();
 
+        const cartIndex = getCorrectIndex('cart');
+        const selectedIndex = getCorrectIndex('selected');
+
+        const { gmx_id: gmxId } = e.detail;
+        let item = store.getData('snapshots', gmxId);
+
+        let {properties} = item;
+        if (properties) {
+            properties[cartIndex] = !properties[cartIndex];
+            properties[selectedIndex] = true;
+        }
+        item['properties'] = properties;
+
+        store.updateData('snapshots', {id: gmxId, content: item}, ['snapshots:addToCart']);
+        
+        // ... redraw contour on map ... //
+    }
+
+    clearSnapShotsOnResults() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        const resultIndex = getCorrectIndex('result');
+        const cartIndex = getCorrectIndex('cart');
+
         const snapShotsData = store.getData('snapshots');
         const keysToRemove = Object.keys(snapShotsData);
+
+        if (keysToRemove.length < 1) {
+            return;
+        }
+
+        // remove only results, not favourites
         const dataToRemove = keysToRemove.reduce(
             (data, gmxId) => {
                 const {properties} = snapShotsData[gmxId];
@@ -38,20 +84,21 @@ export default class SnapshotBridgeController {
                     properties[resultIndex] = false;
                 }
                 else {
-                    data.push([id]);
-                }            
+                    data.push([gmxId]);
+                }
                 return data;
-            }
-        );
+            },
+        []);
 
-        this._vectorLayer.removeData(toRemove);
-        toRemove.forEach(([id]) => {
-            let {quicklook} = this._vectors[id];
-            if(quicklook) {
-                this._map.removeLayer(quicklook);
-            }
-            delete this._vectors[id];
+        // ... remove Contours from map ... //
+
+        let idsToRemove = [];
+        dataToRemove.forEach(([id]) => {
+            // ... delete quicklook layer from map ... //
+            idsToRemove.push(id);
         });
+
+        store.removeData('snapshots', idsToRemove, ['snapshots:researched'])
     }
 
     addContoursOnMapAndList(result) {

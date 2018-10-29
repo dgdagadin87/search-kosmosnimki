@@ -36,17 +36,22 @@ export default class ResultListComponent extends BaseComponent {
         const appEvents = application.getAppEvents();
         const store = application.getStore();
 
+        const SnapshotBridgeController = application.getBridgeController('snapshot');
+
         const view = this.getView();
 
         appEvents.on('sidebar:tab:resize', (e) => this._resizeResultsList(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
 
         store.on('snapshots:researched', this._updateList.bind(this));
+        store.on('snapshots:addToCart', this._redrawItemOnList.bind(this));
 
-        view.addEventListener('info', (e) => {
-            const bBox = view.bbox;
-            this.events.trigger('imageDetails:show', e, bBox);
-        });
+        view.addEventListener('showInfo', this._onInfoHandler.bind(this));
+        view.addEventListener('click', (e) => SnapshotBridgeController.zoomToContourOnMap(e));
+        view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOmListAndMap(e));
+        view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContourOnMap(e, state));
+        view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContourOnMap(e, state));
+        view.addEventListener('addToCart', (e, state = false) => SnapshotBridgeController.addToCartOnListAndMap(e, state));
     }
 
     _onTabChangeHandler(e) {
@@ -80,6 +85,15 @@ export default class ResultListComponent extends BaseComponent {
         this._resizeResultsList();
     }
 
+    _redrawItemOnList(itemId) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        const item = store.getData('snapshots', itemId);
+        console.log(itemId);
+    }
+
     _resizeResultsList() {
 
         const view = this.getView();
@@ -88,6 +102,14 @@ export default class ResultListComponent extends BaseComponent {
 
         view.resize(total);
         view.adjustWidth();
+    }
+
+    _onInfoHandler(e) {
+
+        const view = this.getView();
+        const bBox = view.bbox;
+
+        this.events.trigger('imageDetails:show', e, bBox);
     }
 
 }

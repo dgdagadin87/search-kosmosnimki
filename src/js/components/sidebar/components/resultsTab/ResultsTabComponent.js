@@ -27,7 +27,7 @@ export default class ResultTabComponent extends BaseCompositedComponent {
 
         store.on('snapshots:researched', this._onStoreResearchHandler.bind(this));
 
-        this._resultListComponent.events.on('imageDetails:show', (e, bBox) => this.events.trigger(e, bBox));
+        this._resultListComponent.events.on('imageDetails:show', (e, bBox) => this.events.trigger('imageDetails:show', e, bBox));
     }
 
     _addTabToSidebar() {

@@ -6,8 +6,7 @@ import SidebarControl from  'scanex-leaflet-sidebar';
 import { RESULT_MAX_COUNT_PLUS_ONE } from '../../config/constants/constants';
 
 import {getTotalHeight} from '../../utils/commonUtils';
-
-import { satellites } from '../../config/satellites/satellites';
+import {createDefaultCriteria} from './utils/utils';
 
 import SearchTabComponent from './components/searchTab/SearchTabComponent';
 import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';
@@ -65,6 +64,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const store = application.getStore();
         const requestManager = application.getRequestManager();
+        const view = this.getView();
         const SnapshotBridgeController = application.getBridgeController('snapshot');
 
         const searchCriteria = store.getData('searchCriteria');
@@ -78,16 +78,13 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         application.showLoader(true);
 
-        //SnapshotBridgeController.clearSnapShotsOnResults();
+        SnapshotBridgeController.clearSnapShotsOnResults();
+
+        view.disable('results');
+        view.setCurrent('search');
 
         requestManager.requestSearchSnapshots(RESULT_MAX_COUNT_PLUS_ONE)
         .then(this._setSnapshotsData.bind(this));
-    }
-
-    _showImageDetails(e, bBox) {
-
-        const imageDetailsComponent = this.getChildComponent('imageDetails');
-        imageDetailsComponent.toggle(e, bBox);
     }
 
     _setSnapshotsData(result = {}) {
@@ -145,34 +142,10 @@ export default class SidebarComponent extends BaseCompositedComponent {
     }
 
     _setDefaultCriteria() {
-
-        const setSatellitesChecked = (group, flag) => {
-            for (let key in group) {      
-                let s = group[key];
-                s.checked = flag;
-            }
-        };
-
+        
         const application = this.getApplication();
         const store = application.getStore();
-
-        const now = new Date();
-
-        const dateStart = new Date(now.getFullYear(), 0, 1);
-        const dateEnd = now;
-
-        setSatellitesChecked(satellites.ms, true);
-        setSatellitesChecked(satellites.pc, true);
-
-        const defaultCriteria = {
-            date: [ dateStart, dateEnd ],
-            annually: false,
-            clouds: [0, 100],
-            angle: [0, 60],
-            resolution: [0.3, 20],
-            satellites: satellites,
-            stereo: false,
-        };
+        const defaultCriteria = createDefaultCriteria();
 
         store.rewriteData('searchCriteria', defaultCriteria);
     }
@@ -185,7 +158,6 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const height = getTotalHeight([ '#header', '.leaflet-gmx-copyright' ]);
 
         document.body.querySelector('.scanex-sidebar').style.height = `${document.body.getBoundingClientRect().height - height}px`;
-
         appEvents.trigger('sidebar:tab:resize');
     }
 
@@ -195,6 +167,12 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         view.disable('results');
         view.disable('favourites');
+    }
+
+    _showImageDetails(e, bBox) {
+
+        const imageDetailsComponent = this.getChildComponent('imageDetails');
+        imageDetailsComponent.toggle(e, bBox);
     }
 
 }

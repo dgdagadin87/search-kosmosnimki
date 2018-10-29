@@ -252,12 +252,12 @@ class ResultList extends EventTarget {
                     item.cart = true;                    
                 }                
 
-                event.initEvent('cart', false, false);
+                event.initEvent('addToCart', false, false);
                 event.detail = item;
                 this.dispatchEvent(event);
                 break;
             case 'visible':                
-                event.initEvent('visible', false, false);
+                event.initEvent('setVisible', false, false);
                 event.detail = item;
                 this.dispatchEvent(event);
                 break;
@@ -272,7 +272,7 @@ class ResultList extends EventTarget {
                                 
                 this._activeInfo = button;
                                 
-                event.initEvent('info', false, false);
+                event.initEvent('showInfo', false, false);
                 event.detail = {item: item, left, top, button};
                 this.dispatchEvent(event);
                 break;
