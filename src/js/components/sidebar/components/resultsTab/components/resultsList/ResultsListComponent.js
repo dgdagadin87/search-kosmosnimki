@@ -24,7 +24,7 @@ export default class ResultListComponent extends BaseComponent {
 
         this._view = new ResultList(
             this._searchContainer.querySelector('.results-pane'),
-            { restricted }
+            { restricted, application }
         );
 
         this._bindEvents();
@@ -44,6 +44,7 @@ export default class ResultListComponent extends BaseComponent {
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
 
         store.on('snapshots:researched', this._updateList.bind(this));
+        store.on('snapshots:addAllToCart', this._updateList.bind(this));
         store.on('snapshots:addToCart', this._redrawItemOnList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
@@ -51,7 +52,8 @@ export default class ResultListComponent extends BaseComponent {
         view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOmListAndMap(e));
         view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContourOnMap(e, state));
         view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContourOnMap(e, state));
-        view.addEventListener('addToCart', (e, state = false) => SnapshotBridgeController.addToCartOnListAndMap(e, state));
+        view.addEventListener('addToCart', (e) => SnapshotBridgeController.addToCartOnListAndMap(e));
+        view.addEventListener('addAllToCart', (e) => SnapshotBridgeController.addAllToCartOnListAndMap(e));
     }
 
     _onTabChangeHandler(e) {
@@ -89,9 +91,12 @@ export default class ResultListComponent extends BaseComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
+        const view = this.getView();
 
         const item = store.getData('snapshots', itemId);
-        console.log(itemId);
+        const preparedItem = propertiesToItem(item['properties']);
+
+        view.redrawItem(itemId, preparedItem);
     }
 
     _resizeResultsList() {

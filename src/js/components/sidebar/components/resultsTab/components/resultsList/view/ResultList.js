@@ -6,7 +6,7 @@ import EventTarget from 'scanex-event-target';
 
 
 class ResultList extends EventTarget {
-    constructor(container, { restricted }){
+    constructor(container, { restricted, application }){
         super();       
         this._cart = {};
         this._restricted = restricted;
@@ -240,7 +240,7 @@ class ResultList extends EventTarget {
 
         switch(name){           
             case 'cart':
-                btn = cell.querySelector('i');
+                /*btn = cell.querySelector('i');
                 if (btn.classList.contains('cart-add-active')) {
                     btn.classList.remove('cart-add-active');
                     btn.classList.add('cart-add-passive');
@@ -250,7 +250,7 @@ class ResultList extends EventTarget {
                     btn.classList.remove('cart-add-passive');
                     btn.classList.add('cart-add-active');
                     item.cart = true;                    
-                }                
+                }*/
 
                 event.initEvent('addToCart', false, false);
                 event.detail = item;
@@ -330,25 +330,25 @@ class ResultList extends EventTarget {
         let event = document.createEvent('Event');
         switch (name) {
             case 'cart':
-                let newItems = this._grid.items.filter(item => !item.cart);
+                //let newItems = this._grid.items.filter(item => !item.cart);
                 // let state = !this._getChecked();
-                let state = true;
-                if (newItems.length + window.Catalog.favoritesList.items.length <= window.MAX_CART_SIZE) {                    
-                    this._grid.items.forEach(item => {
-                        item.checked = state;                        
-                    });
-                    this._grid.refresh();
+                //let state = true;
+                //if (newItems.length + window.Catalog.favoritesList.items.length <= window.MAX_CART_SIZE) {                    
+                //    this._grid.items.forEach(item => {
+                //        item.checked = state;                        
+                //    });
+                //    this._grid.refresh();
 
                     // this._updateChecked(state);
 
-                    event.initEvent('cart:all', false, false);
-                    event.detail = {items: state ? newItems : this._grid.items, state};
+                    event.initEvent('addAllToCart', false, false);
+                    event.detail = {};
                     this.dispatchEvent(event);
-                }
-                else {
-                    event.initEvent('cart:limit', false, false);                    
-                    this.dispatchEvent(event);
-                }                
+                //}
+                //else {
+                //    event.initEvent('cart:limit', false, false);                    
+                //    this.dispatchEvent(event);
+                //}                
                 break;
             default:
                 break;

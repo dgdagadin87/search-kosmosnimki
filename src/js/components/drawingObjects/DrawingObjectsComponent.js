@@ -40,9 +40,7 @@ export default class DrawingObjectsComponent extends BaseComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-
-        const drawingObjectsItems = store.getData('drawings');
-        const data = Object.keys(drawingObjectsItems).map(id => drawingObjectsItems[id]);
+        const data = store.getSerializedData('drawings');
 
         this.getView().widget.items = data;
 

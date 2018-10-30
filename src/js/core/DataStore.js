@@ -62,6 +62,19 @@ export default class DataStore {
         }
     }
 
+    getSerializedData(key) {
+
+        const keySegment = this._data[key] || {};
+        const {data, config:{isTable}} = keySegment;
+
+        if (!isTable) {
+            return data;
+        }
+        else {
+            return Object.keys(data).map(id => data[id]);
+        }
+    }
+
     addData(key, data = [], events = []) {
 
         const currentSegment = this._data[key] || {};

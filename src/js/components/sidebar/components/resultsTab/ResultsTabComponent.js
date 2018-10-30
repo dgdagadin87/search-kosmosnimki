@@ -24,10 +24,14 @@ export default class ResultTabComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
+        const clearButton = this._getClearResultsButton();
+        const listComponent = this.getChildComponent('resultList');
 
         store.on('snapshots:researched', this._onStoreResearchHandler.bind(this));
 
-        this._resultListComponent.events.on('imageDetails:show', (e, bBox) => this.events.trigger('imageDetails:show', e, bBox));
+        clearButton.addEventListener('click', () => this.events.trigger('results:clear'));
+
+        listComponent.events.on('imageDetails:show', (e, bBox) => this.events.trigger('imageDetails:show', e, bBox));
     }
 
     _addTabToSidebar() {
@@ -74,6 +78,17 @@ export default class ResultTabComponent extends BaseCompositedComponent {
         return quickLooksCartButton;
     }
 
+    _getClearResultsButton() {
+
+        const sidebarComponent = this.getParentComponent();
+        const sidebarView = sidebarComponent.getView();
+        const sidebarContainer = sidebarView.getContainer();
+
+        const clearResultsButton = sidebarContainer.querySelector('.results-clear');
+
+        return clearResultsButton;
+    }
+
     _onStoreResearchHandler() {
 
         const application = this.getApplication();
@@ -95,6 +110,11 @@ export default class ResultTabComponent extends BaseCompositedComponent {
 
         this._updateResultsNumber(dataLength);
         this._updateQuickLooksCartButton(visibleLength);
+    }
+
+    _onClearResultsHandler() {
+
+
     }
 
     _updateResultsNumber(number) {

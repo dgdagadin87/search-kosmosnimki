@@ -6,6 +6,9 @@ import {
 } from '../../utils/layersUtils';
 
 import {
+    CART_LIMIT_SIZE
+} from '../../config/constants/constants';
+import {
     LAYER_ATTRIBUTES
 } from '../../config/layers/layers';
 
@@ -41,10 +44,22 @@ export default class SnapshotBridgeController {
     addToCartOnListAndMap(e) {
 
         const application = this.getApplication();
+        const appEvents = application.getAppEvents();
         const store = application.getStore();
 
         const cartIndex = getCorrectIndex('cart');
         const selectedIndex = getCorrectIndex('selected');
+
+        const allData = store.getSerializedData('snapshots');
+        const filteredAllData = allData.filter(item => {
+            const {properties} = item;
+            return properties[cartIndex];
+        });
+
+        if (filteredAllData.length + 1 > CART_LIMIT_SIZE) {
+            appEvents.trigger('sidebar:cart:limit');
+            return;
+        }
 
         const { gmx_id: gmxId } = e.detail;
         let item = store.getData('snapshots', gmxId);
@@ -59,6 +74,43 @@ export default class SnapshotBridgeController {
         store.updateData('snapshots', {id: gmxId, content: item}, ['snapshots:addToCart']);
         
         // ... redraw contour on map ... //
+    }
+
+    addAllToCartOnListAndMap() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        const cartIndex = getCorrectIndex('cart');
+        const selectedIndex = getCorrectIndex('selected');
+
+        const rawData = store.getData('snapshots');
+        const dataArray = Object.keys(rawData).map(itemId => rawData[itemId]);
+
+        const areSomeNotInCart = dataArray.some(item => {
+            const {properties} = item;
+            return properties[cartIndex] === false;
+        });
+
+        const dataToRewrite = Object.keys(rawData).map(
+            (gmxId) => {
+                let item = rawData[gmxId];
+                let {properties} = item;
+                properties[cartIndex] = areSomeNotInCart;
+                properties[selectedIndex] = areSomeNotInCart;
+
+                item['properties'] = properties;
+
+                return {
+                    id: gmxId,
+                    content: item
+                };
+            }
+        );
+
+        store.rewriteData('snapshots', dataToRewrite, ['snapshots:addAllToCart']);
+
+        // ... redraw contours on map ... //
     }
 
     clearSnapShotsOnResults() {
@@ -172,26 +224,23 @@ export default class SnapshotBridgeController {
 
             return preparedContours;
         },[]);
-        
-        const resultsForAdding = contours.map(item => {
 
-            const gmxId = item[0];
+        const oldData = store.getData('snapshots');
+        const mergedData = this._mergeResults(oldData, contours);
+
+        const resultsForAdding = Object.keys(mergedData).map(gmxId => {
+
+            const item = mergedData[gmxId];
 
             return {
                 id: gmxId,
-                content: {
-                    properties:item,
-                    quicklook: null
-                }
+                content: item
             };
         });
 
         store.rewriteData('snapshots', resultsForAdding, ['snapshots:researched']);
 
-        /*this._vectors = this._mergeResults (this._vectors, vectors);
-        this._vectorLayer.removeData();
-        let items = serialize(this._vectors).map(({properties}) => properties);
-        this._vectorLayer.addData(items);*/
+        // ... remove and add data on map ... //
     }
 
     getApplication() {
@@ -202,6 +251,29 @@ export default class SnapshotBridgeController {
     getMap() {
 
         return this._map;
+    }
+
+    _mergeResults (old, data) {
+
+        const resultIndex = getCorrectIndex('result');
+
+        const cache = Object.keys(old).reduce((a,id) => {
+            a[id] = a[id] || {properties: [], quicklook: null};
+            a[id].properties = old[id].properties;
+            return a;
+        }, {});
+
+        return data.reduce((a,value) => {
+            const id = value[0];
+            if (cache[id]){
+                cache[id].properties[resultIndex] = true;
+            }
+            else {
+                a[id] = a[id] || {properties: [], quicklook: null};
+                a[id].properties = value;
+            }
+            return a;
+        }, cache);
     }
 
 }
