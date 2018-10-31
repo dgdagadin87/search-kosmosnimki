@@ -2,12 +2,12 @@ import BaseComponent from '../../../../../../base/BaseComponent';
 
 import {
     ACCESS_USER_ROLE,
-    TAB_RESULTS_NAME
+    TAB_FAVORITES_NAME
 } from '../../../../../../config/constants/constants';
 
 import { getPanelHeight, propertiesToItem } from '../../../../../../utils/commonUtils';
 
-import ResultList from './view/ResultList';
+import FavoriteList from './view/FavoritesList';
 
 
 export default class ResultListComponent extends BaseComponent {
@@ -22,8 +22,8 @@ export default class ResultListComponent extends BaseComponent {
 
         this._searchContainer = this.getParentComponent().getView()._container;
 
-        this._view = new ResultList(
-            this._searchContainer.querySelector('.results-pane'),
+        this._view = new FavoriteList(
+            this._searchContainer.querySelector('.favorites-pane'),
             { restricted, application }
         );
 
@@ -40,29 +40,27 @@ export default class ResultListComponent extends BaseComponent {
 
         const view = this.getView();
 
-        appEvents.on('sidebar:tab:resize', (e) => this._resizeResultsList(e));
+        appEvents.on('sidebar:tab:resize', (e) => this._resizeFavoritesList(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
 
-        store.on('snapshots:researched', this._updateList.bind(this));
         store.on('snapshots:addAllToCart', this._updateList.bind(this));
-        store.on('snapshots:addToCart', this._redrawItemOnList.bind(this));
+        store.on('snapshots:addToCart', this._updateList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
+        view.addEventListener('selected', this._onSelectedHandler.bind(this));
         view.addEventListener('click', (e) => SnapshotBridgeController.zoomToContourOnMap(e));
         view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOmListAndMap(e));
         view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContourOnMap(e, state));
         view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContourOnMap(e, state));
-        view.addEventListener('addToCart', (e) => SnapshotBridgeController.addToCartOnListAndMap(e));
-        view.addEventListener('addAllToCart', (e) => SnapshotBridgeController.addAllToCartOnListAndMap(e));
     }
 
     _onTabChangeHandler(e) {
 
         const {detail: {current: currentTab}} = e;
 
-        if (currentTab === TAB_RESULTS_NAME) {
+        if (currentTab === TAB_FAVORITES_NAME) {
 
-            this._resizeResultsList();
+            this._resizeFavoritesList();
         }
     }
 
@@ -79,30 +77,20 @@ export default class ResultListComponent extends BaseComponent {
 
             return propertiesToItem(properties);
         });
-        const filteredData = commonData.filter(item => item.result);
+        const filteredData = commonData.filter(item => item.cart);
 
         this.getView().items = filteredData;
 
-        this._resizeResultsList();
+        this._resizeFavoritesList();
     }
 
-    _redrawItemOnList(itemId) {
-
-        const application = this.getApplication();
-        const store = application.getStore();
-        const view = this.getView();
-
-        const item = store.getData('snapshots', itemId);
-        const preparedItem = propertiesToItem(item['properties']);
-
-        view.redrawItem(itemId, preparedItem);
-    }
-
-    _resizeResultsList() {
+    _resizeFavoritesList() {
 
         const view = this.getView();
 
-        const total = getPanelHeight(document.body.querySelector('.scanex-sidebar'), [ '.results-header' ]);
+        const total = getPanelHeight(
+            document.body.querySelector('.scanex-sidebar'),
+            [ '.favorites-header', '.favorites-footer' ]);
 
         view.resize(total);
         view.adjustWidth();
@@ -115,5 +103,23 @@ export default class ResultListComponent extends BaseComponent {
 
         this.events.trigger('imageDetails:show', e, bBox);
     }
+
+    _onSelectedHandler(e) {
+
+        const {detail: {gmx_id: gmxId}} = e;
+        console.log(gmxId);
+    }
+
+    /*_redrawItemOnList(itemId) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const view = this.getView();
+
+        const item = store.getData('snapshots', itemId);
+        const preparedItem = propertiesToItem(item['properties']);
+
+        view.redrawItem(itemId, preparedItem);
+    }*/
 
 }

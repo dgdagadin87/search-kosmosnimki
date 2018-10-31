@@ -1,16 +1,8 @@
-import {
-    getCorrectIndex
-} from '../../utils/commonUtils';
-import {
-    normalizeGeometry
-} from '../../utils/layersUtils';
+import {getCorrectIndex} from '../../utils/commonUtils';
+import {normalizeGeometry} from '../../utils/layersUtils';
 
-import {
-    CART_LIMIT_SIZE
-} from '../../config/constants/constants';
-import {
-    LAYER_ATTRIBUTES
-} from '../../config/layers/layers';
+import {MAX_CART_SIZE} from '../../config/constants/constants';
+import {LAYER_ATTRIBUTES} from '../../config/layers/layers';
 
 
 export default class SnapshotBridgeController {
@@ -56,17 +48,19 @@ export default class SnapshotBridgeController {
             return properties[cartIndex];
         });
 
-        if (filteredAllData.length + 1 > CART_LIMIT_SIZE) {
-            appEvents.trigger('sidebar:cart:limit');
-            return;
-        }
-
         const { gmx_id: gmxId } = e.detail;
         let item = store.getData('snapshots', gmxId);
 
         let {properties} = item;
+        let isCart = properties[cartIndex];
+
+        if (filteredAllData.length + 1 > MAX_CART_SIZE && !isCart) {
+            appEvents.trigger('sidebar:cart:limit');
+            return;
+        }
+        
         if (properties) {
-            properties[cartIndex] = !properties[cartIndex];
+            properties[cartIndex] = !isCart;
             properties[selectedIndex] = true;
         }
         item['properties'] = properties;
@@ -79,6 +73,7 @@ export default class SnapshotBridgeController {
     addAllToCartOnListAndMap() {
 
         const application = this.getApplication();
+        const appEvents = application.getAppEvents();
         const store = application.getStore();
 
         const cartIndex = getCorrectIndex('cart');
@@ -91,6 +86,11 @@ export default class SnapshotBridgeController {
             const {properties} = item;
             return properties[cartIndex] === false;
         });
+
+        if (areSomeNotInCart && dataArray.length > MAX_CART_SIZE) {
+            appEvents.trigger('sidebar:cart:limit');
+            return;
+        }
 
         const dataToRewrite = Object.keys(rawData).map(
             (gmxId) => {

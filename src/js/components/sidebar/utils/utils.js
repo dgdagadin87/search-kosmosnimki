@@ -1,5 +1,7 @@
 import { satellites } from '../../../config/satellites/satellites';
 
+import { getCorrectIndex } from '../../../utils/commonUtils';
+
 
 function createDefaultCriteria() {
 
@@ -31,4 +33,80 @@ function createDefaultCriteria() {
     return defaultCriteria;
 }
 
-export {createDefaultCriteria};
+function manageTabsState(sidebar, store, state) {
+
+    const resultIndex = getCorrectIndex('result');
+    const cartIndex = getCorrectIndex('cart');
+
+    const allSnapShots = store.getSerializedData('snapshots');
+
+    const resultData = allSnapShots.filter(item => {
+        const {properties} = item;
+        if (properties) {
+            return properties[resultIndex];
+        }
+    });
+
+    const cartData = allSnapShots.filter(item => {
+        const {properties} = item;
+        if (properties) {
+            return properties[cartIndex];
+        }
+    });
+
+    if (state === 'start') {
+
+        sidebar.disable('results');
+        sidebar.disable('favorites');
+
+        return;
+    }
+
+    if (state === 'stopDrawing') {
+
+        if (!sidebar.getCurrent()) {               
+            sidebar.setCurrent('search');
+        }
+
+        return;
+    }
+
+    if (state === 'clearResults') {
+
+        sidebar.disable('results');
+        sidebar.setCurrent('search');
+
+        return;
+    }
+
+    if (state === 'addToResults') {
+
+        sidebar.enable('results');
+        sidebar.setCurrent('results');
+
+        return;
+    }
+
+    if (state === 'addToFavorites') {
+
+        if (cartData.length > 0) {
+            sidebar.enable('favorites');
+        }
+        else {
+            sidebar.disable('favorites');
+            sidebar.setCurrent('results');
+        }
+
+        return;
+    }
+
+    if (state === 'clearFavorites') {
+
+        sidebar.disable('favorites');
+        resultData.length > 0 ? sidebar.setCurrent('results') : sidebar.setCurrent('search');
+
+        return;
+    }
+}
+
+export { createDefaultCriteria, manageTabsState };

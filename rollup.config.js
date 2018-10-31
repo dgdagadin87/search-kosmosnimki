@@ -42,7 +42,8 @@ export default [
                 contentBase:['', 'dist'],
                 host: 'localhost',
                 port: 8080,
-            })
+            }),
+            livereload()
         ]
     }
 ]; 

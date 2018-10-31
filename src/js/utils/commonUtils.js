@@ -22,6 +22,13 @@ function getWindowCenter () {
     return {left: left + Math.round (width / 2), top: top + Math.round(height / 2)};
 }
 
+function getMapCenter () {
+
+    const headerBounds = document.getElementById('header').getBoundingClientRect();
+    const {top, left} = getWindowCenter ();
+    return {top: top + headerBounds.top + headerBounds.height, left};
+}
+
 function isMobile () {
 
     let browserCheckString = navigator.userAgent || navigator.vendor || window.opera;
@@ -165,6 +172,7 @@ export {
     isNumber,
     createContainer,
     getWindowCenter,
+    getMapCenter,
     isMobile,
     flatten,
     getTotalHeight,

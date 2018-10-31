@@ -23,6 +23,9 @@ import '../../css/info.css';
 // results list
 import '../../css/resultsList.css';
 
+// favorites list
+import '../../css/favoritesList.css';
+
 // image details
 import '../../css/imageDetails.css';
 

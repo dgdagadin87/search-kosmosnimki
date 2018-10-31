@@ -112,11 +112,6 @@ export default class ResultTabComponent extends BaseCompositedComponent {
         this._updateQuickLooksCartButton(visibleLength);
     }
 
-    _onClearResultsHandler() {
-
-
-    }
-
     _updateResultsNumber(number) {
 
         const resultsNumSpan = this._getResultsNumSpan();

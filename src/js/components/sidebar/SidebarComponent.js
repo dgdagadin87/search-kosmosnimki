@@ -6,10 +6,11 @@ import SidebarControl from  'scanex-leaflet-sidebar';
 import { RESULT_MAX_COUNT_PLUS_ONE } from '../../config/constants/constants';
 
 import {getTotalHeight} from '../../utils/commonUtils';
-import {createDefaultCriteria} from './utils/utils';
+import {createDefaultCriteria, manageTabsState} from './utils/utils';
 
 import SearchTabComponent from './components/searchTab/SearchTabComponent';
 import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';
+import FavoritesTabComponent from './components/favoritesTab/FavoritesTabComponent';
 import ImageDetailsComponent from './components/imageDetails/ImageDetailsComponent';
 import LimitDialogComponent from './components/limitDialog/LimitDialogComponent';
 
@@ -23,22 +24,22 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const map = this.getMap();
 
         this._view = new SidebarControl({position: 'topleft'});
+        map.addControl(this.getView());
+        this._endInitingSidebar();
 
         this._searchTabComponent = new SearchTabComponent({...this.getConfig(), parent: this});
         this._resultsTabComponent = new ResultsTabComponent({...this.getConfig(), parent: this});
+        this._favoritesTabComponent = new FavoritesTabComponent({...this.getConfig(), parent: this});
         this._imageDetailsComponent = new ImageDetailsComponent({...this.getConfig(), parent: this});
         this._limitDialogComponent = new LimitDialogComponent({...this.getConfig(), parent: this});
 
-        map.addControl(this.getView());
-
-        this._endInitingSidebar();
-
         this._searchTabComponent.init();
         this._resultsTabComponent.init();
+        this._favoritesTabComponent.init();
         this._imageDetailsComponent.init();
         this._limitDialogComponent.init();
 
-        this._disableTabs();
+        manageTabsState(this.getView(), this.getApplication().getStore(), 'start');
 
         this._bindEvents();
     }
@@ -47,13 +48,19 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const globalEvents = application.getAppEvents();
+        const store = application.getStore();
         const map = application.getMap();
         const searchTabComponent = this.getChildComponent('searchTab');
         const resultsTabComponent = this.getChildComponent('resultsTab');
+        const favoritesTabComponent = this.getChildComponent('favoritesTab');
+        const view = this.getView();
 
-        this.getView().on('change', e => globalEvents.trigger('sidebar:tab:change', e));
+        view.on('change', e => globalEvents.trigger('sidebar:tab:change', e));
 
-        map.gmxDrawing.on('drawstop', () => this._setCurrentSearchTab());
+        map.gmxDrawing.on('drawstop', () => manageTabsState(view, store, 'stopDrawing'));
+
+        store.on('snapshots:addToCart', () => manageTabsState(view, store, 'addToFavorites'));
+        store.on('snapshots:addAllToCart', () => manageTabsState(view, store, 'addToFavorites'));
 
         globalEvents.on('system:window:resize', () => this._resizeSidebar());
         globalEvents.on('system:components:created', () => this._resizeSidebar());
@@ -62,6 +69,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
         resultsTabComponent.events.on('results:clear', () => this._clearResults());
         resultsTabComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
+        favoritesTabComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
     }
 
     _searchResults() {
@@ -110,8 +118,8 @@ export default class SidebarComponent extends BaseCompositedComponent {
             else if (0 < resultLength && resultLength < RESULT_MAX_COUNT_PLUS_ONE) {
 
                 SnapshotBridgeController.addContoursOnMapAndList(result);
-                view.enable('results');
-                view.setCurrent('results');
+                
+                manageTabsState(view, store, 'addToResults');
             }
             else {
                 application.showNotification('В разработке');
@@ -122,15 +130,6 @@ export default class SidebarComponent extends BaseCompositedComponent {
         application.showLoader(false);
 
         store.rewriteData('cancelLoading', false);
-    }
-
-    _setCurrentSearchTab() {
-
-        const searchSidebar = this.getView();
-
-        if (!searchSidebar.getCurrent()) {               
-            searchSidebar.setCurrent('search');
-        }
     }
 
     _endInitingSidebar() {
@@ -161,14 +160,6 @@ export default class SidebarComponent extends BaseCompositedComponent {
         appEvents.trigger('sidebar:tab:resize');
     }
 
-    _disableTabs() {
-
-        const view = this.getView();
-
-        view.disable('results');
-        view.disable('favourites');
-    }
-
     _clearResults() {
 
         const application = this.getApplication();
@@ -177,8 +168,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         SnapshotBridgeController.clearSnapShotsOnResults();
 
-        view.disable('results');
-        view.setCurrent('search');
+        manageTabsState(view, application.getStore(), 'clearResults');
     }
 
     _showImageDetails(e, bBox) {

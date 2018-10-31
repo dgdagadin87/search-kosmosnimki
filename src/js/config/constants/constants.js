@@ -26,12 +26,11 @@ const NON_EDIT_LINE_STYLE = {
 
 const TAB_SEARCH_NAME = 'search';
 const TAB_RESULTS_NAME = 'results';
+const TAB_FAVORITES_NAME = 'favorites';
 
 const VERSION_PATH = 'dist/version-';
 
 const NOTIFICATION_HIDE_TIMEOUT = 2000;
-
-const CART_LIMIT_SIZE = 5;
 
 export {
     ACCESS_LAYER_ID,
@@ -49,6 +48,6 @@ export {
     VERSION_PATH,
     TAB_SEARCH_NAME,
     TAB_RESULTS_NAME,
-    NOTIFICATION_HIDE_TIMEOUT,
-    CART_LIMIT_SIZE
+    TAB_FAVORITES_NAME,
+    NOTIFICATION_HIDE_TIMEOUT
 };
