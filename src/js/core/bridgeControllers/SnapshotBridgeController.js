@@ -27,10 +27,61 @@ export default class SnapshotBridgeController {
         //console.log('ZOOMED');
     }
 
-    showQuicklookOmListAndMap(e) {
+    showQuicklookOnListAndMap(e) {
 
         //console.log(e.detail);
         //console.log('VISIBLED');
+    }
+
+    setSelectedOnListAndMap(e) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const selectedIndex = getCorrectIndex('selected');
+
+        const {detail: {gmx_id: gmxId}} = e;
+        let item = store.getData('snapshots', gmxId);
+
+        let {properties} = item;
+
+        if (properties) {
+            properties[selectedIndex] = !properties[selectedIndex];
+        }
+        item['properties'] = properties;
+
+        store.updateData('snapshots', {id: gmxId, content: item}, ['snapshots:setSelected']);
+
+        // ... redraw contour on map ... //
+    }
+
+    setAllSelectedOnListAndMap() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        const selectedIndex = getCorrectIndex('selected');
+        const cartIndex = getCorrectIndex('cart');
+        const gmxIdIndex = getCorrectIndex('gmx_id');
+
+        const data = store.getSerializedData('snapshots');
+        const cartData = data.filter(item => item['properties'][cartIndex]);
+
+        const selectedState = !cartData.every(item => item['properties'][selectedIndex]);
+
+        const dataToUpdate = cartData.map(item => {
+            const {properties} = item;
+            const gmxId = properties[gmxIdIndex];
+            properties[selectedIndex] = selectedState;
+            item['properties'] = properties;
+            return {
+                id: gmxId,
+                content: item
+            }
+        });
+
+        store.updateData('snapshots', dataToUpdate, ['snapshots:setAllSelected']);
+
+        // ... redraw contours on map ... //
     }
 
     addToCartOnListAndMap(e) {
@@ -58,7 +109,7 @@ export default class SnapshotBridgeController {
             appEvents.trigger('sidebar:cart:limit');
             return;
         }
-        
+
         if (properties) {
             properties[cartIndex] = !isCart;
             properties[selectedIndex] = true;
@@ -109,6 +160,39 @@ export default class SnapshotBridgeController {
         );
 
         store.rewriteData('snapshots', dataToRewrite, ['snapshots:addAllToCart']);
+
+        // ... redraw contours on map ... //
+    }
+
+    removeSelectedFavoritesFromListAndMap() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        const selectedIndex = getCorrectIndex('selected');
+        const cartIndex = getCorrectIndex('cart');
+        const gmxIdIndex = getCorrectIndex('gmx_id');
+
+        const data = store.getSerializedData('snapshots');
+        const cartData = data.filter(item => item['properties'][cartIndex] && item['properties'][selectedIndex]);
+
+        if (cartData.length < 1) {
+            return;
+        }
+
+        const dataToUpdate = cartData.map(item => {
+            const {properties} = item;
+            const gmxId = properties[gmxIdIndex];
+            properties[cartIndex] = false;
+            properties[selectedIndex] = false;
+            item['properties'] = properties;
+            return {
+                id: gmxId,
+                content: item
+            }
+        });
+
+        store.updateData('snapshots', dataToUpdate, ['snapshots:removeSelectedFavorites']);
 
         // ... redraw contours on map ... //
     }

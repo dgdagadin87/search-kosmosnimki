@@ -224,7 +224,7 @@ class FavoritesList extends EventTarget {
         switch(name){           
             case 'selected':
                 item.selected = Boolean(cell.querySelector('input[type=checkbox]').checked);
-                event.initEvent('selected', false, false);
+                event.initEvent('setSelected', false, false);
                 event.detail = item;
                 this.dispatchEvent(event);
                 break;
@@ -275,8 +275,14 @@ class FavoritesList extends EventTarget {
     }   
     _onColumnClick (e) {
         e.stopPropagation();
-        let {col, field, name} = e.detail;        
+        let {col, field, name} = e.detail;
+        let event = document.createEvent('Event');     
         switch (name) {
+            case 'selected':
+                e.preventDefault();
+                event.initEvent('setAllSelected', false, false);
+                this.dispatchEvent(event);
+                break;
             case 'visible':
                 let state = false;
                 if (this._grid.items.every(x => x.visible !== 'hidden')) {
@@ -297,7 +303,6 @@ class FavoritesList extends EventTarget {
                     btn.classList.add('favorites-select-quicklooks-active');
                     btn.classList.remove('favorites-select-quicklooks-passive');
                 }
-                let event = document.createEvent('Event');
                 event.initEvent('visible:all', false, false);
                 event.detail = state;
                 this.dispatchEvent(event);

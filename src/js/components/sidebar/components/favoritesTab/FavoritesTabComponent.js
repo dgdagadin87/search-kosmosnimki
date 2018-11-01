@@ -4,7 +4,8 @@ import BaseCompositedComponent from '../../../../base/BaseCompositedComponent';
 
 import FavoriteListComponent from './components/favoritesList/FavoritesListComponent';
 
-import { propertiesToItem } from '../../../../utils/commonUtils';
+import { propertiesToItem, getCorrectIndex } from '../../../../utils/commonUtils';
+import SnapshotBridgeController from '../../../../core/bridgeControllers/SnapshotBridgeController';
 
 
 export default class FavouritesTabComponent extends BaseCompositedComponent {
@@ -26,9 +27,16 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const store = application.getStore();
         const favoritesComponent = this.getChildComponent('favoritesList');
-        
+        const removeButton = this._getFavoritesRemoveButton();
+        const SnapshotBridgeController = application.getBridgeController('snapshot');
+
         store.on('snapshots:addToCart', this._onAddToCarthHandler.bind(this));
         store.on('snapshots:addAllToCart', this._onAddToCarthHandler.bind(this));
+        store.on('snapshots:setSelected', this._onSetSelectedHandler.bind(this));
+        store.on('snapshots:setAllSelected', this._onSetSelectedHandler.bind(this));
+        store.on('snapshots:removeSelectedFavorites', this._onAddToCarthHandler.bind(this));
+
+        removeButton.addEventListener('click', (e) => SnapshotBridgeController.removeSelectedFavoritesFromListAndMap(e));
 
         favoritesComponent.events.on('imageDetails:show', (e, bBox) => this.events.trigger('imageDetails:show', e, bBox));
     }
@@ -59,6 +67,21 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         </div>`;
     }
 
+    _onSetSelectedHandler() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const selectedIndex = getCorrectIndex('selected');
+
+        const snapshots = store.getSerializedData('snapshots');
+        const isSomeSelected = snapshots.some(item => {
+            const {properties} = item;
+            return properties[selectedIndex];
+        });
+
+        this._updateOrderAndRemoveButtons(isSomeSelected);
+    }
+
     _onAddToCarthHandler() {
 
         const application = this.getApplication();
@@ -77,7 +100,7 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         const dataLength = filteredData.length;
 
         this._updateCartNumber(dataLength);
-        this._updateRemoveSelectedButton(dataLength);
+        this._updateOrderAndRemoveButtons(dataLength > 0);
     }
 
     _updateCartNumber(number) {
@@ -91,12 +114,12 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         innerNumSpan.innerText = number;
     }
 
-    _updateRemoveSelectedButton(number) {
+    _updateOrderAndRemoveButtons(state) {
 
         const btnOrder = this._getFavoritesOrderButton();
         const btnDelete = this._getFavoritesRemoveButton();
 
-        if (number > 0) {
+        if (state) {
             btnOrder.classList.remove('favorites-order-button-passive');
             btnDelete.classList.remove('favorites-delete-button-passive');
             btnOrder.classList.add('favorites-order-button-active');

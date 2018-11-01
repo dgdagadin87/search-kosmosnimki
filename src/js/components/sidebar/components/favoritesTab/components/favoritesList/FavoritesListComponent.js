@@ -1,9 +1,6 @@
 import BaseComponent from '../../../../../../base/BaseComponent';
 
-import {
-    ACCESS_USER_ROLE,
-    TAB_FAVORITES_NAME
-} from '../../../../../../config/constants/constants';
+import { ACCESS_USER_ROLE, TAB_FAVORITES_NAME } from '../../../../../../config/constants/constants';
 
 import { getPanelHeight, propertiesToItem } from '../../../../../../utils/commonUtils';
 
@@ -45,11 +42,15 @@ export default class ResultListComponent extends BaseComponent {
 
         store.on('snapshots:addAllToCart', this._updateList.bind(this));
         store.on('snapshots:addToCart', this._updateList.bind(this));
+        store.on('snapshots:setSelected', this._redrawItemOnList.bind(this));
+        store.on('snapshots:setAllSelected', this._updateList.bind(this));
+        store.on('snapshots:removeSelectedFavorites', this._updateList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
-        view.addEventListener('selected', this._onSelectedHandler.bind(this));
+        view.addEventListener('setSelected', (e) => SnapshotBridgeController.setSelectedOnListAndMap(e));
+        view.addEventListener('setAllSelected', (e) => SnapshotBridgeController.setAllSelectedOnListAndMap(e));
         view.addEventListener('click', (e) => SnapshotBridgeController.zoomToContourOnMap(e));
-        view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOmListAndMap(e));
+        view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOnListAndMap(e));
         view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContourOnMap(e, state));
         view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContourOnMap(e, state));
     }
@@ -104,13 +105,7 @@ export default class ResultListComponent extends BaseComponent {
         this.events.trigger('imageDetails:show', e, bBox);
     }
 
-    _onSelectedHandler(e) {
-
-        const {detail: {gmx_id: gmxId}} = e;
-        console.log(gmxId);
-    }
-
-    /*_redrawItemOnList(itemId) {
+    _redrawItemOnList(itemId) {
 
         const application = this.getApplication();
         const store = application.getStore();
@@ -120,6 +115,6 @@ export default class ResultListComponent extends BaseComponent {
         const preparedItem = propertiesToItem(item['properties']);
 
         view.redrawItem(itemId, preparedItem);
-    }*/
+    }
 
 }

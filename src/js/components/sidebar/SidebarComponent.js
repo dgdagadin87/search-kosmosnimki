@@ -61,6 +61,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         store.on('snapshots:addToCart', () => manageTabsState(view, store, 'addToFavorites'));
         store.on('snapshots:addAllToCart', () => manageTabsState(view, store, 'addToFavorites'));
+        store.on('snapshots:removeSelectedFavorites', () => manageTabsState(view, store, 'clearFavorites'));
 
         globalEvents.on('system:window:resize', () => this._resizeSidebar());
         globalEvents.on('system:components:created', () => this._resizeSidebar());

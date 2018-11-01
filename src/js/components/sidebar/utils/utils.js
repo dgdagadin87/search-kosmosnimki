@@ -102,8 +102,14 @@ function manageTabsState(sidebar, store, state) {
 
     if (state === 'clearFavorites') {
 
-        sidebar.disable('favorites');
-        resultData.length > 0 ? sidebar.setCurrent('results') : sidebar.setCurrent('search');
+        if (cartData.length > 0) {
+            sidebar.enable('favorites');
+            sidebar.setCurrent('favorites');
+        }
+        else {
+            sidebar.disable('favorites');
+            resultData.length > 0 ? sidebar.setCurrent('results') : sidebar.setCurrent('search');
+        }
 
         return;
     }
