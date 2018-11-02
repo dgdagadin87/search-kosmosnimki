@@ -81,8 +81,14 @@ function manageTabsState(sidebar, store, state) {
 
     if (state === 'addToResults') {
 
-        sidebar.enable('results');
-        sidebar.setCurrent('results');
+        if (resultData.length > 0) {
+            sidebar.enable('results');
+            sidebar.setCurrent('results');
+        }
+        else {
+            sidebar.disable('results');
+            sidebar.setCurrent('search');
+        }
 
         return;
     }

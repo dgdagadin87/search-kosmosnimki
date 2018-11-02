@@ -142,7 +142,7 @@ export default class DataStore {
         }
         else {
             this.clear(key);
-            this.addData(key, data, events);
+            this.addData(key, data);
         }
 
         this._fireEvents(events);

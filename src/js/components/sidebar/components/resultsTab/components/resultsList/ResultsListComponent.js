@@ -47,6 +47,7 @@ export default class ResultListComponent extends BaseComponent {
         store.on('snapshots:addAllToCart', this._updateList.bind(this));
         store.on('snapshots:removeSelectedFavorites', this._updateList.bind(this));
         store.on('snapshots:addToCart', this._redrawItemOnList.bind(this));
+        store.on('snapshots:setHovered', this._redrawItemOnList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
         view.addEventListener('click', (e) => SnapshotBridgeController.zoomToContourOnMap(e));

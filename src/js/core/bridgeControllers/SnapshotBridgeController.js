@@ -17,8 +17,59 @@ export default class SnapshotBridgeController {
 
     hoverContourOnMap(e, state) {
 
-        //console.log(e.detail);
-        //console.log('HOVERED', state);
+        const application = this.getApplication();
+        const store = application.getStore();
+        const hoverIndex = getCorrectIndex('hover');
+
+        const {detail: {item}} = e;
+        const {gmx_id: gmxId} = item;
+
+        const snapshot = store.getData('snapshots', gmxId);
+        const {properties} = snapshot;
+
+        if (properties[hoverIndex] !== state) {
+
+            properties[hoverIndex] = state;
+
+            snapshot['properties'] = properties;
+
+            store.updateData(
+                'snapshots',
+                {id: gmxId, content: snapshot},
+                [
+                    'snapshots:setHoveredMap',
+                    //'snapshots:setHovered'
+                ]
+            );
+        }
+    }
+
+    hoverContourOnList(e, state) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const hoverIndex = getCorrectIndex('hover');
+
+        const { gmx: {id: gmxId} } = e;
+
+        const snapshot = store.getData('snapshots', gmxId);
+        const {properties} = snapshot;
+
+        if (properties[hoverIndex] !== state) {
+
+            properties[hoverIndex] = state;
+
+            snapshot['properties'] = properties;
+
+            store.updateData(
+                'snapshots',
+                {id: gmxId, content: snapshot},
+                [
+                    'snapshots:setHoveredMap',
+                    'snapshots:setHovered'
+                ]
+            );
+        }
     }
 
     zoomToContourOnMap(e) {
@@ -116,7 +167,13 @@ export default class SnapshotBridgeController {
         }
         item['properties'] = properties;
 
-        store.updateData('snapshots', {id: gmxId, content: item}, ['snapshots:addToCart']);
+        store.updateData(
+            'snapshots',
+            {id: gmxId, content: item},
+            [
+                'snapshots:addToCart',   // on list
+                'snapshots:addToCartMap' // on map
+            ]);
         
         // ... redraw contour on map ... //
     }
@@ -159,9 +216,14 @@ export default class SnapshotBridgeController {
             }
         );
 
-        store.rewriteData('snapshots', dataToRewrite, ['snapshots:addAllToCart']);
-
-        // ... redraw contours on map ... //
+        store.rewriteData(
+            'snapshots',
+            dataToRewrite,
+            [
+                'snapshots:addAllToCart',
+                'snapshots:addAllToCartMap',
+            ]
+        );
     }
 
     removeSelectedFavoritesFromListAndMap() {
