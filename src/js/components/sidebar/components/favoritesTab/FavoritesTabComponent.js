@@ -30,14 +30,13 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         const removeButton = this._getFavoritesRemoveButton();
         const SnapshotBridgeController = application.getBridgeController('snapshot');
 
-        store.on('snapshots:addToCart', this._onAddToCarthHandler.bind(this));
-        store.on('snapshots:addAllToCart', this._onAddToCarthHandler.bind(this));
+        store.on('snapshots:addToCart', this._onAddToCartHandler.bind(this));
+        store.on('snapshots:addAllToCart', this._onAddToCartHandler.bind(this));
         store.on('snapshots:setSelected', this._onSetSelectedHandler.bind(this));
         store.on('snapshots:setAllSelected', this._onSetSelectedHandler.bind(this));
-        store.on('snapshots:removeSelectedFavorites', this._onAddToCarthHandler.bind(this));
+        store.on('snapshots:removeSelectedFavorites', this._onAddToCartHandler.bind(this));
 
         removeButton.addEventListener('click', (e) => SnapshotBridgeController.removeSelectedFavoritesFromListAndMap(e));
-
         favoritesComponent.events.on('imageDetails:show', (e, bBox) => this.events.trigger('imageDetails:show', e, bBox));
     }
 

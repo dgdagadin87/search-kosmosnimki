@@ -32,19 +32,22 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const appEvents = application.getAppEvents();
         const store = application.getStore();
         const vectorLayer = this._vectorLayer;
-
         const SnapshotsBridgeController = application.getBridgeController('snapshot');
 
         appEvents.on('sidebar:tab:change', this._setCurrentTab.bind(this));
+        appEvents.on('snapshots:zoomMap', this._zoomToContourOnMap.bind(this));
 
-        vectorLayer.on('mouseover', (e, state = true) => SnapshotsBridgeController.hoverContourOnList(e, state));
-        vectorLayer.on('mouseout', (e, state = false) => SnapshotsBridgeController.hoverContourOnList(e, state));
+        vectorLayer.on('mouseover', (e, state = true) => SnapshotsBridgeController.hoverContour(e, state));
+        vectorLayer.on('mouseout', (e, state = false) => SnapshotsBridgeController.hoverContour(e, state));
 
-        store.on('snapshots:researched', this._addContoursOnMap.bind(this));
-        store.on('snapshots:researched', this._zoomToSnapshotsOnMap.bind(this));
+        store.on('snapshots:researchedMap', this._addContoursOnMap.bind(this));
+        store.on('snapshots:researchedMap', this._zoomToSnapshotsOnMap.bind(this));
         store.on('snapshots:addToCartMap', this._redrawSnapshot.bind(this));
         store.on('snapshots:addAllToCartMap', this._redrawSnapshots.bind(this));
         store.on('snapshots:setHoveredMap', this._redrawSnapshot.bind(this));
+        store.on('snapshots:setSelectedMap', this._redrawSnapshot.bind(this));
+        store.on('snapshots:setAllSelectedMap', this._redrawSnapshots.bind(this));
+        store.on('snapshots:removeSelectedFavoritesMap', this._redrawSnapshots.bind(this));
     }
 
     _addContoursOnMap() {
@@ -57,6 +60,18 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
         this._vectorLayer.removeData();
         this._vectorLayer.addData(items);
+    }
+
+    _zoomToContourOnMap() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        const item = store.getData('snapshots', gmxId);
+        const {properties} = item;
+
+        const bounds  = this.getBounds([properties]);
+        this._map.fitBounds(bounds, { animate: false });
     }
 
     _zoomToSnapshotsOnMap() {

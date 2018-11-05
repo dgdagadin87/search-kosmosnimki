@@ -1,11 +1,8 @@
 import BaseComponent from '../../../../../../base/BaseComponent';
 
-import {
-    ACCESS_USER_ROLE,
-    TAB_RESULTS_NAME
-} from '../../../../../../config/constants/constants';
+import { ACCESS_USER_ROLE, TAB_RESULTS_NAME} from '../../../../../../config/constants/constants';
 
-import { getPanelHeight, propertiesToItem } from '../../../../../../utils/commonUtils';
+import { getPanelHeight, propertiesToItem, getCorrectIndex } from '../../../../../../utils/commonUtils';
 
 import ResultList from './view/ResultList';
 
@@ -47,13 +44,13 @@ export default class ResultListComponent extends BaseComponent {
         store.on('snapshots:addAllToCart', this._updateList.bind(this));
         store.on('snapshots:removeSelectedFavorites', this._updateList.bind(this));
         store.on('snapshots:addToCart', this._redrawItemOnList.bind(this));
-        store.on('snapshots:setHovered', this._redrawItemOnList.bind(this));
+        store.on('snapshots:setHovered', this._highliteItemOnList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
         view.addEventListener('click', (e) => SnapshotBridgeController.zoomToContourOnMap(e));
         view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOmListAndMap(e));
-        view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContourOnMap(e, state));
-        view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContourOnMap(e, state));
+        view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContour(e, state));
+        view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContour(e, state));
         view.addEventListener('addToCart', (e) => SnapshotBridgeController.addToCartOnListAndMap(e));
         view.addEventListener('addAllToCart', (e) => SnapshotBridgeController.addAllToCartOnListAndMap(e));
     }
@@ -98,6 +95,27 @@ export default class ResultListComponent extends BaseComponent {
         const preparedItem = propertiesToItem(item['properties']);
 
         view.redrawItem(itemId, preparedItem);
+    }
+
+    _highliteItemOnList(itemId) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const view = this.getView();
+
+        const hoverIndex = getCorrectIndex('hover');
+
+        const item = store.getData('snapshots', itemId);
+        
+        const {properties = []} = item;
+        const isHovered = properties[hoverIndex];
+
+        if (isHovered) {
+            view.hilite(itemId);
+        }
+        else {
+            view.dim(itemId);
+        }
     }
 
     _resizeResultsList() {

@@ -15,42 +15,27 @@ export default class SnapshotBridgeController {
         this._map = map;
     }
 
-    hoverContourOnMap(e, state) {
+    hoverContour(e, state) {
 
         const application = this.getApplication();
         const store = application.getStore();
         const hoverIndex = getCorrectIndex('hover');
 
-        const {detail: {item}} = e;
-        const {gmx_id: gmxId} = item;
+        const {detail} = e;
 
-        const snapshot = store.getData('snapshots', gmxId);
-        const {properties} = snapshot;
+        let gmxId;
+        let mode;
 
-        if (properties[hoverIndex] !== state) {
-
-            properties[hoverIndex] = state;
-
-            snapshot['properties'] = properties;
-
-            store.updateData(
-                'snapshots',
-                {id: gmxId, content: snapshot},
-                [
-                    'snapshots:setHoveredMap',
-                    //'snapshots:setHovered'
-                ]
-            );
+        if (detail === undefined) {
+            const { gmx: {id} } = e;
+            gmxId = id;
+            mode = 'fromMap';
         }
-    }
-
-    hoverContourOnList(e, state) {
-
-        const application = this.getApplication();
-        const store = application.getStore();
-        const hoverIndex = getCorrectIndex('hover');
-
-        const { gmx: {id: gmxId} } = e;
+        else {
+            const {item: {gmx_id}} = detail;
+            gmxId = gmx_id;
+            mode = 'fromList';
+        }
 
         const snapshot = store.getData('snapshots', gmxId);
         const {properties} = snapshot;
@@ -61,21 +46,27 @@ export default class SnapshotBridgeController {
 
             snapshot['properties'] = properties;
 
-            store.updateData(
-                'snapshots',
-                {id: gmxId, content: snapshot},
-                [
-                    'snapshots:setHoveredMap',
-                    'snapshots:setHovered'
-                ]
-            );
+            let events = [];
+
+            if (mode === 'fromMap') {
+                events.push('snapshots:setHovered');
+            }
+            events.push('snapshots:setHoveredMap');
+
+            store.updateData('snapshots', {id: gmxId, content: snapshot}, events);
         }
     }
 
     zoomToContourOnMap(e) {
 
-        //console.log(e.detail);
-        //console.log('ZOOMED');
+        const {detail: {item: {gmx_id: gmxId}}} = e;
+
+        const application = yhis.getApplication();
+        const appEvents = application.getAppEvents();
+
+        appEvents.trigger('snapshots:zoomOnMap', gmxId);
+
+        // ... show ql ... //
     }
 
     showQuicklookOnListAndMap(e) {
@@ -100,9 +91,14 @@ export default class SnapshotBridgeController {
         }
         item['properties'] = properties;
 
-        store.updateData('snapshots', {id: gmxId, content: item}, ['snapshots:setSelected']);
-
-        // ... redraw contour on map ... //
+        store.updateData(
+            'snapshots',
+            {id: gmxId, content: item},
+            [
+                'snapshots:setSelected',
+                'snapshots:setSelectedMap'
+            ]
+        );
     }
 
     setAllSelectedOnListAndMap() {
@@ -130,9 +126,14 @@ export default class SnapshotBridgeController {
             }
         });
 
-        store.updateData('snapshots', dataToUpdate, ['snapshots:setAllSelected']);
-
-        // ... redraw contours on map ... //
+        store.updateData(
+            'snapshots',
+            dataToUpdate,
+            [
+                'snapshots:setAllSelected',
+                'snapshots:setAllSelectedMap'
+            ]
+        );
     }
 
     addToCartOnListAndMap(e) {
@@ -171,11 +172,9 @@ export default class SnapshotBridgeController {
             'snapshots',
             {id: gmxId, content: item},
             [
-                'snapshots:addToCart',   // on list
-                'snapshots:addToCartMap' // on map
+                'snapshots:addToCart',
+                'snapshots:addToCartMap'
             ]);
-        
-        // ... redraw contour on map ... //
     }
 
     addAllToCartOnListAndMap() {
@@ -254,9 +253,14 @@ export default class SnapshotBridgeController {
             }
         });
 
-        store.updateData('snapshots', dataToUpdate, ['snapshots:removeSelectedFavorites']);
-
-        // ... redraw contours on map ... //
+        store.updateData(
+            'snapshots',
+            dataToUpdate,
+            [
+                'snapshots:removeSelectedFavorites',
+                'snapshots:removeSelectedFavoritesMap'
+            ]
+        );
     }
 
     clearSnapShotsOnResults() {
@@ -296,7 +300,15 @@ export default class SnapshotBridgeController {
             idsToRemove.push(id);
         });
 
-        store.removeData('snapshots', idsToRemove, ['snapshots:researched'])
+        store.removeData(
+            'snapshots',
+            idsToRemove,
+            [
+                'snapshots:researched',
+                'snapshots:researchedMap'
+            ]
+        )
+
     }
 
     addContoursOnMapAndList(result) {
@@ -384,9 +396,14 @@ export default class SnapshotBridgeController {
             };
         });
 
-        store.rewriteData('snapshots', resultsForAdding, ['snapshots:researched']);
-
-        // ... remove and add data on map ... //
+        store.rewriteData(
+            'snapshots',
+            resultsForAdding,
+            [
+                'snapshots:researched',
+                'snapshots:researchedMap'
+            ]
+        );
     }
 
     getApplication() {

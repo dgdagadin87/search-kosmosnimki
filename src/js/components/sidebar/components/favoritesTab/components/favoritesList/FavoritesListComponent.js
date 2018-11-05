@@ -2,7 +2,7 @@ import BaseComponent from '../../../../../../base/BaseComponent';
 
 import { ACCESS_USER_ROLE, TAB_FAVORITES_NAME } from '../../../../../../config/constants/constants';
 
-import { getPanelHeight, propertiesToItem } from '../../../../../../utils/commonUtils';
+import { getPanelHeight, propertiesToItem, getCorrectIndex } from '../../../../../../utils/commonUtils';
 
 import FavoriteList from './view/FavoritesList';
 
@@ -32,9 +32,7 @@ export default class ResultListComponent extends BaseComponent {
         const application = this.getApplication();
         const appEvents = application.getAppEvents();
         const store = application.getStore();
-
         const SnapshotBridgeController = application.getBridgeController('snapshot');
-
         const view = this.getView();
 
         appEvents.on('sidebar:tab:resize', (e) => this._resizeFavoritesList(e));
@@ -85,6 +83,39 @@ export default class ResultListComponent extends BaseComponent {
         this._resizeFavoritesList();
     }
 
+    _redrawItemOnList(itemId) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const view = this.getView();
+
+        const item = store.getData('snapshots', itemId);
+        const preparedItem = propertiesToItem(item['properties']);
+
+        view.redrawItem(itemId, preparedItem);
+    }
+
+    _highliteItemOnList(itemId) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const view = this.getView();
+
+        const hoverIndex = getCorrectIndex('hover');
+
+        const item = store.getData('snapshots', itemId);
+        
+        const {properties = []} = item;
+        const isHovered = properties[hoverIndex];
+
+        if (isHovered) {
+            view.hilite(itemId);
+        }
+        else {
+            view.dim(itemId);
+        }
+    }
+
     _resizeFavoritesList() {
 
         const view = this.getView();
@@ -103,18 +134,6 @@ export default class ResultListComponent extends BaseComponent {
         const bBox = view.bbox;
 
         this.events.trigger('imageDetails:show', e, bBox);
-    }
-
-    _redrawItemOnList(itemId) {
-
-        const application = this.getApplication();
-        const store = application.getStore();
-        const view = this.getView();
-
-        const item = store.getData('snapshots', itemId);
-        const preparedItem = propertiesToItem(item['properties']);
-
-        view.redrawItem(itemId, preparedItem);
     }
 
 }
