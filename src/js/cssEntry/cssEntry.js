@@ -29,6 +29,9 @@ import '../../css/favoritesList.css';
 // image details
 import '../../css/imageDetails.css';
 
+// make order
+import '../../css/makeOrder.css';
+
 // scanex-auth
 import 'scanex-auth/dist/scanex-auth.css';
 

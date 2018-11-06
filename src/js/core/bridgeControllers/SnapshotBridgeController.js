@@ -38,10 +38,11 @@ export default class SnapshotBridgeController {
         }
 
         const snapshot = store.getData('snapshots', gmxId);
-        const {properties} = snapshot;
 
-        if (properties[hoverIndex] !== state) {
+        if (snapshot) {
 
+            const {properties} = snapshot;
+        
             properties[hoverIndex] = state;
 
             snapshot['properties'] = properties;
@@ -55,16 +56,19 @@ export default class SnapshotBridgeController {
 
             store.updateData('snapshots', {id: gmxId, content: snapshot}, events);
         }
+        else {
+            window.console.log(`${gmxId} - undefined`);
+        }
     }
 
     zoomToContourOnMap(e) {
 
         const {detail: {item: {gmx_id: gmxId}}} = e;
 
-        const application = yhis.getApplication();
+        const application = this.getApplication();
         const appEvents = application.getAppEvents();
 
-        appEvents.trigger('snapshots:zoomOnMap', gmxId);
+        appEvents.trigger('snapshots:zoomMap', gmxId);
 
         // ... show ql ... //
     }
@@ -291,8 +295,6 @@ export default class SnapshotBridgeController {
                 return data;
             },
         []);
-
-        // ... remove Contours from map ... //
 
         let idsToRemove = [];
         dataToRemove.forEach(([id]) => {

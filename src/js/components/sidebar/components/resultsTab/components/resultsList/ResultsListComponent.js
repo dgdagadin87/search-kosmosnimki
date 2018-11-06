@@ -59,10 +59,7 @@ export default class ResultListComponent extends BaseComponent {
 
         const {detail: {current: currentTab}} = e;
 
-        if (currentTab === TAB_RESULTS_NAME) {
-
-            this._resizeResultsList();
-        }
+        currentTab === TAB_RESULTS_NAME && this._resizeResultsList();
     }
 
     _updateList() {

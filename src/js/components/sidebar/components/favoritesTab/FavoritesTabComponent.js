@@ -27,7 +27,9 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const store = application.getStore();
         const favoritesComponent = this.getChildComponent('favoritesList');
+        const favoriteEvents = favoritesComponent.events;
         const removeButton = this._getFavoritesRemoveButton();
+        const orderButton = this._getFavoritesOrderButton();
         const SnapshotBridgeController = application.getBridgeController('snapshot');
 
         store.on('snapshots:addToCart', this._onAddToCartHandler.bind(this));
@@ -37,7 +39,8 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         store.on('snapshots:removeSelectedFavorites', this._onAddToCartHandler.bind(this));
 
         removeButton.addEventListener('click', (e) => SnapshotBridgeController.removeSelectedFavoritesFromListAndMap(e));
-        favoritesComponent.events.on('imageDetails:show', (e, bBox) => this.events.trigger('imageDetails:show', e, bBox));
+        orderButton.addEventListener('click', (e) => this.events.trigger('makeOrder:click', e));
+        favoriteEvents.on('imageDetails:show', (e, bBox) => this.events.trigger('imageDetails:show', e, bBox));
     }
 
     _addTabToSidebar() {
@@ -81,7 +84,7 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         this._updateOrderAndRemoveButtons(isSomeSelected);
     }
 
-    _onAddToCarthHandler() {
+    _onAddToCartHandler() {
 
         const application = this.getApplication();
         const store = application.getStore();

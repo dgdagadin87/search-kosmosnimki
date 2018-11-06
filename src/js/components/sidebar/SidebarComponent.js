@@ -59,6 +59,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         map.gmxDrawing.on('drawstop', () => manageTabsState(view, store, 'stopDrawing'));
 
+        store.on('snapshots:researched', () => manageTabsState(view, store, 'addToResults'));
         store.on('snapshots:addToCart', () => manageTabsState(view, store, 'addToFavorites'));
         store.on('snapshots:addAllToCart', () => manageTabsState(view, store, 'addToFavorites'));
         store.on('snapshots:removeSelectedFavorites', () => manageTabsState(view, store, 'clearFavorites'));
@@ -71,6 +72,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         resultsTabComponent.events.on('results:clear', () => this._clearResults());
         resultsTabComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
+        favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
     }
 
     _searchResults() {
@@ -100,7 +102,6 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const view = this.getView();
 
         const SnapshotBridgeController = application.getBridgeController('snapshot');
 
@@ -119,8 +120,6 @@ export default class SidebarComponent extends BaseCompositedComponent {
             else if (0 < resultLength && resultLength < RESULT_MAX_COUNT_PLUS_ONE) {
 
                 SnapshotBridgeController.addContoursOnMapAndList(result);
-                
-                manageTabsState(view, store, 'addToResults');
             }
             else {
                 application.showNotification('В разработке');
@@ -169,13 +168,21 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         SnapshotBridgeController.clearSnapShotsOnResults();
 
-        manageTabsState(view, application.getStore(), 'clearResults');
+        //manageTabsState(view, application.getStore(), 'clearResults');
     }
 
     _showImageDetails(e, bBox) {
 
         const imageDetailsComponent = this.getChildComponent('imageDetails');
         imageDetailsComponent.toggle(e, bBox);
+    }
+
+    _onMakeOrderClick(e) {
+
+        const application = this.getApplication();
+        const appEvents = application.getAppEvents();
+
+        appEvents.trigger('makeOrder:click', e);
     }
 
     _cartLimitMessage() {

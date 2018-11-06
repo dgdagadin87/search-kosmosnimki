@@ -3,7 +3,7 @@ import BaseComponent from '../../../../base/BaseComponent';
 import View from './view/View';
 
 
-export default class LimitDialogComponent extends BaseComponent {
+export default class LoginDialogComponent extends BaseComponent {
 
     init() {
 
@@ -16,7 +16,7 @@ export default class LimitDialogComponent extends BaseComponent {
 
     _binEvents() {
 
-        this.events.on('cancel', () => this.hide());
+        this.events.on('click', () => this.events.trigger('login:click'));
     }
 
     show() {

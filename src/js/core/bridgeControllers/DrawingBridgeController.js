@@ -381,7 +381,12 @@ export default class DrawingBridgeController {
                 deleteDrawingFromMap(drawingObject);
             });
 
-            store.clear('drawings', ['drawings:updateList']);
+            if (mode === 'row') {
+                store.removeData('drawings', [e.detail['id']], ['drawings:updateList']);
+            }
+            else {
+                store.clear('drawings', ['drawings:updateList']);
+            }
     }
     /* Delete drawing end */
 

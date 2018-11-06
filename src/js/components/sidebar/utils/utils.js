@@ -40,14 +40,14 @@ function manageTabsState(sidebar, store, state) {
 
     const allSnapShots = store.getSerializedData('snapshots');
 
-    const resultData = allSnapShots.filter(item => {
+    const hasResultData = allSnapShots.some(item => {
         const {properties} = item;
         if (properties) {
             return properties[resultIndex];
         }
     });
 
-    const cartData = allSnapShots.filter(item => {
+    const hasFavoritesData = allSnapShots.some(item => {
         const {properties} = item;
         if (properties) {
             return properties[cartIndex];
@@ -81,7 +81,7 @@ function manageTabsState(sidebar, store, state) {
 
     if (state === 'addToResults') {
 
-        if (resultData.length > 0) {
+        if (hasResultData) {
             sidebar.enable('results');
             sidebar.setCurrent('results');
         }
@@ -95,7 +95,7 @@ function manageTabsState(sidebar, store, state) {
 
     if (state === 'addToFavorites') {
 
-        if (cartData.length > 0) {
+        if (hasFavoritesData > 0) {
             sidebar.enable('favorites');
         }
         else {
@@ -108,13 +108,13 @@ function manageTabsState(sidebar, store, state) {
 
     if (state === 'clearFavorites') {
 
-        if (cartData.length > 0) {
+        if (hasFavoritesData) {
             sidebar.enable('favorites');
             sidebar.setCurrent('favorites');
         }
         else {
             sidebar.disable('favorites');
-            resultData.length > 0 ? sidebar.setCurrent('results') : sidebar.setCurrent('search');
+            hasResultData ? sidebar.setCurrent('results') : sidebar.setCurrent('search');
         }
 
         return;

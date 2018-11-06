@@ -49,8 +49,8 @@ export default class ResultListComponent extends BaseComponent {
         view.addEventListener('setAllSelected', (e) => SnapshotBridgeController.setAllSelectedOnListAndMap(e));
         view.addEventListener('click', (e) => SnapshotBridgeController.zoomToContourOnMap(e));
         view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOnListAndMap(e));
-        view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContourOnMap(e, state));
-        view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContourOnMap(e, state));
+        view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContour(e, state));
+        view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContour(e, state));
     }
 
     _onTabChangeHandler(e) {

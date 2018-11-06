@@ -4,7 +4,7 @@ import FloatingPanel from 'scanex-float-panel';
 import { createContainer, getMapCenter } from '../../../../../utils/commonUtils';
 
 
-export default class LimitDialogView {
+export default class LoginDialogView {
 
     constructor(application, events) {
 
@@ -15,16 +15,16 @@ export default class LimitDialogView {
         const {top} = getMapCenter();
 
         this._container = createContainer();
-        this._container.classList.add('cart-limit-dialog');
+        this._container.classList.add('auth-dialog');
 
         this._main = new FloatingPanel(this._container, {
-            id: 'cart.limit.dialog',
+            id: 'auth.dialog',
             left: Math.round (mapContainer.getBoundingClientRect().width / 2),
-            top, modal: true, header: false,
+            top, modal: true
         });
         
-        this._main.content.innerHTML = `${Translations.getText('favorites.limit')}`;
-        this._main.footer.innerHTML = `<button class="dialog-cancel-button">${Translations.getText('alerts.close')}</button>`;
+        this._main.content.innerHTML = `${Translations.getText('alerts.authenticate')}`;
+        this._main.footer.innerHTML = `<button class="dialog-login-button">${Translations.getText('alerts.login')}</button>`;
 
         this.hide();
 
@@ -33,14 +33,14 @@ export default class LimitDialogView {
 
     _binEvents() {
 
-        const cancelButton = this._getCancelButton();
+        const cancelButton = this._getLoginButton();
 
-        cancelButton.addEventListener('click', () => this.hide());
+        cancelButton.addEventListener('click', () => this.events.trigger('click'));
     }
 
-    _getCancelButton() {
+    _getLoginButton() {
 
-        return this._container.querySelector('button.dialog-cancel-button');
+        return this._container.querySelector('button.dialog-login-button');
     }
 
     show() {

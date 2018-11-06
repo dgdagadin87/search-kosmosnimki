@@ -25,6 +25,11 @@ export default class AuthManagerService {
         return this._authManager;
     }
 
+    createOrder(params = {}) {
+
+        return this._catalogResourceServer.sendPostRequest('CreateOrder.ashx', params);
+    }
+
     getCatalogResourceServer() {
 
         return this._catalogResourceServer;

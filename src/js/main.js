@@ -4,6 +4,7 @@ import './config/translations/about';
 import './config/translations/drawnObjects';
 import './config/translations/searchOptions';
 import './config/translations/resultsList';
+import './config/translations/makeOrder';
 
 import Application from './core/Application';
 
@@ -13,16 +14,13 @@ import GmxSearchProvider from './searchProviders/gmxProvider/GmxSearchProvider';
 
 import LoaderIndicatorComponent from './components/loaderIndicator/LoaderIndicatorComponent';
 import PopupNotificationComponent from './components/popupNotification/PopupNotificationComponent';
-
 import HelpingButtonComponent from './components/helpingButton/HelpingButtonComponent';
 import UserInformationComponent from './components/userInformation/UserInformationComponent';
 import LanguageSelectComponent from './components/languageSelect/LanguageSelectComponent';
 import MapControlsComponent from './components/mapControls/MapControlsComponent';
-
 import DrawingObjectsComponent from './components/drawingObjects/DrawingObjectsComponent';
-
 import SidebarComponent from './components/sidebar/SidebarComponent';
-
+import MakeOrderComponent from './components/makeOrder/MakeOrderComponent';
 import AboutDialogComponent from './components/aboutDialog/AboutDialogComponent';
 
 
@@ -77,6 +75,10 @@ const application = new Application({
         {
             index: 'sidebar',
             constructor: SidebarComponent
+        },
+        {
+            index: 'makeOrder',
+            constructor: MakeOrderComponent
         },
         {
             index: 'about',

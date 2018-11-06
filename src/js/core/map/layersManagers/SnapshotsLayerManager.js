@@ -62,7 +62,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         this._vectorLayer.addData(items);
     }
 
-    _zoomToContourOnMap() {
+    _zoomToContourOnMap(gmxId) {
 
         const application = this.getApplication();
         const store = application.getStore();

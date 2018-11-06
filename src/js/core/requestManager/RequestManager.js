@@ -47,9 +47,9 @@ export default class RequestManager {
         return this._gmxResourceComponent.getLayerId(params);
     }
 
-    requestGetUserInfo() {
+    requestCreateOrder(params = {}) {
 
-        return this._catalogResourceComponent.getUserInfo();
+        return this._catalogResourceComponent.createOrder(params);
     }
 
     // service methods
