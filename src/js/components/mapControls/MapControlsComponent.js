@@ -6,6 +6,7 @@ import DrawingsControlComponent from './components/drawingsControl/DrawingsContr
 import MapTypeSwitcherComponent from './components/mapTypeSwitcher/MapTypeSwitcherComponent';
 import ZoomComponent from './components/zoom/ZoomComponent';
 import BoxZoomComponent from './components/boxZoom/BoxZoomComponent';
+import DownloadComponent from './components/download/DownloadComponent';
 
 
 export default class MapControlsComponent extends BaseCompositedComponent {
@@ -14,15 +15,19 @@ export default class MapControlsComponent extends BaseCompositedComponent {
 
         this._mapControlsPrepare();
 
-        this._drawingsControlComponent = new DrawingsControlComponent(this.getConfig());
-        this._mapTypeSwitcherComponent = new MapTypeSwitcherComponent(this.getConfig());
-        this._zoomComponent = new ZoomComponent(this.getConfig());
+        const preparedConfig = {...this.getConfig(), parent: this};
 
-        this._boxZoomComponent = isMobile() ? false : new BoxZoomComponent(this.getConfig());
+        this._drawingsControlComponent = new DrawingsControlComponent(preparedConfig);
+        this._mapTypeSwitcherComponent = new MapTypeSwitcherComponent(preparedConfig);
+        this._zoomButtonComponent = new ZoomComponent(preparedConfig);
+        this._downloadComponent = new DownloadComponent(preparedConfig);
+
+        this._boxZoomComponent = isMobile() ? false : new BoxZoomComponent(preparedConfig);
 
         this._drawingsControlComponent.init();
         this._mapTypeSwitcherComponent.init();
-        this._zoomComponent.init();
+        this._zoomButtonComponent.init();
+        this._downloadComponent.init();
 
         !isMobile() && this._boxZoomComponent.init();
     }

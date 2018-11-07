@@ -6,7 +6,7 @@ import { ACCESS_USER_ROLE } from '../../../../../config/constants/constants';
 import { createContainer, getMapCenter } from '../../../../../utils/commonUtils';
 
 
-export default class LimitDialogView {
+export default class DownloadDialogView {
 
     constructor(application, events) {
 
@@ -18,13 +18,14 @@ export default class LimitDialogView {
 
         const isUserAuthenticated = this._isUserIsAuthenticated();
 
-        const dialogClass = !isUserAuthenticated ? 'download-change-dialog' : '';
+        const dialogClass = !isUserAuthenticated ? 'download-change-dialog' : 'download-result-dialog';
+        const dialogId = !isUserAuthenticated ? 'download.change.dialog' : 'download.result.dialog';
 
         this._container = createContainer();
         this._container.classList.add(dialogClass);
 
         this._main = new FloatingPanel(this._container, {
-            id: !isUserAuthenticated ? 'download.change.dialog' : '',
+            id: dialogId,
             left,
             top,
             modal: true,
@@ -36,7 +37,10 @@ export default class LimitDialogView {
             this._main.footer.innerHTML = `<button class="dialog-close-button">${Translations.getText('alerts.ok')}</button>`;
         }
         else {
-            // ...
+            this._main.content.innerHTML = `${Translations.getText('results.download')}`;
+            this._main.footer.innerHTML = 
+            `<button class="dialog-ok-button">${Translations.getText('download.ok')}</button>
+            <button class="dialog-cancel-button">${Translations.getText('download.cancel')}</button>`;
         }
 
         this.hide();
@@ -46,14 +50,30 @@ export default class LimitDialogView {
 
     _binEvents() {
 
-        const closeButton = this._getCloseButton();
+        const isUserAuthenticated = this._isUserIsAuthenticated();
+        const closeButton = isUserAuthenticated ? this._getCancelButton() : this._getCloseButton();
+        const applyButton = this._getApplyButton();
+        
+        closeButton.addEventListener('click', () => this.events.trigger('cancel'));
 
-        closeButton.addEventListener('click', () => this.hide());
+        if (isUserAuthenticated) {
+            applyButton.addEventListener('click', () => this.events.trigger('apply'));
+        }
+    }
+
+    _getApplyButton() {
+
+        return this._container.querySelector('button.dialog-ok-button');
     }
 
     _getCloseButton() {
 
         return this._container.querySelector('button.dialog-close-button');
+    }
+
+    _getCancelButton() {
+
+        return this._container.querySelector('button.dialog-cancel-button');
     }
 
     _isUserIsAuthenticated() {
