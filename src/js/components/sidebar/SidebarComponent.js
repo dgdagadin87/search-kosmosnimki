@@ -1,7 +1,7 @@
-import BaseCompositedComponent from '../../base/BaseCompositedComponent';
-
 import Translations from 'scanex-translations';
 import SidebarControl from  'scanex-leaflet-sidebar';
+
+import BaseCompositedComponent from '../../base/BaseCompositedComponent';
 
 import { RESULT_MAX_COUNT_PLUS_ONE } from '../../config/constants/constants';
 
@@ -13,6 +13,7 @@ import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';
 import FavoritesTabComponent from './components/favoritesTab/FavoritesTabComponent';
 import ImageDetailsComponent from './components/imageDetails/ImageDetailsComponent';
 import LimitDialogComponent from './components/limitDialog/LimitDialogComponent';
+import DownloadDialogComponent from './components/downloadDialog/DownloadDialogComponent';
 
 
 export default class SidebarComponent extends BaseCompositedComponent {
@@ -32,12 +33,14 @@ export default class SidebarComponent extends BaseCompositedComponent {
         this._favoritesTabComponent = new FavoritesTabComponent({...this.getConfig(), parent: this});
         this._imageDetailsComponent = new ImageDetailsComponent({...this.getConfig(), parent: this});
         this._limitDialogComponent = new LimitDialogComponent({...this.getConfig(), parent: this});
+        this._downloadDialogComponent = new DownloadDialogComponent({...this.getConfig(), parent: this});
 
         this._searchTabComponent.init();
         this._resultsTabComponent.init();
         this._favoritesTabComponent.init();
         this._imageDetailsComponent.init();
         this._limitDialogComponent.init();
+        this._downloadDialogComponent.init();
 
         manageTabsState(this.getView(), this.getApplication().getStore(), 'start');
 
@@ -102,9 +105,8 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-
         const SnapshotBridgeController = application.getBridgeController('snapshot');
-
+        const downloadDialogComponent = this.getChildComponent('downloadDialog');
         const isLoadingCancelled = store.getData('cancelLoading');
 
         if (!isLoadingCancelled) {
@@ -122,8 +124,8 @@ export default class SidebarComponent extends BaseCompositedComponent {
                 SnapshotBridgeController.addContoursOnMapAndList(result);
             }
             else {
-                application.showNotification('В разработке');
-                // if IsAuthenticated ? window.Catalog.dlgDownloadResult.show() : window.Catalog.dlgChangeResult.show()
+                
+                downloadDialogComponent.show()
             }
         }
 
@@ -164,11 +166,8 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const SnapshotBridgeController = application.getBridgeController('snapshot');
-        const view = this.getView();
 
         SnapshotBridgeController.clearSnapShotsOnResults();
-
-        //manageTabsState(view, application.getStore(), 'clearResults');
     }
 
     _showImageDetails(e, bBox) {
