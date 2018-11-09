@@ -168,6 +168,56 @@ function getPanelHeight (container, parts) {
     }, container.getBoundingClientRect().height);
 }
 
+function getVisibleChangedState(show, properties) {
+
+    const visibleIndex = getCorrectIndex('visible');
+    const visibleValue = properties[visibleIndex];
+
+    let changed = false;
+
+    if (show) {
+        switch(visibleValue) {
+            case 'hidden':
+            case 'failed':
+                properties[visibleIndex] = 'loading';
+                changed = true;
+                break;
+            case 'loading':                
+                properties[visibleIndex] = 'visible';
+                changed = true;
+                break;
+            case 'visible':
+            default:
+                break;
+        }
+    }
+    else {
+        switch(properties[visibleIndex]) {
+            case 'failed':
+            case 'loading':
+            case 'visible':
+                properties[visibleIndex] = 'hidden';
+                changed = true;
+                break;
+            case 'hidden':
+            default:
+                break;
+        }
+    }
+
+    return changed;
+}
+
+function splitComplexId (complexId) {
+
+    let separatorIndex = complexId.lastIndexOf('!');
+    return separatorIndex > 0
+        ? { id: complexId.substring(0, separatorIndex),
+            productId: complexId.substring(separatorIndex + 1, complexId.length)
+        }
+        : { id: complexId };
+}
+
 export {
     isNumber,
     createContainer,
@@ -184,5 +234,7 @@ export {
     getCorrectIndex,
     propertiesToItem,
     getSatelliteName,
-    getPanelHeight
+    getPanelHeight,
+    getVisibleChangedState,
+    splitComplexId
 };

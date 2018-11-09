@@ -4,7 +4,7 @@ import { ACCESS_USER_ROLE, TAB_FAVORITES_NAME } from '../../../../../../config/c
 
 import { getPanelHeight, propertiesToItem, getCorrectIndex } from '../../../../../../utils/commonUtils';
 
-import FavoriteList from './view/FavoritesList';
+import FavoriteList from './view/View';
 
 
 export default class ResultListComponent extends BaseComponent {
@@ -67,16 +67,17 @@ export default class ResultListComponent extends BaseComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
+        const cartIndex = getCorrectIndex('cart');
 
-        const snapshotItems = store.getData('snapshots');
-        const commonData = Object.keys(snapshotItems).map((id) => {
-            
-            const item = snapshotItems[id];
+        const snapshotItems = store.getSerializedData('snapshots');
+
+        const filteredData = snapshotItems.reduce((preparedData, item) => {
             const {properties} = item;
-
-            return propertiesToItem(properties);
-        });
-        const filteredData = commonData.filter(item => item.cart);
+            if (properties[cartIndex]) {
+                preparedData.push(propertiesToItem(properties));
+            }
+            return preparedData;
+        }, []);
 
         this.getView().items = filteredData;
 

@@ -50,12 +50,12 @@ export default class SearchOptionsComponent extends BaseComponent {
     _onTabChangeHandler(e) {
 
         const {detail: {current: currentTab}} = e;
+        const view = this.getView();
 
         if (currentTab === TAB_SEARCH_NAME) {
 
-            this.getView().refresh();
+            view.refresh();
             this._resizeSearchOptions();
-            // ...hide contours
         }
     }
 

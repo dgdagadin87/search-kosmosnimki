@@ -32,13 +32,20 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const appEvents = application.getAppEvents();
         const store = application.getStore();
         const vectorLayer = this._vectorLayer;
-        const SnapshotsBridgeController = application.getBridgeController('snapshot');
+        const SnapshotsController = application.getBridgeController('snapshot');
 
         appEvents.on('sidebar:tab:change', this._setCurrentTab.bind(this));
+        appEvents.on('sidebar:tab:change', this._toggleQuicklooks.bind(this));
         appEvents.on('snapshots:zoomMap', this._zoomToContourOnMap.bind(this));
+        appEvents.on('snapshots:bringToTop', (id) => {
+            this._vectorLayer.bringToTopItem(id)
+        });
+        appEvents.on('snapshots:bringToBottom', (id) => {
+            this._vectorLayer.bringToBottomItem(id)
+        });
 
-        vectorLayer.on('mouseover', (e, state = true) => SnapshotsBridgeController.hoverContour(e, state));
-        vectorLayer.on('mouseout', (e, state = false) => SnapshotsBridgeController.hoverContour(e, state));
+        vectorLayer.on('mouseover', (e, state = true) => SnapshotsController.hoverContour(e, state));
+        vectorLayer.on('mouseout', (e, state = false) => SnapshotsController.hoverContour(e, state));
 
         store.on('snapshots:researchedMap', this._addContoursOnMap.bind(this));
         store.on('snapshots:researchedMap', this._zoomToSnapshotsOnMap.bind(this));
@@ -48,6 +55,8 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         store.on('snapshots:setSelectedMap', this._redrawSnapshot.bind(this));
         store.on('snapshots:setAllSelectedMap', this._redrawSnapshots.bind(this));
         store.on('snapshots:removeSelectedFavoritesMap', this._redrawSnapshots.bind(this));
+        store.on('snapshots:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
+        store.on('snapshots:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
     }
 
     _addContoursOnMap() {
@@ -111,7 +120,48 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const {detail: {current}} = e;
 
         this._currentTab = current;
-        this._vectorLayer.repaint();
+        this._redrawSnapshots();
+    }
+
+    _toggleQuicklooks() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const snapshots = store.getSerializedData('snapshots');
+        const currentTab = this._currentTab;
+        const snapshotController = application.getBridgeController('snapshot');
+
+        const resultIndex = getCorrectIndex('result');
+        const cartIndex = getCorrectIndex('cart');
+        const visibleIndex = getCorrectIndex('visible');
+        const gmxIdIndex = getCorrectIndex('gmx_id');
+
+        if (!currentTab) {
+            return;
+        }
+
+        snapshots.forEach(item => {
+
+            const {properties = []} = item;
+            const visibleValue = properties[visibleIndex];
+            const indexValue = properties[gmxIdIndex];
+
+            let isVisible;
+
+            if (currentTab === 'search') {
+                isVisible = false;
+            }
+
+            if (currentTab === 'results') {
+                isVisible = properties[resultIndex] && visibleValue === 'visible';
+            }
+
+            if (currentTab === 'favorites') {
+                isVisible = properties[cartIndex] && visibleValue === 'visible';
+            }
+
+            snapshotController.showQuicklookOnMap(indexValue, isVisible);
+        });
     }
 
     _initVectorLayer() {

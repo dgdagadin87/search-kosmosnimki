@@ -87,6 +87,7 @@ Events.prototype.on = function(name, callback, context) {
     if ( ! this._events) {
         this._events = {};
     }
+    //let debugCallback = (...args) => {console.log(name);callback(...args)}
     let events = this._events[name] || (this._events[name] = []);
     events.push({callback: callback, context: context, ctx: context || this});
     return this;

@@ -50,7 +50,7 @@ export default class DataStore {
     }
 
     getData(key, rowId = false) {
-
+//rowId === false && console.log('got')
         const keySegment = this._data[key] || {};
         const {data} = keySegment;
 
@@ -63,7 +63,7 @@ export default class DataStore {
     }
 
     getSerializedData(key) {
-
+//console.log('got')
         const keySegment = this._data[key] || {};
         const {data, config:{isTable}} = keySegment;
 

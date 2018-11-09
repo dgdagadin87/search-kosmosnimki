@@ -58,7 +58,13 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const favoritesTabComponent = this.getChildComponent('favoritesTab');
         const view = this.getView();
 
-        view.on('change', e => globalEvents.trigger('sidebar:tab:change', e));
+        view.on('change', e => {
+            /*
+                after change event - for some visual speed
+            */
+            globalEvents.trigger('sidebar:tab:change', e);
+            globalEvents.trigger('sidebar:tab:afterchange', e);
+        });
 
         map.gmxDrawing.on('drawstop', () => manageTabsState(view, store, 'stopDrawing'));
 

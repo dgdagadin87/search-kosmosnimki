@@ -1,4 +1,4 @@
-import {getCorrectIndex} from '../../utils/commonUtils';
+import {getCorrectIndex, getVisibleChangedState, makeCloseTo, splitComplexId, flatten} from '../../utils/commonUtils';
 import {normalizeGeometry} from '../../utils/layersUtils';
 
 import {MAX_CART_SIZE} from '../../config/constants/constants';
@@ -13,6 +13,85 @@ export default class SnapshotBridgeController {
 
         this._application = application;
         this._map = map;
+
+        this._qlUrl = '//search.kosmosnimki.ru/QuickLookImage.ashx',
+        this._qlSize = { width: 600, height: 600 };
+    }
+
+    _showQuicklook (gmxId, show) {
+        /*return new Promise(resolve => {                        
+            if(this._compositeLayer.setVisible(id, show)) {                
+                this._update_list_item (id, this._compositeLayer.getItem (id));
+                this._compositeLayer.showQuicklook(id, show)
+                .then(() => {                    
+                    this._update_list_item (id, this._compositeLayer.getItem (id));
+                    let event = document.createEvent('Event');
+                    event.initEvent('visible', false, false);
+                    this.dispatchEvent(event); 
+                    resolve();
+                })
+                .catch(e => console.log(e));
+            }
+        });*/
+        return new Promise(resolve => {
+            const application = this.getApplication();
+            const appEvents = application.getAppEvents();
+            const store = application.getStore();
+            const snapshot = store.getData('snapshots', gmxId);
+
+            if (snapshot) {
+
+                const {properties = []} = snapshot;
+                const visibleChangedState = getVisibleChangedState(show, properties); // TODO
+
+                if (visibleChangedState) {
+                    snapshot['properties'] = properties;
+                    store.updateData('snapshots', {id: gmxId, content: snapshot}, ['snapshots:showQuicklookList']);
+
+                    this.showQuicklookOnMap(gmxId, show)
+                    .then(() => {                    
+                        //this._update_list_item (id, this._compositeLayer.getItem (id));
+                        appEvents.trigger('snapshots:showQuicklookList', gmxId);
+                        resolve();
+                    })
+                    .catch(e => console.log(e));
+                }
+            }
+            else {
+                console.warn('snapshot with id =', id, ' not found.');
+            }
+        });
+    }
+
+    showQuicklookOnMap(id, isVisible) {
+
+        return new Promise(resolve => {
+
+            const map = this.getMap();
+            const application = this.getApplication();
+            const appEvents = application.getAppEvents();
+            const store = application.getStore();
+            const sceneIdIndex = getCorrectIndex('sceneid');
+            const platformIndex = getCorrectIndex('platform');
+            const clipCoordsIndex = getCorrectIndex('clip_coords');
+            const visibleIndex = getCorrectIndex('visibleIndex');
+            const x1Index = getCorrectIndex('x1');
+            const currentSnapshot = store.getData('snapshots', id);
+            let {quicklook, properties = []} = currentSnapshot;
+
+            if (isVisible) {
+                if (!quicklook) {}
+            else {
+                if (quicklook) {
+                    map.removeLayer(quicklook);
+                    currentSnapshot.quicklook = null;
+                    store.updateData('snapshots', {id: id, content: currentSnapshot}, ['snapshots:showQuicklookList']);
+                }
+
+                appEvents.trigger('snapshots:bringToBottom', id);
+                resolve();
+            }
+        })
     }
 
     hoverContour(e, state) {
@@ -57,7 +136,7 @@ export default class SnapshotBridgeController {
             store.updateData('snapshots', {id: gmxId, content: snapshot}, events);
         }
         else {
-            window.console.log(`${gmxId} - undefined`);
+            window.console.warn(`${gmxId} - undefined`);
         }
     }
 
@@ -75,8 +154,28 @@ export default class SnapshotBridgeController {
 
     showQuicklookOnListAndMap(e) {
 
-        //console.log(e.detail);
-        //console.log('VISIBLED');
+        const {gmx_id: gmxId} = e.detail;
+        const application = this.getApplication();
+        const store = application.getStore();
+        const visibleIndex = getCorrectIndex('visible');
+        const currentSnapshot = store.getData('snapshots', gmxId);
+        const {properties = []} = currentSnapshot;
+        const visible = properties[visibleIndex];
+
+        let showState = false;
+
+        switch (visible) {
+            case 'visible':
+            case 'loading':
+                showState = false;
+                break;                
+            case 'hidden':
+            default:
+                showState = true;
+                break;
+        }
+
+        this._showQuicklook(gmxId, showState);
     }
 
     setSelectedOnListAndMap(e) {
@@ -402,8 +501,9 @@ export default class SnapshotBridgeController {
             'snapshots',
             resultsForAdding,
             [
-                'snapshots:researched',
-                'snapshots:researchedMap'
+                'snapshots:researchedMap',
+                'snapshots:researched'
+                
             ]
         );
     }

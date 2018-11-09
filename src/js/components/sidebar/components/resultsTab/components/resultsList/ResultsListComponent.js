@@ -4,7 +4,7 @@ import { ACCESS_USER_ROLE, TAB_RESULTS_NAME} from '../../../../../../config/cons
 
 import { getPanelHeight, propertiesToItem, getCorrectIndex } from '../../../../../../utils/commonUtils';
 
-import ResultList from './view/ResultList';
+import ResultList from './view/View';
 
 
 export default class ResultListComponent extends BaseComponent {
@@ -39,16 +39,18 @@ export default class ResultListComponent extends BaseComponent {
 
         appEvents.on('sidebar:tab:resize', (e) => this._resizeResultsList(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
+        appEvents.on('snapshots:showQuicklookList', this._redrawItemOnList.bind(this));
 
         store.on('snapshots:researched', this._updateList.bind(this));
         store.on('snapshots:addAllToCart', this._updateList.bind(this));
         store.on('snapshots:removeSelectedFavorites', this._updateList.bind(this));
         store.on('snapshots:addToCart', this._redrawItemOnList.bind(this));
+        store.on('snapshots:showQuicklookList', this._redrawItemOnList.bind(this));
         store.on('snapshots:setHovered', this._highliteItemOnList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
         view.addEventListener('click', (e) => SnapshotBridgeController.zoomToContourOnMap(e));
-        view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOmListAndMap(e));
+        view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOnListAndMap(e));
         view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContour(e, state));
         view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContour(e, state));
         view.addEventListener('addToCart', (e) => SnapshotBridgeController.addToCartOnListAndMap(e));
@@ -66,16 +68,17 @@ export default class ResultListComponent extends BaseComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
+        const resultIndex = getCorrectIndex('result');
 
-        const snapshotItems = store.getData('snapshots');
-        const commonData = Object.keys(snapshotItems).map((id) => {
-            
-            const item = snapshotItems[id];
+        const snapshotItems = store.getSerializedData('snapshots');
+
+        const filteredData = snapshotItems.reduce((preparedData, item) => {
             const {properties} = item;
-
-            return propertiesToItem(properties);
-        });
-        const filteredData = commonData.filter(item => item.result);
+            if (properties[resultIndex]) {
+                preparedData.push(propertiesToItem(properties));
+            }
+            return preparedData;
+        }, []);
 
         this.getView().items = filteredData;
 
