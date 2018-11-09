@@ -218,6 +218,51 @@ function splitComplexId (complexId) {
         : { id: complexId };
 }
 
+function fromGmx ({fields, values, types}, convertMercator = true) {
+
+    return values.map(x => {
+        let item = fields.reduce((a, k, i) => {
+            switch(types[i]){
+                default:                    
+                    a[k] = x[i];
+                    break;                   
+                case 'date':
+                    switch (typeof x[i]) {
+                        case 'string':
+                            a[k] = new Date(x[i]);
+                            break;
+                        case 'number':
+                            a[k] = new Date(x[i] * 1000);
+                            break;
+                        default:
+                            break;
+                    }                    
+                    break;
+                case 'time':
+                    break;
+                case 'geometry':
+                    a[k] = L.gmxUtil.geometryToGeoJSON(x[i], convertMercator);
+                    break;
+            }
+            switch (k) {
+                case 'stereo':
+                    const s = x[i];
+                    a.stereo = typeof s === 'string' && s !== 'NONE';
+                    break;                    
+                default:
+                    break;
+            }
+            return a;                    
+        }, {});
+        if (item.geomixergeojson) {
+            item.geoJSON = item.geomixergeojson;
+            delete item.geomixergeojson;
+        }        
+        item.url = `//search.kosmosnimki.ru/QuickLookImage.ashx?id=${item.sceneid}`;
+        return item;
+    });    
+}
+
 export {
     isNumber,
     createContainer,
@@ -236,5 +281,6 @@ export {
     getSatelliteName,
     getPanelHeight,
     getVisibleChangedState,
-    splitComplexId
+    splitComplexId,
+    fromGmx
 };

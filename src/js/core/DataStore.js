@@ -1,197 +1,121 @@
-import Events from './Events';
+import BaseDataStore from '../base/BaseDataStore';
+
+import { getCorrectIndex, propertiesToItem, fromGmx } from '../utils/commonUtils';
 
 
-export default class DataStore {
+export default class SearchDataStore extends BaseDataStore {
 
-    constructor(config = {}) {
+    hasResults() {
 
-        this._data = [];
+        const snapshots = this.getSerializedData('snapshots');
+        const resultIndex = getCorrectIndex('result');
 
-        this._events = new Events();
+        const hasResults = snapshots.some(item => {
+            const {properties = []} = item;
+            return properties[resultIndex];
+        });
 
-        this._applyConfig(config);
+        return hasResults;
     }
 
-    _applyConfig(config) {
+    hasFavorites() {
 
-        const {name, data} = config;
+        const snapshots = this.getSerializedData('snapshots');
+        const cartIndex = getCorrectIndex('cart');
 
-        this._setName(name);
+        const hasFavorites = snapshots.some(item => {
+            const {properties = []} = item;
+            return properties[cartIndex];
+        });
 
-        this._createConainers(data);
+        return hasFavorites;
     }
 
-    _setName(name) {
+    hasSelectedFavorites() {
 
-        this._name = name;
+        const snapshots = this.getSerializedData('snapshots');
+        const cartIndex = getCorrectIndex('cart');
+        const selectedIndex = getCorrectIndex('selected');
+
+        const hasFavorites = snapshots.some(item => {
+            const {properties = []} = item;
+            return properties[cartIndex] && properties[selectedIndex];
+        });
+
+        return hasFavorites;
     }
 
-    _createConainers(changeable = []) {
+    hasDrawings() {
 
-        changeable.forEach(item => this._createContainer(item));
+        const drawings = this.getSerializedData('drawings');
+        const hasDrawings = drawings.length > 0;
+
+        return hasDrawings;
     }
 
-    _createContainer(item) {
+    getResults(forGrid = false) {
 
-        const {key, isTable = false, indexBy = ''} = item;
+        const resultIndex = getCorrectIndex('result');
+        const snapshotItems = this.getSerializedData('snapshots');
 
-        this._data[key] = {
-            data: isTable ? {} : null,
-            config:{
-                indexBy,
-                isTable
+        const filteredData = snapshotItems.reduce((preparedData, item) => {
+
+            const {properties} = item;
+
+            if (properties[resultIndex]) {
+                if (forGrid) {
+                    preparedData.push(propertiesToItem(properties));
+                }
+                else {
+                    preparedData.push(item);
+                }
             }
-        };
+            
+            return preparedData;
+        }, []);
+
+        return filteredData;
     }
 
-    _fireEvents(events = [], rowIds = []) {
+    getFavorites(forGrid = false) {
 
-        events.forEach(eventName => this._events.trigger(eventName, rowIds));
+        const cartIndex = getCorrectIndex('cart');
+        const snapshotItems = this.getSerializedData('snapshots');
+
+        const filteredData = snapshotItems.reduce((preparedData, item) => {
+
+            const {properties} = item;
+
+            if (properties[cartIndex]) {
+                if (forGrid) {
+                    preparedData.push(propertiesToItem(properties));
+                }
+                else {
+                    preparedData.push(item);
+                }
+            }
+            
+            return preparedData;
+        }, []);
+
+        return filteredData;
     }
 
-    getData(key, rowId = false) {
-//rowId === false && console.log('got')
-        const keySegment = this._data[key] || {};
-        const {data} = keySegment;
+    getDrawings() {
 
-        if (!rowId) {
-            return data;
-        }
-        else {
-            return data[rowId];
-        }
+        return this.getSerializedData('drawings');
     }
 
-    getSerializedData(key) {
-//console.log('got')
-        const keySegment = this._data[key] || {};
-        const {data, config:{isTable}} = keySegment;
+    setDownloadCache(data) {
 
-        if (!isTable) {
-            return data;
-        }
-        else {
-            return Object.keys(data).map(id => data[id]);
-        }
-    }
-
-    addData(key, data = [], events = []) {
-
-        const currentSegment = this._data[key] || {};
-        const {data: prevData} = currentSegment;
-
-        let options;
-
-        if (Array.isArray(data)) {
-
-            options = [];
-
-            data.forEach(dataItem => {
-                const {id, content} = dataItem;
-                prevData[id] = content;
-                options.push(id);
-            });
-    
-            this._data[key]['data'] = prevData;
-        }
-        else {
-
-            const {id, content} = data;
-            prevData[id] = content;
-            options = id;
+        if (Array.isArray[data] && data.length < 1) {
+            this.rewriteData('downloadCache', []);
         }
 
-        this._fireEvents(events, options);
-    }
+        const {fields, values, types} = data;
+        const downloadCache = fromGmx ({fields, values, types});
 
-    updateData(key, data = [], events = []) {
-        
-        const currentSegment = this._data[key] || {};
-        const {data: prevData} = currentSegment;
-
-        let options;
-
-        if (Array.isArray(data)) {
-
-            options = [];
-
-            data.forEach(dataItem => {
-                const {id, content} = dataItem;
-                prevData[id] = content;
-                options.push(id);
-            });
-    
-            this._data[key]['data'] = prevData;
-        }
-        else {
-
-            const {id, content} = data;
-            prevData[id] = content;
-            options = id;
-        }
-
-        this._fireEvents(events, options);
-    }
-
-    rewriteData(key, data = null, events = []) {
-
-        const {config: {isTable}} = this._data[key];
-
-        if (!isTable) {
-            this._data[key]['data'] = data;
-        }
-        else {
-            this.clear(key);
-            this.addData(key, data);
-        }
-
-        this._fireEvents(events);
-    }
-
-    removeData(key, ids = [], events = []) {
-
-        let options;
-
-        if (Array.isArray(ids)) {
-
-            options = [];
-
-            ids.forEach(id => {
-                delete this._data[key]['data'][id];
-                options.push(id);
-            });
-        }
-        else {
-
-            const id = ids;
-
-            delete this._data[key]['data'][id];
-            options = id;
-        }
-
-        this._fireEvents(events, options);
-    }
-
-    clear(key, events = []) {
-
-        const currentSegment = this._data[key] || {};
-        const {config: {isTable}} = currentSegment;
-
-        const emptyValue = isTable ? {} : null;
-
-        this._data[key]['data'] = emptyValue;
-
-        this._fireEvents(events);
-    }
-
-    on(...argList) {
-
-        this._events.on(...argList);
-    }
-
-    trigger(...argList) {
-
-        this._events.trigger(...argList);
+        this.rewriteData('downloadCache', downloadCache);
     }
 
 }

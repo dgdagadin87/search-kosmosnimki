@@ -25,19 +25,29 @@ export default class AuthManagerService {
         return this._authManager;
     }
 
-    createOrder(params = {}) {
-
-        return this._catalogResourceServer.sendPostRequest('CreateOrder.ashx', params);
-    }
-
     getCatalogResourceServer() {
 
         return this._catalogResourceServer;
     }
 
+    createOrder(params = {}) {
+
+        return this._catalogResourceServer.sendPostRequest('CreateOrder.ashx', params);
+    }
+
     getUserInfo() {
 
         return this._authManager.getUserInfo();
+    }
+
+    getShapeMetadata(url, params) {
+
+        return this._catalogResourceServer.sendPostRequest(url, params);
+    }
+
+    downloadCsvFile(url, params) {
+
+        return this._catalogResourceServer.sendPostRequest(url, params);
     }
 
 }

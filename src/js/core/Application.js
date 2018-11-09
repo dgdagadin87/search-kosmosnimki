@@ -49,6 +49,8 @@ class Application {
 
         this._addSearchProviders();
 
+        this._initAddons();
+
         this._addComponents();
 
         this._bindEvents();
@@ -205,6 +207,23 @@ class Application {
         }
     }
 
+    _initAddons() {
+
+        const {addons = []} = this._config;
+
+        this._addons = {};
+
+        for (let i = 0; i < addons.length; i++ ) {
+
+            const currentAddon = addons[i];
+            const {index, constructor} = currentAddon;
+
+            this._addons[index] = new constructor({
+                application: this
+            });
+        }
+    }
+
     _addComponents() {
 
         const {components = []} = this._config;
@@ -254,6 +273,11 @@ class Application {
     getSearchProvider(index) {
 
         return this._searchProviders[index];
+    }
+
+    getAddon(index) {
+
+        return this._addons[index];
     }
 
     getComponent(index) {

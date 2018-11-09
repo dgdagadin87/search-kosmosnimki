@@ -53,6 +53,8 @@
     "scanex-loader-widget": "git+https://github.com/Scanex/LoaderWidget.git",
     "scanex-notify-widget": "git+https://github.com/Scanex/NotificationWidget.git",
     "scanex-tristate": "git+https://github.com/Scanex/TristateCheckbox.git",
+    "scanex-async": "git+https://git@github.com/Scanex/Async.git",
+    "scanex-object-extensions": "git+https://github.com/Scanex/Object.Extensions.git",
     "underscore": "^1.9.1",
     "pikaday": "^1.7.0"
   }

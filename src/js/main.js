@@ -12,6 +12,8 @@ import CrdSearchProvider from './searchProviders/crdProvider/CrdSearchProvider';
 import OsmSearchProvider from './searchProviders/osmProvider/OsmSearchProvider';
 import GmxSearchProvider from './searchProviders/gmxProvider/GmxSearchProvider';
 
+import ShapeLoaderAddon from './addons/shapeLoader/ShapeLoaderAddon';
+
 import LoaderIndicatorComponent from './components/loaderIndicator/LoaderIndicatorComponent';
 import PopupNotificationComponent from './components/popupNotification/PopupNotificationComponent';
 import HelpingButtonComponent from './components/helpingButton/HelpingButtonComponent';
@@ -26,6 +28,43 @@ import AboutDialogComponent from './components/aboutDialog/AboutDialogComponent'
 
 const application = new Application({
 
+    //store
+    store: {
+        'name': 'searchStore',
+        'data': [
+            {
+                'key': 'userInfo',
+                'isTable': false
+            },
+            {
+                'key': 'about',
+                'isTable': false
+            },
+            {
+                'key': 'drawings',
+                'isTable': true,
+                'indexBy': 'id'
+            },
+            {
+                'key': 'snapshots',
+                'isTable': true,
+                'indexBy': 'gmx_id'
+            },
+            {
+                'key': 'downloadCache',
+                'isTable': false
+            },
+            {
+                'key': 'searchCriteria',
+                'isTable': false
+            },
+            {
+                'key': 'cancelLoading',
+                'isTable': false
+            }
+        ]
+    },
+
     // search providers
     searchProviders: [
         {
@@ -39,6 +78,14 @@ const application = new Application({
         {
             index: 'gmxProvider',
             constructor: GmxSearchProvider
+        }
+    ],
+
+    // addons
+    addons: [
+        {
+            index: 'shapeLoader',
+            constructor: ShapeLoaderAddon
         }
     ],
 
@@ -84,40 +131,7 @@ const application = new Application({
             index: 'about',
             constructor: AboutDialogComponent
         }
-    ],
-
-    //store
-    store: {
-        'name': 'searchStore',
-        'data': [
-            {
-                'key': 'userInfo',
-                'isTable': false
-            },
-            {
-                'key': 'about',
-                'isTable': false
-            },
-            {
-                'key': 'drawings',
-                'isTable': true,
-                'indexBy': 'id'
-            },
-            {
-                'key': 'snapshots',
-                'isTable': true,
-                'indexBy': 'gmx_id'
-            },
-            {
-                'key': 'searchCriteria',
-                'isTable': false
-            },
-            {
-                'key': 'cancelLoading',
-                'isTable': false
-            }
-        ]
-    }
+    ]
 
 });
 

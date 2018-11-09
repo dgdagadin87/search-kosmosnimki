@@ -13,15 +13,7 @@ export default class ButtonComponent extends BaseComponent {
             id: 'download',
             position: 'searchControls',
             title: Translations.getText('controls.download'),
-            stateChange: control => {
-                if ((window.Catalog.resultsController.resultsCount + window.Catalog.resultsController.favoritesCount) > 0 || window.Catalog.drawnObjectsControl.widget.items.length) {
-                    dlgDownload.style.display = 'block';                
-                }
-                else {
-                    window.Catalog.notificationWidget.content.innerText = Translations.getText('download.empty');
-                    window.Catalog.notificationWidget.show();
-                }
-            }
+            stateChange: () => this.events.trigger('click:show')
         });
 
         this._view = downloadControl;

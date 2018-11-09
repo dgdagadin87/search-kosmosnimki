@@ -19,20 +19,6 @@ export default class SnapshotBridgeController {
     }
 
     _showQuicklook (gmxId, show) {
-        /*return new Promise(resolve => {                        
-            if(this._compositeLayer.setVisible(id, show)) {                
-                this._update_list_item (id, this._compositeLayer.getItem (id));
-                this._compositeLayer.showQuicklook(id, show)
-                .then(() => {                    
-                    this._update_list_item (id, this._compositeLayer.getItem (id));
-                    let event = document.createEvent('Event');
-                    event.initEvent('visible', false, false);
-                    this.dispatchEvent(event); 
-                    resolve();
-                })
-                .catch(e => console.log(e));
-            }
-        });*/
         return new Promise(resolve => {
             const application = this.getApplication();
             const appEvents = application.getAppEvents();
@@ -80,7 +66,19 @@ export default class SnapshotBridgeController {
             let {quicklook, properties = []} = currentSnapshot;
 
             if (isVisible) {
-                if (!quicklook) {}
+                if (!quicklook) {/* ... */}
+                else {
+                    properties[visibleIndex] = 'visible';
+                    quicklook.addTo(this._map);
+                    //this._vectorLayer.bringToTopItem(id);
+                    store.updateData(
+                        'snapshots',
+                        {id: gmx_id, content: currentSnapshot},
+                        ['snapshots:showQuicklookList', 'snapshots:bringToTop']
+                    );
+                    resolve();
+                }
+            }
             else {
                 if (quicklook) {
                     map.removeLayer(quicklook);
@@ -91,7 +89,7 @@ export default class SnapshotBridgeController {
                 appEvents.trigger('snapshots:bringToBottom', id);
                 resolve();
             }
-        })
+        });
     }
 
     hoverContour(e, state) {

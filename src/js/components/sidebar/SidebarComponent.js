@@ -23,17 +23,21 @@ export default class SidebarComponent extends BaseCompositedComponent {
         this._setDefaultCriteria();
 
         const map = this.getMap();
+        const application = this.getApplication();
+        const store = application.getStore();
 
         this._view = new SidebarControl({position: 'topleft'});
-        map.addControl(this.getView());
+        map.addControl(this._view);
         this._endInitingSidebar();
 
-        this._searchTabComponent = new SearchTabComponent({...this.getConfig(), parent: this});
-        this._resultsTabComponent = new ResultsTabComponent({...this.getConfig(), parent: this});
-        this._favoritesTabComponent = new FavoritesTabComponent({...this.getConfig(), parent: this});
-        this._imageDetailsComponent = new ImageDetailsComponent({...this.getConfig(), parent: this});
-        this._limitDialogComponent = new LimitDialogComponent({...this.getConfig(), parent: this});
-        this._downloadDialogComponent = new DownloadDialogComponent({...this.getConfig(), parent: this});
+        const preparedConfig = {...this.getConfig(), parent: this};
+
+        this._searchTabComponent = new SearchTabComponent(preparedConfig);
+        this._resultsTabComponent = new ResultsTabComponent(preparedConfig);
+        this._favoritesTabComponent = new FavoritesTabComponent(preparedConfig);
+        this._imageDetailsComponent = new ImageDetailsComponent(preparedConfig);
+        this._limitDialogComponent = new LimitDialogComponent(preparedConfig);
+        this._downloadDialogComponent = new DownloadDialogComponent(preparedConfig);
 
         this._searchTabComponent.init();
         this._resultsTabComponent.init();
@@ -42,7 +46,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         this._limitDialogComponent.init();
         this._downloadDialogComponent.init();
 
-        manageTabsState(this.getView(), this.getApplication().getStore(), 'start');
+        manageTabsState(this._view, store, 'start');
 
         this._bindEvents();
     }
@@ -52,21 +56,19 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const globalEvents = application.getAppEvents();
         const store = application.getStore();
-        const map = application.getMap();
+        const {gmxDrawing} = application.getMap();
         const searchTabComponent = this.getChildComponent('searchTab');
         const resultsTabComponent = this.getChildComponent('resultsTab');
         const favoritesTabComponent = this.getChildComponent('favoritesTab');
+        const downloadDialogComponent = this.getChildComponent('downloadDialog');
         const view = this.getView();
 
         view.on('change', e => {
-            /*
-                after change event - for some visual speed
-            */
             globalEvents.trigger('sidebar:tab:change', e);
             globalEvents.trigger('sidebar:tab:afterchange', e);
         });
 
-        map.gmxDrawing.on('drawstop', () => manageTabsState(view, store, 'stopDrawing'));
+        gmxDrawing.on('drawstop', () => manageTabsState(view, store, 'stopDrawing'));
 
         store.on('snapshots:researched', () => manageTabsState(view, store, 'addToResults'));
         store.on('snapshots:addToCart', () => manageTabsState(view, store, 'addToFavorites'));
@@ -82,6 +84,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         resultsTabComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
+        downloadDialogComponent.events.on('downloadApply:click', () => this._onDownloadApplyClick());
     }
 
     _searchResults() {
@@ -130,8 +133,8 @@ export default class SidebarComponent extends BaseCompositedComponent {
                 SnapshotBridgeController.addContoursOnMapAndList(result);
             }
             else {
-                
-                downloadDialogComponent.show()
+
+                downloadDialogComponent.show();
             }
         }
 
@@ -161,10 +164,10 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const appEvents = application.getAppEvents();
-
         const height = getTotalHeight([ '#header', '.leaflet-gmx-copyright' ]);
+        const preparedHeight = `${document.body.getBoundingClientRect().height - height}px`
 
-        document.body.querySelector('.scanex-sidebar').style.height = `${document.body.getBoundingClientRect().height - height}px`;
+        document.body.querySelector('.scanex-sidebar').style.height = preparedHeight;
         appEvents.trigger('sidebar:tab:resize');
     }
 
@@ -195,6 +198,38 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const limitDialogComponent = this.getChildComponent('limitDialog');
 
         limitDialogComponent.show();
+    }
+
+    _onDownloadApplyClick() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const requestManager = application.getRequestManager();
+        const shapeLoader = application.getAddon('shapeLoader');
+        const downloadDialogComponent = this.getChildComponent('downloadDialog');
+
+        store.rewriteData('cancelLoading', false);
+
+        downloadDialogComponent.hide();
+        
+        application.showLoader(true);
+
+        requestManager.requestSearchSnapshots()
+        .then ((data) => {
+
+            application.showLoader(false);
+
+            const cancelLoading = store.getData('cancelLoading');
+
+            if (!cancelLoading) {
+
+                store.setDownloadCache(data);
+                shapeLoader.download('results', 'results');
+            }                
+        })
+        .catch (e => {
+            // TODO ERROR!!!
+        });
     }
 
 }

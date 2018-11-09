@@ -47,9 +47,29 @@ export default class RequestManager {
         return this._gmxResourceComponent.getLayerId(params);
     }
 
+    requestMakeFile(url, params = {}) {
+
+        return this._gmxResourceComponent.makeFile(url, params);
+    }
+
     requestCreateOrder(params = {}) {
 
         return this._catalogResourceComponent.createOrder(params);
+    }
+
+    requestGetShapeMetadata(url, params = {}) {
+
+        return this._catalogResourceComponent.getShapeMetadata(url, params);
+    }
+
+    requestDownloadCsvFile(url, params = {}) {
+
+        return this._catalogResourceComponent.downloadCsvFile(url, params);
+    }
+
+    requestDownloadCommonFile(url) {
+
+        return this._gmxResourceComponent.downloadCommonFile(url);
     }
 
     // service methods

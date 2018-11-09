@@ -25,4 +25,14 @@ export default class GmxResourceServerService {
         return this._gmxResourceService.sendPostRequest('VectorLayer/Search.ashx', params);
     }
 
+    makeFile(url, params = {}) {
+
+        return this._gmxResourceService.sendPostRequest(url, params);
+    }
+
+    downloadCommonFile(url) {
+
+        return this._gmxResourceService.sendPostRequest(url);
+    }
+
 }
