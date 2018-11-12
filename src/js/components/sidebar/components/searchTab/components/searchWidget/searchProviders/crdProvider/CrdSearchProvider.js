@@ -1,8 +1,8 @@
 import { CoordinatesDataProvider } from 'scanex-search-input';
 
-import {getDrawingObject} from '../../utils/layersUtils';
+import {getDrawingObject} from '../../utils/commonUtils';
 
-import BaseSearchProvider from '../../base/BaseSearchProvider';
+import BaseSearchProvider from '../base/BaseSearchProvider';
 
 
 export default class CrdSearchProvider extends BaseSearchProvider {

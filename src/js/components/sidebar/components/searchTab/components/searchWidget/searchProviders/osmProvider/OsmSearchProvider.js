@@ -1,6 +1,6 @@
 import { OsmDataProvider } from 'scanex-search-input';
 
-import BaseSearchProvider from '../../base/BaseSearchProvider';
+import BaseSearchProvider from '../base/BaseSearchProvider';
 
 
 export default class OsmSearchProvider extends BaseSearchProvider {

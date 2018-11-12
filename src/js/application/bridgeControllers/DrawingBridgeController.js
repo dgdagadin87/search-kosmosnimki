@@ -1,22 +1,16 @@
+import BaseBridgeController from '../../base/BaseBridgeController';
+
 import {
     isGeojsonFeature,
     getDrawingObject,
     normalizeGeometry,
     getDrawingObjectArea
-} from '../../utils/layersUtils';
+} from '../../utils/commonUtils';
 
 import {NON_EDIT_LINE_STYLE} from '../../config/constants/constants';
 
 
-export default class DrawingBridgeController {
-
-    constructor(config) {
-
-        const {application, map} = config;
-
-        this._application = application;
-        this._map = map;
-    }
+export default class DrawingBridgeController extends BaseBridgeController {
 
     /* Add drawing start */
     addDrawingOnList(rawItem) {

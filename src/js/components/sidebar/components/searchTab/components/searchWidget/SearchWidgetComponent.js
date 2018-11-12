@@ -1,13 +1,17 @@
 import { SearchWidget } from 'scanex-search-input';
-
 import Translations from 'scanex-translations';
 
 import BaseComponent from '../../../../../../base/BaseComponent';
 
+import CrdSearchProvider from './searchProviders/crdProvider/CrdSearchProvider';
+import OsmSearchProvider from './searchProviders/osmProvider/OsmSearchProvider';
+import GmxSearchProvider from './searchProviders/gmxProvider/GmxSearchProvider';
 
 export default class SearchWidgetComponent extends BaseComponent {
 
     init() {
+
+        this._initSearchProviders();
 
         this._searchContainer = this.getParentComponent().getView()._container;
 
@@ -49,14 +53,26 @@ export default class SearchWidgetComponent extends BaseComponent {
         map.on ('dragstart', searchControl.results.hide.bind(searchControl.results));
     }
 
-    _getSearchProviders() {
+    _initSearchProviders() {
 
         const application = this.getApplication();
+        const map = this.getMap();
+
+        const config = {
+            map, application
+        };
+
+        this._crdProvider = new CrdSearchProvider(config);
+        this._gmxProvider = new GmxSearchProvider(config);
+        this._osmProvider = new OsmSearchProvider(config);
+    }
+
+    _getSearchProviders() {
 
         return [
-            application.getSearchProvider('crdProvider').getMain(),
-            application.getSearchProvider('gmxProvider').getMain(),
-            application.getSearchProvider('osmProvider').getMain(),
+            this._crdProvider.getMain(),
+            this._gmxProvider.getMain(),
+            this._osmProvider.getMain()
         ];
     }
 

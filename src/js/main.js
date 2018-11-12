@@ -1,16 +1,7 @@
-import './cssEntry/cssEntry';
-import './config/translations/common';
-import './config/translations/about';
-import './config/translations/drawnObjects';
-import './config/translations/searchOptions';
-import './config/translations/resultsList';
-import './config/translations/makeOrder';
+import './services/css/css';
+import './services/translations/translations';
 
 import Application from './core/Application';
-
-import CrdSearchProvider from './searchProviders/crdProvider/CrdSearchProvider';
-import OsmSearchProvider from './searchProviders/osmProvider/OsmSearchProvider';
-import GmxSearchProvider from './searchProviders/gmxProvider/GmxSearchProvider';
 
 import ShapeLoaderAddon from './addons/shapeLoader/ShapeLoaderAddon';
 
@@ -64,22 +55,6 @@ const application = new Application({
             }
         ]
     },
-
-    // search providers
-    searchProviders: [
-        {
-            index: 'crdProvider',
-            constructor: CrdSearchProvider
-        },
-        {
-            index: 'osmProvider',
-            constructor: OsmSearchProvider
-        },
-        {
-            index: 'gmxProvider',
-            constructor: GmxSearchProvider
-        }
-    ],
 
     // addons
     addons: [

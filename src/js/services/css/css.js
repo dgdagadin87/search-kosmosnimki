@@ -1,36 +1,36 @@
 // main
-import '../../css/main.css';
-import '../../css/search.css';
-import '../../css/sprite.css';
-import '../../css/sidebar.css';
-import '../../css/fonts.css';
+import '../../../css/main.css';
+import '../../../css/search.css';
+import '../../../css/sprite.css';
+import '../../../css/sidebar.css';
+import '../../../css/fonts.css';
 
 // about
-import '../../css/about.css';
+import '../../../css/about.css';
 
 // drawn Objects
-import '../../css/drawnObjects.css';
+import '../../../css/drawnObjects.css';
 
 // search Options
-import '../../css/searchOptions.css';
+import '../../../css/searchOptions.css';
 
 // satellites
-import '../../css/satellites.css';
+import '../../../css/satellites.css';
 
 // satellites info
-import '../../css/info.css';
+import '../../../css/info.css';
 
 // results list
-import '../../css/resultsList.css';
+import '../../../css/resultsList.css';
 
 // favorites list
-import '../../css/favoritesList.css';
+import '../../../css/favoritesList.css';
 
 // image details
-import '../../css/imageDetails.css';
+import '../../../css/imageDetails.css';
 
 // make order
-import '../../css/makeOrder.css';
+import '../../../css/makeOrder.css';
 
 // scanex-auth
 import 'scanex-auth/dist/scanex-auth.css';

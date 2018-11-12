@@ -1,9 +1,8 @@
 import BaseLayerManager from '../../../base/BaseLayerManager';
 
-import {LAYER_ATTRIBUTES, LAYER_ATTR_TYPES} from '../../../config/layers/layers';
+import {LAYER_ATTRIBUTES, LAYER_ATTR_TYPES} from '../../../config/constants/constants';
 
-import {getCorrectIndex, makeCloseTo} from '../../../utils/commonUtils';
-import {getBbox} from '../../../utils/layersUtils';
+import {getCorrectIndex, makeCloseTo, getBbox} from '../../../utils/commonUtils';
 
 
 const Colors = {

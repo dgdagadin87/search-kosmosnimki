@@ -1,7 +1,6 @@
 import { ACCESS_USER_ROLE } from '../../../../config/constants/constants';
 
-import { stRange, toQuery } from '../../../../utils/commonUtils';
-import { getBbox } from '../../../../utils/layersUtils';
+import { stRange, toQuery, getBbox } from '../../../../utils/commonUtils';
 
 
 export default class AdapterCore {

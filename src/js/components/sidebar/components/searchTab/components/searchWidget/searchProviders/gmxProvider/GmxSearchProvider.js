@@ -1,6 +1,6 @@
 import Translations from 'scanex-translations';
 
-import BaseSearchProvider from '../../base/BaseSearchProvider';
+import BaseSearchProvider from '../base/BaseSearchProvider';
 
 import GmxDataProvider from './_core/ProviderCore';
 

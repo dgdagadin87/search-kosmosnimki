@@ -1,18 +1,22 @@
-import {getCorrectIndex, getVisibleChangedState, makeCloseTo, splitComplexId, flatten} from '../../utils/commonUtils';
-import {normalizeGeometry} from '../../utils/layersUtils';
+import BaseBridgeController from '../../base/BaseBridgeController';
 
-import {MAX_CART_SIZE} from '../../config/constants/constants';
-import {LAYER_ATTRIBUTES} from '../../config/layers/layers';
+import {
+    getCorrectIndex,
+    getVisibleChangedState,
+    makeCloseTo,
+    splitComplexId,
+    flatten
+} from '../../utils/commonUtils';
+import {normalizeGeometry} from '../../utils/commonUtils';
+
+import {MAX_CART_SIZE, LAYER_ATTRIBUTES} from '../../config/constants/constants';
 
 
-export default class SnapshotBridgeController {
+export default class SnapshotBridgeController extends BaseBridgeController {
 
-    constructor(config) {
+    constructor(...config) {
 
-        const {application, map} = config;
-
-        this._application = application;
-        this._map = map;
+        super(...config);
 
         this._qlUrl = '//search.kosmosnimki.ru/QuickLookImage.ashx',
         this._qlSize = { width: 600, height: 600 };
