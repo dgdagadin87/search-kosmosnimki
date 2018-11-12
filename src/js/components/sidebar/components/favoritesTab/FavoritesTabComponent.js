@@ -5,7 +5,6 @@ import BaseCompositedComponent from '../../../../base/BaseCompositedComponent';
 import FavoriteListComponent from './components/favoritesList/FavoritesListComponent';
 
 import { propertiesToItem, getCorrectIndex } from '../../../../utils/commonUtils';
-import SnapshotBridgeController from '../../../../core/bridgeControllers/SnapshotBridgeController';
 
 
 export default class FavouritesTabComponent extends BaseCompositedComponent {

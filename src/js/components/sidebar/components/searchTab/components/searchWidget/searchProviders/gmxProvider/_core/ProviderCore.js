@@ -1,6 +1,6 @@
 import EventTarget from 'scanex-event-target';
 
-import {LAYER_ID} from '../../../config/constants/constants'
+import {LAYER_ID} from '../../../../../../../../../config/constants/constants';
 
 
 class GmxLayerDataProvider extends EventTarget {
@@ -32,12 +32,12 @@ class GmxLayerDataProvider extends EventTarget {
         }, {type: 'Feature'});
     }
 
-    fetch (value) {
+    fetch () {
     
         return new Promise(resolve => resolve([]));
     }
 
-    find (value, limit, strong, retrieveGeometry) {
+    find (value) {
 
         var query = value.split(/[\s,]+/).map(x => "(sceneid = '" + x + "')").join(' OR ');
 

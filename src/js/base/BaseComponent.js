@@ -1,4 +1,4 @@
-import Events from '../core/Events';
+import Events from '../application/events/Events';
 
 
 export default class BaseComponent {

@@ -1,7 +1,7 @@
 import './services/css/css';
 import './services/translations/translations';
 
-import Application from './core/Application';
+import Application from './application/Application';
 
 import ShapeLoaderAddon from './addons/shapeLoader/ShapeLoaderAddon';
 

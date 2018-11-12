@@ -1,6 +1,6 @@
 import { CoordinatesDataProvider } from 'scanex-search-input';
 
-import {getDrawingObject} from '../../utils/commonUtils';
+import {getDrawingObject} from '../../../../../../../../utils/commonUtils';
 
 import BaseSearchProvider from '../base/BaseSearchProvider';
 

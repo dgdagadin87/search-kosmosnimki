@@ -1,6 +1,6 @@
 import Translations from 'scanex-translations';
 
-import {MAX_CART_SIZE, MAX_UPLOAD_OBJECTS, MAX_UPLOAD_POINTS} from '../constants/constants';
+import {MAX_CART_SIZE, MAX_UPLOAD_OBJECTS, MAX_UPLOAD_POINTS} from '../../config/constants/constants';
 
 Translations.addText('rus', {  
     aoi: 'Область интереса', 

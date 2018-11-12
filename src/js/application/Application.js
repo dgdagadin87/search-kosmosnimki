@@ -12,14 +12,17 @@ import {
 
 import RequestManager from './requestManager/RequestManager';
 
-import DataStore from './DataStore';
+import DataStore from './searchDataStore/SearchDataStore';
 
 import MapComponent from './map/Map';
 
 import DrawingBridgeController from './bridgeControllers/DrawingBridgeController';
 import SnapshotBridgeController from './bridgeControllers/SnapshotBridgeController';
 
-import Events from './Events';
+import DrawingLayerManager from './layersManagers/DrawingsLayerManager';
+import SnapshotLayerManager from './layersManagers/SnapshotsLayerManager';
+
+import Events from './events/Events';
 
 
 class Application {
@@ -184,7 +187,17 @@ class Application {
 
     _initLayersManagers() {
 
-        this._mapComponent.initLayersManagers();
+        this._drawingLayerManager = new DrawingLayerManager({
+            map: this.getMap(),
+            application: this,
+            store: this._dataStore
+        });
+
+        this._snapshotLayerManager = new SnapshotLayerManager({
+            map: this.getMap(),
+            application: this,
+            store: this._dataStore
+        });
     }
 
     _initAddons() {

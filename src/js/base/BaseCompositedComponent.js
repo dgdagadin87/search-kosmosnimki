@@ -1,5 +1,3 @@
-import Events from '../core/Events';
-
 import BaseComponent from './BaseComponent';
 
 

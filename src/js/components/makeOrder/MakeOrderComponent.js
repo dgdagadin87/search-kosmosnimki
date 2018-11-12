@@ -68,6 +68,7 @@ export default class MakeOrderComponent extends BaseCompositedComponent {
 
         if (!userInfo['IsAuthenticated']) {
             loginDialogComponent.show();
+            return;
         }
 
         const preparedItems = selectedCarts.map(item => {

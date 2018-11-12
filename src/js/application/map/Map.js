@@ -6,9 +6,6 @@ import  {
     LOAD_MAP_PARAMS
 } from '../../config/constants/constants';
 
-import DrawingLayerManager from './layersManagers/DrawingsLayerManager';
-import SnapshotLayerManager from './layersManagers/SnapshotsLayerManager';
-
 
 export default class Map {
 
@@ -41,21 +38,6 @@ export default class Map {
         await this._initBaseLayerManager();
 
         this._setActiveLayer();
-    }
-
-    initLayersManagers() {
-
-        this._drawingLayerManager = new DrawingLayerManager({
-            map: this._map,
-            application: this.getApplication(),
-            store: this.getApplication().getStore()
-        });
-
-        this._snapshotLayerManager = new SnapshotLayerManager({
-            map: this._map,
-            application: this.getApplication(),
-            store: this.getApplication().getStore()
-        });
     }
 
     _bindEvents() {
