@@ -17,7 +17,7 @@ export default class ResultListComponent extends BaseComponent {
         const userInfo = store.getData('userInfo');
         const restricted = userInfo['Role'] === ACCESS_USER_ROLE;
 
-        this._searchContainer = this.getParentComponent().getView()._container;
+        this._searchContainer = this.getParentComponent().getView();
 
         this._view = new ResultList(
             this._searchContainer.querySelector('.results-pane'),
@@ -68,19 +68,9 @@ export default class ResultListComponent extends BaseComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const resultIndex = getCorrectIndex('result');
+        const resultsData = store.getResults(true);
 
-        const snapshotItems = store.getSerializedData('snapshots');
-
-        const filteredData = snapshotItems.reduce((preparedData, item) => {
-            const {properties} = item;
-            if (properties[resultIndex]) {
-                preparedData.push(propertiesToItem(properties));
-            }
-            return preparedData;
-        }, []);
-
-        this.getView().items = filteredData;
+        this.getView().items = resultsData;
 
         this._resizeResultsList();
     }

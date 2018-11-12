@@ -20,7 +20,7 @@ export default class SearchOptionsComponent extends BaseComponent {
         const userInfo = store.getData('userInfo');
         const restricted = userInfo['Role'] === ACCESS_USER_ROLE;
 
-        this._searchContainer = this.getParentComponent().getView()._container;
+        this._searchContainer = this.getParentComponent().getView();
 
         this._view = new SearchOptions(
             this._searchContainer.querySelector('.search-options-pane'),

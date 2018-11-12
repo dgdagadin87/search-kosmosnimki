@@ -30,21 +30,32 @@ export default class SidebarComponent extends BaseCompositedComponent {
         map.addControl(this._view);
         this._endInitingSidebar();
 
-        const preparedConfig = {...this.getConfig(), parent: this};
-
-        this._searchTabComponent = new SearchTabComponent(preparedConfig);
-        this._resultsTabComponent = new ResultsTabComponent(preparedConfig);
-        this._favoritesTabComponent = new FavoritesTabComponent(preparedConfig);
-        this._imageDetailsComponent = new ImageDetailsComponent(preparedConfig);
-        this._limitDialogComponent = new LimitDialogComponent(preparedConfig);
-        this._downloadDialogComponent = new DownloadDialogComponent(preparedConfig);
-
-        this._searchTabComponent.init();
-        this._resultsTabComponent.init();
-        this._favoritesTabComponent.init();
-        this._imageDetailsComponent.init();
-        this._limitDialogComponent.init();
-        this._downloadDialogComponent.init();
+        this.initChildren([
+            {
+                index: 'searchTab',
+                constructor: SearchTabComponent
+            },
+            {
+                index: 'resultsTab',
+                constructor: ResultsTabComponent
+            },
+            {
+                index: 'favoritesTab',
+                constructor: FavoritesTabComponent
+            },
+            {
+                index: 'imageDetails',
+                constructor: ImageDetailsComponent
+            },
+            {
+                index: 'limitDialog',
+                constructor: LimitDialogComponent
+            },
+            {
+                index: 'downloadDialog',
+                constructor: DownloadDialogComponent
+            }
+        ]);
 
         manageTabsState(this._view, store, 'start');
 
@@ -58,8 +69,10 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const store = application.getStore();
         const {gmxDrawing} = application.getMap();
         const searchTabComponent = this.getChildComponent('searchTab');
-        const resultsTabComponent = this.getChildComponent('resultsTab');
+        const resultsHeaderComponent = this.getChildComponent('resultsTab.header');
+        const resutsList = this.getChildComponent('resultsTab.list');
         const favoritesTabComponent = this.getChildComponent('favoritesTab');
+        const favoritesList = this.getChildComponent('favoritesTab.list');
         const downloadDialogComponent = this.getChildComponent('downloadDialog');
         const view = this.getView();
 
@@ -80,9 +93,9 @@ export default class SidebarComponent extends BaseCompositedComponent {
         globalEvents.on('sidebar:cart:limit', () => this._cartLimitMessage());
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
-        resultsTabComponent.events.on('results:clear', () => this._clearResults());
-        resultsTabComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
-        favoritesTabComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
+        resultsHeaderComponent.events.on('results:clear', () => this._clearResults());
+        resutsList.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
+        favoritesList.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
         downloadDialogComponent.events.on('downloadApply:click', () => this._onDownloadApplyClick());
     }

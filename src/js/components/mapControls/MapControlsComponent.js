@@ -15,21 +15,37 @@ export default class MapControlsComponent extends BaseCompositedComponent {
 
         this._mapControlsPrepare();
 
-        const preparedConfig = {...this.getConfig(), parent: this};
+        let components = [];
 
-        this._drawingsControlComponent = new DrawingsControlComponent(preparedConfig);
-        this._mapTypeSwitcherComponent = new MapTypeSwitcherComponent(preparedConfig);
-        this._zoomButtonComponent = new ZoomComponent(preparedConfig);
-        this._downloadComponent = new DownloadComponent(preparedConfig);
+        components.push({
+            index: 'drawingsControl',
+            constructor: DrawingsControlComponent
+        });
 
-        this._boxZoomComponent = isMobile() ? false : new BoxZoomComponent(preparedConfig);
+        components.push({
+            index: 'mapTypeSwitcher',
+            constructor: MapTypeSwitcherComponent
+        });
 
-        this._drawingsControlComponent.init();
-        this._mapTypeSwitcherComponent.init();
-        this._zoomButtonComponent.init();
-        this._downloadComponent.init();
+        components.push({
+            index: 'zoomButton',
+            constructor: ZoomComponent
+        });
 
-        !isMobile() && this._boxZoomComponent.init();
+        components.push({
+            index: 'download',
+            constructor: DownloadComponent
+        });
+
+        if (!isMobile()) {
+
+            components.push({
+                index: 'boxZoom',
+                constructor: BoxZoomComponent
+            });
+        }
+
+        this.initChildren(components);
     }
 
     _mapControlsPrepare() {

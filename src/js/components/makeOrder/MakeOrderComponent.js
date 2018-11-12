@@ -11,13 +11,20 @@ export default class MakeOrderComponent extends BaseCompositedComponent {
 
     init() {
 
-        this._loginDialogComponent = new LoginDialogComponent({...this.getConfig(), parent: this});
-        this._orderDialogComponent = new OrderDialogComponent({...this.getConfig(), parent: this});
-        this._successDialogComponent = new SuccessDialogComponent({...this.getConfig(), parent: this});
-
-        this._loginDialogComponent.init();
-        this._orderDialogComponent.init();
-        this._successDialogComponent.init();
+        this.initChildren([
+            {
+                index: 'loginDialog',
+                constructor: LoginDialogComponent
+            },
+            {
+                index: 'orderDialog',
+                constructor: OrderDialogComponent
+            },
+            {
+                index: 'successDialog',
+                constructor: SuccessDialogComponent
+            }
+        ]);
 
         this._bindEvents();
     }

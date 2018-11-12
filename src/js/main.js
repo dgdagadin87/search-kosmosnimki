@@ -5,8 +5,8 @@ import Application from './application/Application';
 
 import ShapeLoaderAddon from './addons/shapeLoader/ShapeLoaderAddon';
 
-import LoaderIndicatorComponent from './components/loaderIndicator/LoaderIndicatorComponent';
-import PopupNotificationComponent from './components/popupNotification/PopupNotificationComponent';
+//import LoaderIndicatorComponent from './components/loaderIndicator/LoaderIndicatorComponent';
+//import PopupNotificationComponent from './components/popupNotification/PopupNotificationComponent';
 import HelpingButtonComponent from './components/helpingButton/HelpingButtonComponent';
 import UserInformationComponent from './components/userInformation/UserInformationComponent';
 import LanguageSelectComponent from './components/languageSelect/LanguageSelectComponent';
@@ -66,14 +66,14 @@ const application = new Application({
 
     // components
     components: [
-        {
+        /*{
             index: 'loaderIndicator',
             constructor: LoaderIndicatorComponent
         },
         {
             index: 'popupNotification',
             constructor: PopupNotificationComponent
-        },
+        },*/
         {
             index: 'helpingButton',
             constructor: HelpingButtonComponent

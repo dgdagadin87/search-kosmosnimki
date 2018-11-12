@@ -13,7 +13,7 @@ export default class SearchWidgetComponent extends BaseComponent {
 
         this._initSearchProviders();
 
-        this._searchContainer = this.getParentComponent().getView()._container;
+        this._searchContainer = this.getParentComponent().getView();
 
         this._view = new SearchWidget(
             this._searchContainer.querySelector('.search-pane'),

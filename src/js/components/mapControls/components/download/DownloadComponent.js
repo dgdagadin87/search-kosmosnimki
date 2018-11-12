@@ -10,13 +10,16 @@ export default class DownloadComponent extends BaseCompositedComponent {
 
     init() {
 
-        const preparedConfig = { ...this.getConfig(), parent: this };
-
-        this._buttonComponent = new ButtonComponent(preparedConfig);
-        this._dialogComponent = new DialogComponent(preparedConfig);
-
-        this._buttonComponent.init();
-        this._dialogComponent.init();
+        this.initChildren([
+            {
+                index: 'button',
+                constructor: ButtonComponent
+            },
+            {
+                index: 'dialog',
+                constructor: DialogComponent
+            }
+        ]);
 
         this._bindEvents();
     }

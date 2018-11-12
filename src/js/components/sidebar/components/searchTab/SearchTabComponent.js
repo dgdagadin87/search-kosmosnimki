@@ -12,11 +12,16 @@ export default class SearchTabComponent extends BaseCompositedComponent {
 
         this._addTabToSidebar();
 
-        this._searchWidgetComponent = new SearchWidgetComponent(this.getConfig());
-        this._searchOptionsComponent = new SearchOptionsComponent(this.getConfig());
-
-        this._searchWidgetComponent.init();
-        this._searchOptionsComponent.init();
+        this.initChildren([
+            {
+                index: 'searchWidget',
+                constructor: SearchWidgetComponent
+            },
+            {
+                index: 'searchOptions',
+                constructor: SearchOptionsComponent
+            }
+        ]);
 
         this._bindEvents();
     }

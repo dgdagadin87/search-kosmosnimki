@@ -17,7 +17,7 @@ export default class ResultListComponent extends BaseComponent {
         const userInfo = store.getData('userInfo');
         const restricted = userInfo['Role'] === ACCESS_USER_ROLE;
 
-        this._searchContainer = this.getParentComponent().getView()._container;
+        this._searchContainer = this.getParentComponent().getView();
 
         this._view = new FavoriteList(
             this._searchContainer.querySelector('.favorites-pane'),
@@ -67,19 +67,9 @@ export default class ResultListComponent extends BaseComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const cartIndex = getCorrectIndex('cart');
+        const favoritesData = store.getFavorites(true);
 
-        const snapshotItems = store.getSerializedData('snapshots');
-
-        const filteredData = snapshotItems.reduce((preparedData, item) => {
-            const {properties} = item;
-            if (properties[cartIndex]) {
-                preparedData.push(propertiesToItem(properties));
-            }
-            return preparedData;
-        }, []);
-
-        this.getView().items = filteredData;
+        this.getView().items = favoritesData;
 
         this._resizeFavoritesList();
     }

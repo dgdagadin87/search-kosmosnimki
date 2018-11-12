@@ -22,6 +22,9 @@ import SnapshotBridgeController from './bridgeControllers/SnapshotBridgeControll
 import DrawingLayerManager from './layersManagers/DrawingsLayerManager';
 import SnapshotLayerManager from './layersManagers/SnapshotsLayerManager';
 
+import LoaderIndicatorComponent from './components/loaderIndicator/LoaderIndicatorComponent';
+import PopupNotificationComponent from './components/popupNotification/PopupNotificationComponent';
+
 import Events from './events/Events';
 
 
@@ -219,9 +222,35 @@ class Application {
 
     _addComponents() {
 
-        const {components = []} = this._config;
-
         this._components = {};
+
+        this._addApplicationComponents();
+        this._addUserComponents();
+    }
+
+    _addApplicationComponents() {
+
+        const baseConfig = {
+            application: this,
+            map: this.getMap()
+        };
+
+        this._components['loaderIndicator'] = new LoaderIndicatorComponent({
+            name: 'loadIndicator',
+            ...baseConfig
+        });
+        this._components['loaderIndicator'].init();
+
+        this._components['popupNotificator'] = new PopupNotificationComponent({
+            name: 'popupNotificator',
+            ...baseConfig
+        });
+        this._components['popupNotificator'].init();
+    }
+
+    _addUserComponents() {
+
+        const {components = []} = this._config;
 
         for (let i = 0; i < components.length; i++ ) {
 
@@ -229,6 +258,7 @@ class Application {
             const {index, constructor} = currentComponent;
 
             this._components[index] = new constructor({
+                name: index,
                 application: this,
                 map: this.getMap()
             });
@@ -254,7 +284,7 @@ class Application {
 
     showNotification(message = '') {
 
-        const notificationWidget = this.getComponent('popupNotification');
+        const notificationWidget = this.getComponent('popupNotificator');
         notificationWidget.show(message);
     }
 

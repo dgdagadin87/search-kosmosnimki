@@ -2,7 +2,7 @@ import Translations from 'scanex-translations';
 
 import BaseCompositedComponent from '../../../../base/BaseCompositedComponent';
 
-import FavoriteListComponent from './components/favoritesList/FavoritesListComponent';
+import ListComponent from './components/list/ListComponent';
 
 import { propertiesToItem, getCorrectIndex } from '../../../../utils/commonUtils';
 
@@ -14,9 +14,12 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         this._addTabToSidebar();
         this._createCartNumberPlace();
 
-        this._favoritesListComponent = new FavoriteListComponent(this.getConfig());
-
-        this._favoritesListComponent.init();
+        this.initChildren([
+            {
+                index: 'list',
+                constructor: ListComponent
+            }
+        ]);
 
         this._bindEvents();
     }
@@ -25,8 +28,6 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const favoritesComponent = this.getChildComponent('favoritesList');
-        const favoriteEvents = favoritesComponent.events;
         const removeButton = this._getFavoritesRemoveButton();
         const orderButton = this._getFavoritesOrderButton();
         const SnapshotBridgeController = application.getBridgeController('snapshot');
@@ -39,7 +40,6 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
 
         removeButton.addEventListener('click', (e) => SnapshotBridgeController.removeSelectedFavoritesFromListAndMap(e));
         orderButton.addEventListener('click', (e) => this.events.trigger('makeOrder:click', e));
-        favoriteEvents.on('imageDetails:show', (e, bBox) => this.events.trigger('imageDetails:show', e, bBox));
     }
 
     _addTabToSidebar() {
