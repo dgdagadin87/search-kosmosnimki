@@ -1,16 +1,21 @@
-import Translations from 'scanex-translations';
-
 import BaseCompositedComponent from '../../../../base/BaseCompositedComponent';
 
 import HeaderComponent from './components/header/HeaderComponent';
 import ListComponent from './components/list/ListComponent';
+
+import View from './view/View';
 
 
 export default class ResultTabComponent extends BaseCompositedComponent {
 
     init() {
 
-        this._addTabToSidebar();
+        const parent = this.getParentComponent();
+        const sidebarView = parent.getView();
+
+        this._view = new View({
+            sidebarView 
+        });
 
         this.initChildren([
             {
@@ -27,16 +32,5 @@ export default class ResultTabComponent extends BaseCompositedComponent {
     }
 
     _bindEvents() {}
-
-    _addTabToSidebar() {
-
-        this._view = this.getParentComponent().getView().addTab({
-            id: 'results',            
-            icon: 'sidebar-results',
-            opened: 'sidebar-results-opened',
-            closed: 'sidebar-results-closed',
-            tooltip: Translations.getText('results.title')
-        })
-    }
 
 }

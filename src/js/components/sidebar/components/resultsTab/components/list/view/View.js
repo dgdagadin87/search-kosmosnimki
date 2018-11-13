@@ -1,16 +1,16 @@
 import Translations from 'scanex-translations';
 import { DataGrid } from 'scanex-datagrid';
 
-import { getSatelliteName } from '../../../../../../../utils/commonUtils';
+import { getSatelliteName, getPanelHeight } from '../../../../../../../utils/commonUtils';
 import EventTarget from 'scanex-event-target';
 
 
 class ResultList extends EventTarget {
-    constructor(container, { restricted, application }){
-        super();       
+    constructor({ restricted }){
+        super();    
         this._cart = {};
         this._restricted = restricted;
-        this._container = container;
+        this._container = document.querySelector('#map div.noselect.leaflet-control div.panes div.results-pane');
         this._container.classList.add('result-list');
         this._onColumnClick = this._onColumnClick.bind(this);
         this._onCellClick = this._onCellClick.bind(this);
@@ -216,6 +216,14 @@ class ResultList extends EventTarget {
         e.stopPropagation();
     }
     
+    resizeList() {
+
+        const total = getPanelHeight(document.body.querySelector('.scanex-sidebar'), [ '.results-header' ]);
+
+        this.resize(total);
+        this.adjustWidth();
+    }
+
     getItemByIndex (id) {
         return this._grid.getItemByIndex(id);
     }

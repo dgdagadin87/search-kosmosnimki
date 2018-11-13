@@ -1,6 +1,6 @@
 import BaseComponent from '../../base/BaseComponent';
 
-import { DrawnObjectsControl } from './view/DrawnObjects';
+import View from './view/View';
 
 
 export default class DrawingObjectsComponent extends BaseComponent {
@@ -8,10 +8,13 @@ export default class DrawingObjectsComponent extends BaseComponent {
     init() {
 
         const map = this.getMap();
+        const application = this.getApplication();
 
-        this._view = new DrawnObjectsControl({position: 'topright'});
-
-        map.addControl(this.getView());
+        this._view = new View({
+            map,
+            application,
+            position: 'topright'
+        });
 
         this._bindEvents();
     }
@@ -23,7 +26,7 @@ export default class DrawingObjectsComponent extends BaseComponent {
 
         const DrawingBridgeController = application.getBridgeController('drawing');
 
-        const componentWidget = this.getView().widget;
+        const componentWidget = this._view.widget;
 
         store.on('drawings:updateList', this._updateList.bind(this));
 
@@ -49,10 +52,9 @@ export default class DrawingObjectsComponent extends BaseComponent {
 
     _resizeWidget() {
 
-        const app = this.getApplication();
+        const view = this.getView();
 
-        const { height } =  app.getMapContainer().getBoundingClientRect();
-        this.getView().widget.resize(height - 150);
+        view.resizeDrawings();
     }
 
 }

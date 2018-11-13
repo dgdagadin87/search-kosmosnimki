@@ -24,6 +24,7 @@ import SnapshotLayerManager from './layersManagers/SnapshotsLayerManager';
 
 import LoaderIndicatorComponent from './components/loaderIndicator/LoaderIndicatorComponent';
 import PopupNotificationComponent from './components/popupNotification/PopupNotificationComponent';
+import ErrorDialogComponent from './components/errorDialog/ErrorDialogComponent';
 
 import Events from './events/Events';
 
@@ -246,6 +247,12 @@ class Application {
             ...baseConfig
         });
         this._components['popupNotificator'].init();
+
+        this._components['errorDialog'] = new ErrorDialogComponent({
+            name: 'errorDialog',
+            ...baseConfig
+        });
+        this._components['errorDialog'].init();
     }
 
     _addUserComponents() {
@@ -279,13 +286,22 @@ class Application {
     showLoader(state = false) {
 
         const loaderWidget = this.getComponent('loaderIndicator');
+
         loaderWidget.show(state);
     }
 
     showNotification(message = '') {
 
         const notificationWidget = this.getComponent('popupNotificator');
+
         notificationWidget.show(message);
+    }
+
+    showError(errorText) {
+
+        const errorDialog = this.getComponent('errorDialog');
+
+        errorDialog.show(errorText);
     }
 
     getRequestManager() {

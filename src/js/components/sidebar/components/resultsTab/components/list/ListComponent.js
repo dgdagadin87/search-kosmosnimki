@@ -2,9 +2,9 @@ import BaseComponent from '../../../../../../base/BaseComponent';
 
 import { ACCESS_USER_ROLE, TAB_RESULTS_NAME} from '../../../../../../config/constants/constants';
 
-import { getPanelHeight, propertiesToItem, getCorrectIndex } from '../../../../../../utils/commonUtils';
+import { propertiesToItem, getCorrectIndex } from '../../../../../../utils/commonUtils';
 
-import ResultList from './view/View';
+import View from './view/View';
 
 
 export default class ResultListComponent extends BaseComponent {
@@ -17,12 +17,9 @@ export default class ResultListComponent extends BaseComponent {
         const userInfo = store.getData('userInfo');
         const restricted = userInfo['Role'] === ACCESS_USER_ROLE;
 
-        this._searchContainer = this.getParentComponent().getView();
-
-        this._view = new ResultList(
-            this._searchContainer.querySelector('.results-pane'),
-            { restricted, application }
-        );
+        this._view = new View({
+            restricted
+        });
 
         this._bindEvents();
     }
@@ -32,12 +29,10 @@ export default class ResultListComponent extends BaseComponent {
         const application = this.getApplication();
         const appEvents = application.getAppEvents();
         const store = application.getStore();
-
-        const SnapshotBridgeController = application.getBridgeController('snapshot');
-
+        const SnapshotController = application.getBridgeController('snapshot');
         const view = this.getView();
 
-        appEvents.on('sidebar:tab:resize', (e) => this._resizeResultsList(e));
+        appEvents.on('sidebar:tab:resize', (e) => this._resizeList(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
         appEvents.on('snapshots:showQuicklookList', this._redrawItemOnList.bind(this));
 
@@ -49,19 +44,19 @@ export default class ResultListComponent extends BaseComponent {
         store.on('snapshots:setHovered', this._highliteItemOnList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
-        view.addEventListener('click', (e) => SnapshotBridgeController.zoomToContourOnMap(e));
-        view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOnListAndMap(e));
-        view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContour(e, state));
-        view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContour(e, state));
-        view.addEventListener('addToCart', (e) => SnapshotBridgeController.addToCartOnListAndMap(e));
-        view.addEventListener('addAllToCart', (e) => SnapshotBridgeController.addAllToCartOnListAndMap(e));
+        view.addEventListener('click', (e) => SnapshotController.zoomToContourOnMap(e));
+        view.addEventListener('setVisible', (e) => SnapshotController.showQuicklookOnListAndMap(e));
+        view.addEventListener('mouseover', (e, state = true) => SnapshotController.hoverContour(e, state));
+        view.addEventListener('mouseout', (e, state = false) => SnapshotController.hoverContour(e, state));
+        view.addEventListener('addToCart', (e) => SnapshotController.addToCartOnListAndMap(e));
+        view.addEventListener('addAllToCart', (e) => SnapshotController.addAllToCartOnListAndMap(e));
     }
 
     _onTabChangeHandler(e) {
 
         const {detail: {current: currentTab}} = e;
 
-        currentTab === TAB_RESULTS_NAME && this._resizeResultsList();
+        currentTab === TAB_RESULTS_NAME && this._resizeList();
     }
 
     _updateList() {
@@ -69,10 +64,11 @@ export default class ResultListComponent extends BaseComponent {
         const application = this.getApplication();
         const store = application.getStore();
         const resultsData = store.getResults(true);
+        const view = this.getView();
 
-        this.getView().items = resultsData;
+        view.items = resultsData;
 
-        this._resizeResultsList();
+        this._resizeList();
     }
 
     _redrawItemOnList(itemId) {
@@ -108,14 +104,11 @@ export default class ResultListComponent extends BaseComponent {
         }
     }
 
-    _resizeResultsList() {
+    _resizeList() {
 
         const view = this.getView();
 
-        const total = getPanelHeight(document.body.querySelector('.scanex-sidebar'), [ '.results-header' ]);
-
-        view.resize(total);
-        view.adjustWidth();
+        view.resizeList();
     }
 
     _onInfoHandler(e) {

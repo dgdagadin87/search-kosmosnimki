@@ -255,26 +255,49 @@ class DrawnObjects extends EventTarget {
     }
 }
 
-let DrawnObjectsControl = L.Control.extend ({
-    includes: L.Evented ? L.Evented.prototype : L.Mixin.Events,
+export default class View {
 
-    // options.position (left|right)
-    initialize: function(options) {    
-        L.setOptions(this, options);
-    },
+    constructor({ application, map, position }){
 
-    onAdd: function(map) {
-        this._container = L.DomUtil.create('div', 'drawn-objects-control');
-        this.widget = new DrawnObjects(this._container, {});
-        // L.DomEvent.disableClickPropagation(this._container);
-        // L.DomEvent.disableScrollPropagation(this._container);
-        // L.DomEvent.on(this._container, 'mousemove', L.DomEvent.stopPropagation);
-        return this._container;
-    },    
+        this._application = application;
 
-    onRemove: function(map) { },
+        const DrawnObjectsControl = L.Control.extend ({
+            includes: L.Evented ? L.Evented.prototype : L.Mixin.Events,
+        
+            // options.position (left|right)
+            initialize: function(options) {    
+                L.setOptions(this, options);
+            },
+        
+            onAdd: function() {
+                this._container = L.DomUtil.create('div', 'drawn-objects-control');
+                this.widget = new DrawnObjects(this._container, {});
+                // L.DomEvent.disableClickPropagation(this._container);
+                // L.DomEvent.disableScrollPropagation(this._container);
+                // L.DomEvent.on(this._container, 'mousemove', L.DomEvent.stopPropagation);
+                return this._container;
+            },    
+        
+            onRemove: function(map) { },
 
-});
+            resizeDrawings() {
 
+                const app = application;
+        
+                const { height } =  app.getMapContainer().getBoundingClientRect();
+                this.widget.resize(height - 150);
+            }
+        });
 
-export { DrawnObjectsControl };
+        const drawingView = new DrawnObjectsControl({
+            position
+        });
+
+        map.addControl(drawingView);
+
+        this._main = drawingView;
+
+        return drawingView;
+    }
+
+}

@@ -7,9 +7,9 @@ export default class View {
 
         this._tabComponent = config.parent || {};
 
-        const tabView = this._tabComponent.getView();
+        this._main = this._tabComponent.getView();
 
-        tabView.innerHTML = 
+        this._main.innerHTML = 
         `<div class="results-header">
             <span class="results-title">${Translations.getText('results.title')}</span>
             <span class="results-number">0</span>
@@ -23,23 +23,44 @@ export default class View {
 
     getResultsNumSpan() {
 
-        const resultsNumSpan = document.querySelector('#map div.panes div.results-header > span.results-number');
+        const resultsNumSpan = this._main.querySelector('span.results-number');
 
         return resultsNumSpan;
     }
 
     getQuickLooksCartButton() {
 
-        const quickLooksCartButton = document.querySelector('#map div.panes div.results-header > div > i.quicklooks-cart');
+        const quickLooksCartButton = this._main.querySelector('i.quicklooks-cart');
 
         return quickLooksCartButton;
     }
 
     getClearResultsButton() {
 
-        const clearResultsButton = document.querySelector('#map div.panes div.results-header > div > i.results-clear');
+        const clearResultsButton = this._main.querySelector('i.results-clear');
 
         return clearResultsButton;
+    }
+
+    updateResultsNumber(number) {
+
+        const resultsNumSpan = this.getResultsNumSpan();
+
+        resultsNumSpan.innerText = number;
+    }
+
+    updateQuickLooksCartButton(number) {
+
+        const quickLooksCartButton = this.getQuickLooksCartButton();
+        
+        if (number > 0){
+            quickLooksCartButton.classList.add('quicklooks-cart-active');
+            quickLooksCartButton.classList.remove('quicklooks-cart-passive');
+        }
+        else {
+            quickLooksCartButton.classList.remove('quicklooks-cart-active');
+            quickLooksCartButton.classList.add('quicklooks-cart-passive');
+        }
     }
 
 }

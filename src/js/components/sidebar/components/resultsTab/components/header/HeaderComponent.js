@@ -1,8 +1,8 @@
 import BaseComponent from '../../../../../../base/BaseComponent';
 
-import View from './view/View';
+import { getCorrectIndex } from '../../../../../../utils/commonUtils';
 
-import { propertiesToItem } from '../../../../../../utils/commonUtils';
+import View from './view/View';
 
 
 export default class HeaderComponent extends BaseComponent {
@@ -28,62 +28,54 @@ export default class HeaderComponent extends BaseComponent {
         clearButton.addEventListener('click', () => this.events.trigger('results:clear'));
     }
 
-    _getResultsNumSpan() {
-
-        return this._view.getResultsNumSpan();
-    }
-
-    _getQuickLooksCartButton() {
-
-        return this._view.getQuickLooksCartButton();
-    }
-
-    _getClearResultsButton() {
-
-        return this._view.getClearResultsButton();
-    }
-
     _onStoreResearchHandler() {
 
         const application = this.getApplication();
         const store = application.getStore();
+        const visibleIndex = getCorrectIndex('visible');
+        const allResults = store.getResults();
+        const visibleResults = allResults.filter(item => item['properties'][visibleIndex]);
 
-        const snapshotItems = store.getData('snapshots');
-        const commonData = Object.keys(snapshotItems).map((id) => {
-            
-            const item = snapshotItems[id];
-            const {properties} = item;
+        const allLength = allResults.length;
+        const visibleLength = visibleResults.length;
 
-            return propertiesToItem(properties);
-        });
-        const filteredData = commonData.filter(item => item.result);
-        const visibleData = filteredData.filter(item => item.visible === 'visible');
-
-        const dataLength = filteredData.length;
-        const visibleLength = visibleData.length;
-
-        this._updateResultsNumber(dataLength);
+        this._updateResultsNumber(allLength);
         this._updateQuickLooksCartButton(visibleLength);
+    }
+
+    _getResultsNumSpan() {
+
+        const view = this.getView();
+
+        return view.getResultsNumSpan();
+    }
+
+    _getQuickLooksCartButton() {
+
+        const view = this.getView();
+
+        return view.getQuickLooksCartButton();
+    }
+
+    _getClearResultsButton() {
+
+        const view = this.getView();
+
+        return view.getClearResultsButton();
     }
 
     _updateResultsNumber(number) {
 
-        const resultsNumSpan = this._getResultsNumSpan();
-        resultsNumSpan.innerText = number;
+        const view = this.getView();
+
+        view.updateResultsNumber(number);
     }
 
     _updateQuickLooksCartButton(number) {
 
-        const quickLooksCartButton = this._getQuickLooksCartButton();
-        
-        if (number > 0){
-            quickLooksCartButton.classList.add('quicklooks-cart-active');
-            quickLooksCartButton.classList.remove('quicklooks-cart-passive');
-        }
-        else {
-            quickLooksCartButton.classList.remove('quicklooks-cart-active');
-            quickLooksCartButton.classList.add('quicklooks-cart-passive');
-        }
+        const view = this.getView();
+
+        view.updateQuickLooksCartButton(number);
     }
 
 }

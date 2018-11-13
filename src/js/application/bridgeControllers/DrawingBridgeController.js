@@ -84,9 +84,6 @@ export default class DrawingBridgeController extends BaseBridgeController {
 
         const map = this.getMap();
 
-        const application = this.getApplication();
-        const appEvents = application.getAppEvents();
-
         const features = results.map(x => {
             x.feature.properties.editable = false;
             x.feature.properties.name = x.feature.properties.ObjName;

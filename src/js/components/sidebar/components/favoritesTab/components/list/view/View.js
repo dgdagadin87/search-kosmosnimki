@@ -7,11 +7,11 @@ import { getSatelliteName } from '../../../../../../../utils/commonUtils';
 
 
 class FavoritesList extends EventTarget {
-    constructor(container, { restricted }) {
+    constructor({ restricted }) {
         super();
         this._cart = {};
         this._restricted = restricted;
-        this._container = container;
+        this._container = document.querySelector('#map div.noselect.leaflet-control div.panes div.favorites-pane');
         this._container.classList.add('favorites-list');             
         this._onCellClick = this._onCellClick.bind(this);
         this._onColumnClick = this._onColumnClick.bind(this);

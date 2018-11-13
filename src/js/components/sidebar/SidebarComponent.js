@@ -1,5 +1,4 @@
 import Translations from 'scanex-translations';
-import SidebarControl from  'scanex-leaflet-sidebar';
 
 import BaseCompositedComponent from '../../base/BaseCompositedComponent';
 
@@ -15,6 +14,8 @@ import ImageDetailsComponent from './components/imageDetails/ImageDetailsCompone
 import LimitDialogComponent from './components/limitDialog/LimitDialogComponent';
 import DownloadDialogComponent from './components/downloadDialog/DownloadDialogComponent';
 
+import View from './view/View';
+
 
 export default class SidebarComponent extends BaseCompositedComponent {
 
@@ -26,9 +27,9 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const store = application.getStore();
 
-        this._view = new SidebarControl({position: 'topleft'});
-        map.addControl(this._view);
-        this._endInitingSidebar();
+        this._view = new View({
+            map
+        });
 
         this.initChildren([
             {
@@ -70,9 +71,9 @@ export default class SidebarComponent extends BaseCompositedComponent {
         const {gmxDrawing} = application.getMap();
         const searchTabComponent = this.getChildComponent('searchTab');
         const resultsHeaderComponent = this.getChildComponent('resultsTab.header');
-        const resutsList = this.getChildComponent('resultsTab.list');
+        const resutsListComponent = this.getChildComponent('resultsTab.list');
         const favoritesTabComponent = this.getChildComponent('favoritesTab');
-        const favoritesList = this.getChildComponent('favoritesTab.list');
+        const favoritesListComponent = this.getChildComponent('favoritesTab.list');
         const downloadDialogComponent = this.getChildComponent('downloadDialog');
         const view = this.getView();
 
@@ -94,8 +95,8 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
         resultsHeaderComponent.events.on('results:clear', () => this._clearResults());
-        resutsList.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
-        favoritesList.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
+        resutsListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
+        favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
         downloadDialogComponent.events.on('downloadApply:click', () => this._onDownloadApplyClick());
     }
@@ -120,7 +121,8 @@ export default class SidebarComponent extends BaseCompositedComponent {
         this._clearResults();
 
         requestManager.requestSearchSnapshots(RESULT_MAX_COUNT_PLUS_ONE)
-        .then(this._setSnapshotsData.bind(this));
+        .then(this._setSnapshotsData.bind(this))
+        .catch(this._showError.bind(this));
     }
 
     _setSnapshotsData(result = {}) {
@@ -240,9 +242,17 @@ export default class SidebarComponent extends BaseCompositedComponent {
                 shapeLoader.download('results', 'results');
             }                
         })
-        .catch (e => {
-            // TODO ERROR!!!
-        });
+        .catch(this._showError.bind(this));
+    }
+
+    _showError(e) {
+
+        const application = this.getApplication();
+        const errorText = e.toString();
+
+        application.showError(errorText);
+
+        window.console.error(e);
     }
 
 }

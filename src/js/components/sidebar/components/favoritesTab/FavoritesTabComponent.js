@@ -4,7 +4,7 @@ import BaseCompositedComponent from '../../../../base/BaseCompositedComponent';
 
 import ListComponent from './components/list/ListComponent';
 
-import { propertiesToItem, getCorrectIndex } from '../../../../utils/commonUtils';
+import { getCorrectIndex } from '../../../../utils/commonUtils';
 
 
 export default class FavouritesTabComponent extends BaseCompositedComponent {
@@ -87,18 +87,8 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-
-        const snapshotItems = store.getData('snapshots');
-        const commonData = Object.keys(snapshotItems).map((id) => {
-            
-            const item = snapshotItems[id];
-            const {properties} = item;
-
-            return propertiesToItem(properties);
-        });
-        const filteredData = commonData.filter(item => item.cart);
-
-        const dataLength = filteredData.length;
+        const commonData = store.getFavorites();
+        const dataLength = commonData.length;
 
         this._updateCartNumber(dataLength);
         this._updateOrderAndRemoveButtons(dataLength > 0);

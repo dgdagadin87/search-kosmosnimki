@@ -12,8 +12,8 @@ export default class BaseLayesrComponent extends BaseComponent {
         });
         this._view = zoomControl;
 
-        map.gmxControlsManager.add(this.getView());
-        map.addControl(this.getView());
+        map.gmxControlsManager.add(this._view);
+        map.addControl(this._view);
     }
 
 }

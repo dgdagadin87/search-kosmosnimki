@@ -4,7 +4,7 @@ import { ACCESS_USER_ROLE, TAB_FAVORITES_NAME } from '../../../../../../config/c
 
 import { getPanelHeight, propertiesToItem, getCorrectIndex } from '../../../../../../utils/commonUtils';
 
-import FavoriteList from './view/View';
+import View from './view/View';
 
 
 export default class ResultListComponent extends BaseComponent {
@@ -19,10 +19,9 @@ export default class ResultListComponent extends BaseComponent {
 
         this._searchContainer = this.getParentComponent().getView();
 
-        this._view = new FavoriteList(
-            this._searchContainer.querySelector('.favorites-pane'),
-            { restricted, application }
-        );
+        this._view = new View({
+            restricted
+        });
 
         this._bindEvents();
     }
