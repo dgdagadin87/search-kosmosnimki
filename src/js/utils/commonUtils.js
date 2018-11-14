@@ -564,6 +564,58 @@ function tileRange (period, [[x1, y1], [x2, y2], [x3, y3], [x4, y4]]) {
     return rng;
 }
 
+function getShapefileObject(item, key) {
+
+    const drawingObject = getDrawingObject ({geoJSON: item});
+    const {name, color, editable, visible, geoJSON: {geometry, properties}} = drawingObject;
+    const itemId = '_item' + key;
+
+    return Object.assign(
+        {},
+        {
+            selectedName: name,
+            itemId,
+            name,
+            color,
+            editable,
+            visible
+        },
+        {geoJSON: {geometry, properties}}
+    );
+}
+
+function getCoordinatesCount(results) {
+
+    let numOfCoordinates = 0;
+
+    const recursiveArrayLength = data => {
+
+        for (let i = 0; i < data.length; i++) {
+
+            const currentArray = data[i];
+
+            if (currentArray instanceof Array) {
+                recursiveArrayLength(currentArray);
+            }
+            else {
+                numOfCoordinates++;
+            }
+        }
+    };
+
+    for (let i = 0; i < results.length; i++) {
+
+        const currentItem = results[i];
+        const {geometry: {coordinates = []}} = currentItem;
+
+        recursiveArrayLength(coordinates);
+    }
+
+    numOfCoordinates = Math.round(numOfCoordinates / 2);
+
+    return numOfCoordinates;
+}
+
 export {
     isNumber,
     createContainer,
@@ -591,5 +643,7 @@ export {
     isGeojsonFeature,
     isGeometry,
     getBbox,
-    tileRange
+    tileRange,
+    getShapefileObject,
+    getCoordinatesCount
 };

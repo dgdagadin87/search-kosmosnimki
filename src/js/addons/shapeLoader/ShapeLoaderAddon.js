@@ -28,9 +28,27 @@ class ShapeLoader {
         this._fileDownloaderUrl = fileDownloaderUrl;
         this._metadataUrl = metadataUrl;
         this._csvFileUrl = csvFileUrl;
+
+        this._fileInput = null;
     }
 
-    upload () {/* ... */}
+    upload () {
+
+        return new Promise ((resolve, reject) => {
+
+            const fileInput = document.createElement('input');
+
+            fileInput.setAttribute('type', 'file');
+
+            document.body.appendChild(fileInput);
+
+            this._fileInput = fileInput;
+
+            fileInput.click();
+
+            fileInput.addEventListener('change', () => this._inputChangeHandler(resolve, reject));
+        });               
+    }
 
     download (archiveName, type) {
 
@@ -52,6 +70,11 @@ class ShapeLoader {
                 console.log(state.error);
             }
         });        
+    }
+
+    getApplication() {
+
+        return this._application;
     }
 
     _getMetaData(state, type) {
@@ -298,10 +321,86 @@ class ShapeLoader {
         });
     }
 
-    getApplication() {
+    _inputChangeHandler(resolve, reject) {
 
-        return this._application;
+        const application = this.getApplication();
+        const requestManager = application.getRequestManager();
+
+        application.showLoader(true);
+
+        let [file] = this._fileInput.files;
+
+        if (file) {
+
+            const formData = new FormData();
+
+            formData.append('filename', file);
+            formData.append('WrapStyle', 'None');
+
+            requestManager.requestShapeLoader(this._shapeLoaderUrl, { method: 'POST', body: formData })
+            .then (response => {
+                this._removeFileInput();
+                return response.json();
+            })
+            .then(response => {
+
+                application.showLoader(false);
+
+                const {Status: status, Result: result} = response;
+
+                switch(status) {
+
+                    case 'ok':
+                        resolve({
+                            type: 'shapefile',
+                            results: result
+                        });
+                        break;
+
+                    default:
+                        requestManager.requestIdLoader(this._shapeLoaderUrl, { method: 'POST', body: formData })
+                        .then (response => {
+                            this._removeFileInput();
+                            return response.json();
+                        })
+                        .then (response => {
+
+                            const {Status: status, Result: result} = response;
+
+                            if (status === 'ok') {
+                                resolve({
+                                    type: 'idlist',
+                                    results: result
+                                });
+                            }
+                            else {
+                                reject(response);
+                            }
+                        })
+                        .catch (e => {
+                            this._removeFileInput();
+                            reject(e);
+                        });
+                        break;
+                }
+            })
+            .catch(e => {
+                
+                application.showLoader(false);
+
+                this._removeFileInput();
+
+                reject(e);
+            });
+        }
     }
+
+    _removeFileInput() {
+
+        this._fileInput.remove();
+        this._fileInput = null;
+    }
+
 }
 
 export default ShapeLoader;

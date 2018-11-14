@@ -110,6 +110,4 @@ export default class DownloadComponent extends BaseCompositedComponent {
         dialogComponent.hide();
     }
 
-    
-
 }

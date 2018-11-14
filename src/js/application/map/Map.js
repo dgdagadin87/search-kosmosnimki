@@ -38,6 +38,8 @@ export default class Map {
         await this._initBaseLayerManager();
 
         this._setActiveLayer();
+
+        this._mapControlsPrepare();
     }
 
     _bindEvents() {
@@ -70,6 +72,20 @@ export default class Map {
         this._map.addControl(new window.L.Control.gmxLayers(this._map.gmxBaseLayersManager, {
             hideBaseLayers: true 
         }));
+    }
+
+    _mapControlsPrepare() {
+
+        this._map._controlCorners.searchControls = document.querySelector('#search-controls');                
+        this._map._controlCorners.drawControls = document.querySelector('#draw-controls');
+
+        this._map.gmxControlsManager.init({
+            gmxHide: null,
+            gmxLogo: null,
+            gmxZoom: null,
+            gmxDrawing: null,
+            svgSprite: false,
+        });
     }
 
     _resizeMap() {

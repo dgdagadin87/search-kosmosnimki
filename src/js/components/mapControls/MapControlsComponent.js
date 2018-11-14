@@ -6,14 +6,13 @@ import DrawingsControlComponent from './components/drawingsControl/DrawingsContr
 import MapTypeSwitcherComponent from './components/mapTypeSwitcher/MapTypeSwitcherComponent';
 import ZoomComponent from './components/zoom/ZoomComponent';
 import BoxZoomComponent from './components/boxZoom/BoxZoomComponent';
+import UploadComponent from './components/upload/UploadComponent';
 import DownloadComponent from './components/download/DownloadComponent';
 
 
 export default class MapControlsComponent extends BaseCompositedComponent {
 
     init() {
-
-        this._mapControlsPrepare();
 
         let components = [];
 
@@ -33,6 +32,11 @@ export default class MapControlsComponent extends BaseCompositedComponent {
         });
 
         components.push({
+            index: 'upload',
+            constructor: UploadComponent
+        });
+
+        components.push({
             index: 'download',
             constructor: DownloadComponent
         });
@@ -46,22 +50,6 @@ export default class MapControlsComponent extends BaseCompositedComponent {
         }
 
         this.initChildren(components);
-    }
-
-    _mapControlsPrepare() {
-
-        const map = this.getMap();
-
-        map._controlCorners.searchControls = document.querySelector('#search-controls');                
-        map._controlCorners.drawControls = document.querySelector('#draw-controls');
-
-        map.gmxControlsManager.init({
-            gmxHide: null,
-            gmxLogo: null,
-            gmxZoom: null,
-            gmxDrawing: null,
-            svgSprite: false,
-        });
     }
 
 }

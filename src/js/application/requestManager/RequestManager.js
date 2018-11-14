@@ -72,6 +72,16 @@ export default class RequestManager {
         return this._gmxResourceComponent.downloadCommonFile(url);
     }
 
+    requestShapeLoader(url, params = {}) {
+
+        return fetch(url, params);
+    }
+
+    requestIdLoader(url, params = {}) {
+
+        return fetch(url, params);
+    }
+
     // service methods
     getAuthManager() {
 
