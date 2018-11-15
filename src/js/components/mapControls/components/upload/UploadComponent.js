@@ -3,6 +3,7 @@ import Translations from 'scanex-translations';
 import BaseCompositedComponent from '../../../../base/BaseCompositedComponent';
 
 import ButtonComponent from './components/button/ButtonComponent';
+import DialogComponent from './components/dialog/DialogComponent';
 
 import {MAX_UPLOAD_OBJECTS, MAX_UPLOAD_POINTS} from '../../../../config/constants/constants';
 
@@ -17,6 +18,10 @@ export default class UploadComponent extends BaseCompositedComponent {
             {
                 index: 'button',
                 constructor: ButtonComponent
+            },
+            {
+                index: 'dialog',
+                constructor: DialogComponent
             }
         ]);
 
@@ -26,8 +31,10 @@ export default class UploadComponent extends BaseCompositedComponent {
     _bindEvents() {
 
         const buttonComponent = this.getChildComponent('button');
+        const dialogComponent = this.getChildComponent('dialog');
 
         buttonComponent.events.on('click:show', this._onShowClick.bind(this));
+        dialogComponent.events.on('click:apply', this._onApplyClick.bind(this));
     }
 
     _onShowClick() {
@@ -40,9 +47,28 @@ export default class UploadComponent extends BaseCompositedComponent {
         .catch((error) => this._errorHandler(error));
     }
 
+    _onApplyClick(data) {
+
+        const application = this.getApplication();
+        const drawingController = application.getBridgeController('drawing');
+
+        /*data.forEach(item => {
+            const {selectedName, color, editable, visible, geoJSON: {geometry, properties}} = item;
+            drawingController.addDrawingOnMapAndList({
+                name: selectedName,
+                color,
+                geoJSON: {type: 'Feature', properties, geometry},
+                visible,
+                editable,
+            });
+        });*/
+        drawingController.addDrawingsOnListAndMapFromUploading(data);
+    }
+
     _uploadHandler({type, results}) {
 
         const application = this.getApplication();
+        const dialogComponent = this.getChildComponent('dialog');
 
         switch (type) {
 
@@ -57,7 +83,7 @@ export default class UploadComponent extends BaseCompositedComponent {
 
                     results.forEach((item, key) => drawingsProperties.push(getShapefileObject(item, key)));
 
-                    console.log(drawingsProperties);
+                    dialogComponent.show(drawingsProperties);
                 }
                 else {
 
@@ -65,6 +91,9 @@ export default class UploadComponent extends BaseCompositedComponent {
                     application.showError(errorText);
                 }
 
+                break;
+
+            default:
                 break;
 
         }

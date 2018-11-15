@@ -29,7 +29,7 @@ export default class SearchOptionsComponent extends BaseComponent {
 
         const defaultCriteria = store.getData('searchCriteria');
 
-        this.getView().criteria = defaultCriteria;
+        this._view.criteria = defaultCriteria;
 
         this._bindEvents();
     }

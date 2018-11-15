@@ -14,14 +14,11 @@ export default class DrawingBridgeController extends BaseBridgeController {
 
     /* Add drawing start */
     addDrawingOnList(rawItem) {
-
-        const {object, geoJSON} = rawItem;
-
-        const drawingId = object.options.uuid || L.gmxUtil.newId();
-
+        
         const application = this.getApplication();
         const store = application.getStore();
-
+        const {object, geoJSON} = rawItem;
+        const drawingId = object.options.uuid || L.gmxUtil.newId();
         const drawing = store.getData('drawings', drawingId);
 
         if (!drawing) {
@@ -55,7 +52,7 @@ export default class DrawingBridgeController extends BaseBridgeController {
         }
     }
 
-    addDrawingOnMapAndList(item) {
+    addDrawingOnMapAndList(item, returnId = false) {
 
         const application = this.getApplication();
         const store = application.getStore();
@@ -74,10 +71,54 @@ export default class DrawingBridgeController extends BaseBridgeController {
 
             // add drawing on map
             this.toggleDrawingOnMap(drawingId, visible);
+
+            if (returnId) {
+                return drawingId;
+            }
         }
         else {
             return null;
         }
+    }
+
+    addDrawingsOnListAndMapFromUploading(items = []) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const map = this.getMap();
+
+        let idsList = [];
+
+        items.forEach(item => {
+            const {selectedName, color, editable, visible, geoJSON: {geometry, properties}} = item;
+            const itemId = this.addDrawingOnMapAndList({
+                name: selectedName,
+                color,
+                geoJSON: {type: 'Feature', properties, geometry},
+                visible,
+                editable,
+            }, true);
+            idsList.push(itemId);
+        });
+
+        const drawings = store.getData('drawings');
+        const addedDrawings = idsList.map(itemId => drawings[itemId]);
+
+        let bounds = null;
+
+        addedDrawings.forEach(item => {
+            const {drawing} = item;
+            if (drawing) {
+                if (bounds) {
+                    bounds.extend(drawing.getBounds());
+                }
+                else {
+                    bounds = drawing.getBounds();
+                }                                            
+            }
+        });
+
+        map.fitBounds(bounds, { animate: false });
     }
 
     addDrawingOnMapAndListFromOsm(results = []) {
