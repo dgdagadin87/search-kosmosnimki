@@ -52,16 +52,6 @@ export default class UploadComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const drawingController = application.getBridgeController('drawing');
 
-        /*data.forEach(item => {
-            const {selectedName, color, editable, visible, geoJSON: {geometry, properties}} = item;
-            drawingController.addDrawingOnMapAndList({
-                name: selectedName,
-                color,
-                geoJSON: {type: 'Feature', properties, geometry},
-                visible,
-                editable,
-            });
-        });*/
         drawingController.addDrawingsOnListAndMapFromUploading(data);
     }
 
@@ -69,11 +59,11 @@ export default class UploadComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const dialogComponent = this.getChildComponent('dialog');
+        const snapshotController = application.getBridgeController('snapshot');
 
         switch (type) {
 
             case 'shapefile':
-
                 const objectsCount = results.length;
                 const pointsCount = getCoordinatesCount(results);
 
@@ -91,6 +81,19 @@ export default class UploadComponent extends BaseCompositedComponent {
                     application.showError(errorText);
                 }
 
+                break;
+
+            case 'idlist':
+                let {values, Count: count} = results;
+
+                if (count){
+                    const geometryIndex = values[0].length - 1;
+                    values.forEach (item => {
+                        item[geometryIndex] = L.gmxUtil.convertGeometry (item[geometryIndex], false, true);
+                    });
+                    snapshotController.clearSnapShotsOnResults();
+                    snapshotController.addContoursOnMapAndList(results);
+                }
                 break;
 
             default:
