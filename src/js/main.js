@@ -54,6 +54,10 @@ const application = new Application({
             {
                 'key': 'cancelLoading',
                 'isTable': false
+            },
+            {
+                'key': 'activeIcon',
+                'isTable': false
             }
         ]
     },

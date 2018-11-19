@@ -2,7 +2,10 @@ import BaseCompositedComponent from '../../base/BaseCompositedComponent';
 
 import { isMobile } from '../../utils/commonUtils';
 
-import DrawingsControlComponent from './components/drawingsControl/DrawingsControlComponent';
+import PointComponent from './components/point/PointComponent';
+import PolylineComponent from './components/polyline/PolylineComponent';
+import PolygonComponent from './components/polygon/PolygonComponent';
+import RectangleComponent from './components/rectangle/RectangleComponent';
 import MapTypeSwitcherComponent from './components/mapTypeSwitcher/MapTypeSwitcherComponent';
 import ZoomComponent from './components/zoom/ZoomComponent';
 import BoxZoomComponent from './components/boxZoom/BoxZoomComponent';
@@ -14,12 +17,32 @@ export default class MapControlsComponent extends BaseCompositedComponent {
 
     init() {
 
+        const isMobileGadget = isMobile();
+
         let components = [];
 
         components.push({
-            index: 'drawingsControl',
-            constructor: DrawingsControlComponent
+            index: 'point',
+            constructor: PointComponent
         });
+
+        if (!isMobileGadget) {
+
+            components.push({
+                index: 'polyline',
+                constructor: PolylineComponent
+            });
+
+            components.push({
+                index: 'polygon',
+                constructor: PolygonComponent
+            });
+
+            components.push({
+                index: 'rectangle',
+                constructor: RectangleComponent
+            });
+        }
 
         components.push({
             index: 'mapTypeSwitcher',
@@ -41,8 +64,7 @@ export default class MapControlsComponent extends BaseCompositedComponent {
             constructor: DownloadComponent
         });
 
-        if (!isMobile()) {
-
+        if (!isMobileGadget) {
             components.push({
                 index: 'boxZoom',
                 constructor: BoxZoomComponent
