@@ -84,10 +84,10 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         gmxDrawing.on('drawstop', () => manageTabsState(view, store, 'stopDrawing'));
 
-        store.on('snapshots:researched', () => manageTabsState(view, store, 'addToResults'));
-        store.on('snapshots:addToCart', () => manageTabsState(view, store, 'addToFavorites'));
-        store.on('snapshots:addAllToCart', () => manageTabsState(view, store, 'addToFavorites'));
-        store.on('snapshots:removeSelectedFavorites', () => manageTabsState(view, store, 'clearFavorites'));
+        store.on('contours:researched', () => manageTabsState(view, store, 'addToResults'));
+        store.on('contours:addToCart', () => manageTabsState(view, store, 'addToFavorites'));
+        store.on('contours:addAllToCart', () => manageTabsState(view, store, 'addToFavorites'));
+        store.on('contours:removeSelectedFavorites', () => manageTabsState(view, store, 'clearFavorites'));
 
         globalEvents.on('system:window:resize', () => this._resizeSidebar());
         globalEvents.on('system:components:created', () => this._resizeSidebar());
@@ -120,16 +120,16 @@ export default class SidebarComponent extends BaseCompositedComponent {
 
         this._clearResults();
 
-        requestManager.requestSearchSnapshots(RESULT_MAX_COUNT_PLUS_ONE)
-        .then(this._setSnapshotsData.bind(this))
+        requestManager.requestSearchContours(RESULT_MAX_COUNT_PLUS_ONE)
+        .then(this._setContoursData.bind(this))
         .catch(this._showError.bind(this));
     }
 
-    _setSnapshotsData(result = {}) {
+    _setContoursData(result = {}) {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const SnapshotBridgeController = application.getBridgeController('snapshot');
+        const ContourBridgeController = application.getBridgeController('contour');
         const downloadDialogComponent = this.getChildComponent('downloadDialog');
         const isLoadingCancelled = store.getData('cancelLoading');
 
@@ -145,7 +145,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
             }
             else if (0 < resultLength && resultLength < RESULT_MAX_COUNT_PLUS_ONE) {
 
-                SnapshotBridgeController.addContoursOnMapAndList(result);
+                ContourBridgeController.addContoursOnMapAndList(result);
             }
             else {
 
@@ -189,9 +189,9 @@ export default class SidebarComponent extends BaseCompositedComponent {
     _clearResults() {
 
         const application = this.getApplication();
-        const SnapshotBridgeController = application.getBridgeController('snapshot');
+        const ContourBridgeController = application.getBridgeController('contour');
 
-        SnapshotBridgeController.clearSnapShotsOnResults();
+        ContourBridgeController.clearSnapShotsOnResults();
     }
 
     _showImageDetails(e, bBox) {
@@ -229,7 +229,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         
         application.showLoader(true);
 
-        requestManager.requestSearchSnapshots()
+        requestManager.requestSearchContours()
         .then ((data) => {
 
             application.showLoader(false);

@@ -59,7 +59,7 @@ export default class UploadComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const dialogComponent = this.getChildComponent('dialog');
-        const snapshotController = application.getBridgeController('snapshot');
+        const contourController = application.getBridgeController('contour');
 
         switch (type) {
 
@@ -80,7 +80,6 @@ export default class UploadComponent extends BaseCompositedComponent {
                     const errorText = `${Translations.getText('errors.upload')}<br />${Translations.getText('errors.points')}`;
                     application.showError(errorText);
                 }
-
                 break;
 
             case 'idlist':
@@ -91,8 +90,8 @@ export default class UploadComponent extends BaseCompositedComponent {
                     values.forEach (item => {
                         item[geometryIndex] = L.gmxUtil.convertGeometry (item[geometryIndex], false, true);
                     });
-                    snapshotController.clearSnapShotsOnResults();
-                    snapshotController.addContoursOnMapAndList(results);
+                    contourController.clearSnapShotsOnResults();
+                    contourController.addContoursOnMapAndList(results);
                 }
                 break;
 

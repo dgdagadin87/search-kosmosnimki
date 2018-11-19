@@ -24,7 +24,7 @@ export default class HeaderComponent extends BaseComponent {
         const store = application.getStore();
         const clearButton = this._getClearResultsButton();
 
-        store.on('snapshots:researched', this._onStoreResearchHandler.bind(this));
+        store.on('contours:researched', this._onStoreResearchHandler.bind(this));
         clearButton.addEventListener('click', () => this.events.trigger('results:clear'));
     }
 

@@ -17,10 +17,10 @@ import DataStore from './searchDataStore/SearchDataStore';
 import MapComponent from './map/Map';
 
 import DrawingBridgeController from './bridgeControllers/DrawingBridgeController';
-import SnapshotBridgeController from './bridgeControllers/SnapshotBridgeController';
+import ContourBridgeController from './bridgeControllers/ContourBridgeController';
 
 import DrawingLayerManager from './layersManagers/DrawingsLayerManager';
-import SnapshotLayerManager from './layersManagers/SnapshotsLayerManager';
+import ContourLayerManager from './layersManagers/ContoursLayerManager';
 
 import LoaderIndicatorComponent from './components/loaderIndicator/LoaderIndicatorComponent';
 import PopupNotificationComponent from './components/popupNotification/PopupNotificationComponent';
@@ -183,7 +183,7 @@ class Application {
             map: this.getMap()
         });
 
-        this._snapshotBridgeController = new SnapshotBridgeController({
+        this._contourBridgeController = new ContourBridgeController({
             application: this,
             map: this.getMap()
         });
@@ -197,7 +197,7 @@ class Application {
             store: this._dataStore
         });
 
-        this._snapshotLayerManager = new SnapshotLayerManager({
+        this._contourLayerManager = new ContourLayerManager({
             map: this.getMap(),
             application: this,
             store: this._dataStore

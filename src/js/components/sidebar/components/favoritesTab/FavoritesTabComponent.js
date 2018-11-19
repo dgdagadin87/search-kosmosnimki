@@ -30,15 +30,15 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         const store = application.getStore();
         const removeButton = this._getFavoritesRemoveButton();
         const orderButton = this._getFavoritesOrderButton();
-        const SnapshotBridgeController = application.getBridgeController('snapshot');
+        const ContourBridgeController = application.getBridgeController('contour');
 
-        store.on('snapshots:addToCart', this._onAddToCartHandler.bind(this));
-        store.on('snapshots:addAllToCart', this._onAddToCartHandler.bind(this));
-        store.on('snapshots:setSelected', this._onSetSelectedHandler.bind(this));
-        store.on('snapshots:setAllSelected', this._onSetSelectedHandler.bind(this));
-        store.on('snapshots:removeSelectedFavorites', this._onAddToCartHandler.bind(this));
+        store.on('contours:addToCart', this._onAddToCartHandler.bind(this));
+        store.on('contours:addAllToCart', this._onAddToCartHandler.bind(this));
+        store.on('contours:setSelected', this._onSetSelectedHandler.bind(this));
+        store.on('contours:setAllSelected', this._onSetSelectedHandler.bind(this));
+        store.on('contours:removeSelectedFavorites', this._onAddToCartHandler.bind(this));
 
-        removeButton.addEventListener('click', (e) => SnapshotBridgeController.removeSelectedFavoritesFromListAndMap(e));
+        removeButton.addEventListener('click', (e) => ContourBridgeController.removeSelectedFavoritesFromListAndMap(e));
         orderButton.addEventListener('click', (e) => this.events.trigger('makeOrder:click', e));
     }
 
@@ -74,8 +74,8 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         const store = application.getStore();
         const selectedIndex = getCorrectIndex('selected');
 
-        const snapshots = store.getSerializedData('snapshots');
-        const isSomeSelected = snapshots.some(item => {
+        const contours = store.getSerializedData('contours');
+        const isSomeSelected = contours.some(item => {
             const {properties} = item;
             return properties[selectedIndex];
         });

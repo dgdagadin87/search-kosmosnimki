@@ -29,27 +29,27 @@ export default class ResultListComponent extends BaseComponent {
         const application = this.getApplication();
         const appEvents = application.getAppEvents();
         const store = application.getStore();
-        const SnapshotController = application.getBridgeController('snapshot');
+        const ContourController = application.getBridgeController('contour');
         const view = this.getView();
 
         appEvents.on('sidebar:tab:resize', (e) => this._resizeList(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
-        appEvents.on('snapshots:showQuicklookList', this._redrawItemOnList.bind(this));
+        appEvents.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
 
-        store.on('snapshots:researched', this._updateList.bind(this));
-        store.on('snapshots:addAllToCart', this._updateList.bind(this));
-        store.on('snapshots:removeSelectedFavorites', this._updateList.bind(this));
-        store.on('snapshots:addToCart', this._redrawItemOnList.bind(this));
-        store.on('snapshots:showQuicklookList', this._redrawItemOnList.bind(this));
-        store.on('snapshots:setHovered', this._highliteItemOnList.bind(this));
+        store.on('contours:researched', this._updateList.bind(this));
+        store.on('contours:addAllToCart', this._updateList.bind(this));
+        store.on('contours:removeSelectedFavorites', this._updateList.bind(this));
+        store.on('contours:addToCart', this._redrawItemOnList.bind(this));
+        store.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
+        store.on('contours:setHovered', this._highliteItemOnList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
-        view.addEventListener('click', (e) => SnapshotController.zoomToContourOnMap(e));
-        view.addEventListener('setVisible', (e) => SnapshotController.showQuicklookOnListAndMap(e));
-        view.addEventListener('mouseover', (e, state = true) => SnapshotController.hoverContour(e, state));
-        view.addEventListener('mouseout', (e, state = false) => SnapshotController.hoverContour(e, state));
-        view.addEventListener('addToCart', (e) => SnapshotController.addToCartOnListAndMap(e));
-        view.addEventListener('addAllToCart', (e) => SnapshotController.addAllToCartOnListAndMap(e));
+        view.addEventListener('click', (e) => ContourController.zoomToContourOnMap(e));
+        view.addEventListener('setVisible', (e) => ContourController.showQuicklookOnListAndMap(e));
+        view.addEventListener('mouseover', (e, state = true) => ContourController.hoverContour(e, state));
+        view.addEventListener('mouseout', (e, state = false) => ContourController.hoverContour(e, state));
+        view.addEventListener('addToCart', (e) => ContourController.addToCartOnListAndMap(e));
+        view.addEventListener('addAllToCart', (e) => ContourController.addAllToCartOnListAndMap(e));
     }
 
     _onTabChangeHandler(e) {
@@ -77,7 +77,7 @@ export default class ResultListComponent extends BaseComponent {
         const store = application.getStore();
         const view = this.getView();
 
-        const item = store.getData('snapshots', itemId);
+        const item = store.getData('contours', itemId);
         const preparedItem = propertiesToItem(item['properties']);
 
         view.redrawItem(itemId, preparedItem);
@@ -91,7 +91,7 @@ export default class ResultListComponent extends BaseComponent {
 
         const hoverIndex = getCorrectIndex('hover');
 
-        const item = store.getData('snapshots', itemId);
+        const item = store.getData('contours', itemId);
         
         const {properties = []} = item;
         const isHovered = properties[hoverIndex];

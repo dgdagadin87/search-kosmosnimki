@@ -31,25 +31,25 @@ export default class ResultListComponent extends BaseComponent {
         const application = this.getApplication();
         const appEvents = application.getAppEvents();
         const store = application.getStore();
-        const SnapshotBridgeController = application.getBridgeController('snapshot');
+        const ContourBridgeController = application.getBridgeController('contour');
         const view = this.getView();
 
         appEvents.on('sidebar:tab:resize', (e) => this._resizeFavoritesList(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
 
-        store.on('snapshots:addAllToCart', this._updateList.bind(this));
-        store.on('snapshots:addToCart', this._updateList.bind(this));
-        store.on('snapshots:setSelected', this._redrawItemOnList.bind(this));
-        store.on('snapshots:setAllSelected', this._updateList.bind(this));
-        store.on('snapshots:removeSelectedFavorites', this._updateList.bind(this));
+        store.on('contours:addAllToCart', this._updateList.bind(this));
+        store.on('contours:addToCart', this._updateList.bind(this));
+        store.on('contours:setSelected', this._redrawItemOnList.bind(this));
+        store.on('contours:setAllSelected', this._updateList.bind(this));
+        store.on('contours:removeSelectedFavorites', this._updateList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
-        view.addEventListener('setSelected', (e) => SnapshotBridgeController.setSelectedOnListAndMap(e));
-        view.addEventListener('setAllSelected', (e) => SnapshotBridgeController.setAllSelectedOnListAndMap(e));
-        view.addEventListener('click', (e) => SnapshotBridgeController.zoomToContourOnMap(e));
-        view.addEventListener('setVisible', (e) => SnapshotBridgeController.showQuicklookOnListAndMap(e));
-        view.addEventListener('mouseover', (e, state = true) => SnapshotBridgeController.hoverContour(e, state));
-        view.addEventListener('mouseout', (e, state = false) => SnapshotBridgeController.hoverContour(e, state));
+        view.addEventListener('setSelected', (e) => ContourBridgeController.setSelectedOnListAndMap(e));
+        view.addEventListener('setAllSelected', (e) => ContourBridgeController.setAllSelectedOnListAndMap(e));
+        view.addEventListener('click', (e) => ContourBridgeController.zoomToContourOnMap(e));
+        view.addEventListener('setVisible', (e) => ContourBridgeController.showQuicklookOnListAndMap(e));
+        view.addEventListener('mouseover', (e, state = true) => ContourBridgeController.hoverContour(e, state));
+        view.addEventListener('mouseout', (e, state = false) => ContourBridgeController.hoverContour(e, state));
     }
 
     _onTabChangeHandler(e) {
@@ -79,7 +79,7 @@ export default class ResultListComponent extends BaseComponent {
         const store = application.getStore();
         const view = this.getView();
 
-        const item = store.getData('snapshots', itemId);
+        const item = store.getData('contours', itemId);
         const preparedItem = propertiesToItem(item['properties']);
 
         view.redrawItem(itemId, preparedItem);
@@ -93,7 +93,7 @@ export default class ResultListComponent extends BaseComponent {
 
         const hoverIndex = getCorrectIndex('hover');
 
-        const item = store.getData('snapshots', itemId);
+        const item = store.getData('contours', itemId);
         
         const {properties = []} = item;
         const isHovered = properties[hoverIndex];

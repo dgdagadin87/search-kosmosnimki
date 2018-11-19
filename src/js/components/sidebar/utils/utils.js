@@ -38,7 +38,7 @@ function manageTabsState(sidebar, store, state) {
     const resultIndex = getCorrectIndex('result');
     const cartIndex = getCorrectIndex('cart');
 
-    const allSnapShots = store.getSerializedData('snapshots');
+    const allSnapShots = store.getSerializedData('contours');
 
     const hasResultData = allSnapShots.some(item => {
         const {properties} = item;

@@ -69,7 +69,7 @@ export default class RequestAdapter {
         return geometries;
     }
 
-    searchSnapshots(limit = 0) {
+    searchContours(limit = 0) {
 
         const store = this._application.getStore();
         const searchCriteria = store.getData('searchCriteria');

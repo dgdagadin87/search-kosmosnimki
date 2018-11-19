@@ -7,10 +7,10 @@ export default class SearchDataStore extends BaseDataStore {
 
     hasResults() {
 
-        const snapshots = this.getSerializedData('snapshots');
+        const contours = this.getSerializedData('contours');
         const resultIndex = getCorrectIndex('result');
 
-        const hasResults = snapshots.some(item => {
+        const hasResults = contours.some(item => {
             const {properties = []} = item;
             return properties[resultIndex];
         });
@@ -20,10 +20,10 @@ export default class SearchDataStore extends BaseDataStore {
 
     hasFavorites() {
 
-        const snapshots = this.getSerializedData('snapshots');
+        const contours = this.getSerializedData('contours');
         const cartIndex = getCorrectIndex('cart');
 
-        const hasFavorites = snapshots.some(item => {
+        const hasFavorites = contours.some(item => {
             const {properties = []} = item;
             return properties[cartIndex];
         });
@@ -33,11 +33,11 @@ export default class SearchDataStore extends BaseDataStore {
 
     hasSelectedFavorites() {
 
-        const snapshots = this.getSerializedData('snapshots');
+        const contours = this.getSerializedData('contours');
         const cartIndex = getCorrectIndex('cart');
         const selectedIndex = getCorrectIndex('selected');
 
-        const hasFavorites = snapshots.some(item => {
+        const hasFavorites = contours.some(item => {
             const {properties = []} = item;
             return properties[cartIndex] && properties[selectedIndex];
         });
@@ -56,9 +56,9 @@ export default class SearchDataStore extends BaseDataStore {
     getResults(forGrid = false) {
 
         const resultIndex = getCorrectIndex('result');
-        const snapshotItems = this.getSerializedData('snapshots');
+        const contourItems = this.getSerializedData('contours');
 
-        const filteredData = snapshotItems.reduce((preparedData, item) => {
+        const filteredData = contourItems.reduce((preparedData, item) => {
 
             const {properties} = item;
 
@@ -80,9 +80,9 @@ export default class SearchDataStore extends BaseDataStore {
     getFavorites(forGrid = false) {
 
         const cartIndex = getCorrectIndex('cart');
-        const snapshotItems = this.getSerializedData('snapshots');
+        const contourItems = this.getSerializedData('contours');
 
-        const filteredData = snapshotItems.reduce((preparedData, item) => {
+        const filteredData = contourItems.reduce((preparedData, item) => {
 
             const {properties} = item;
 

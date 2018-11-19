@@ -32,9 +32,9 @@ export default class RequestManager {
         return this._catalogResourceComponent.getUserInfo();
     }
 
-    requestSearchSnapshots(limit = 0) {
+    requestSearchContours(limit = 0) {
 
-        return this._requestAdapterComponent.searchSnapshots(limit);
+        return this._requestAdapterComponent.searchContours(limit);
     }
 
     requestVectorLayerSearch(params = {}) {

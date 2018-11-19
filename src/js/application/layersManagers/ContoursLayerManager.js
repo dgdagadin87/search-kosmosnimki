@@ -22,7 +22,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
         this._bindEvents();
 
-        window.console.log('Snapshots layer manager was initialized');
+        window.console.log('Contours layer manager was initialized');
     }
 
     _bindEvents() {
@@ -31,31 +31,31 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const appEvents = application.getAppEvents();
         const store = application.getStore();
         const vectorLayer = this._vectorLayer;
-        const SnapshotsController = application.getBridgeController('snapshot');
+        const ContoursController = application.getBridgeController('contour');
 
         appEvents.on('sidebar:tab:change', this._setCurrentTab.bind(this));
         appEvents.on('sidebar:tab:change', this._toggleQuicklooks.bind(this));
-        appEvents.on('snapshots:zoomMap', this._zoomToContourOnMap.bind(this));
-        appEvents.on('snapshots:bringToTop', (id) => {
+        appEvents.on('contours:zoomMap', this._zoomToContourOnMap.bind(this));
+        appEvents.on('contours:bringToTop', (id) => {
             this._vectorLayer.bringToTopItem(id)
         });
-        appEvents.on('snapshots:bringToBottom', (id) => {
+        appEvents.on('contours:bringToBottom', (id) => {
             this._vectorLayer.bringToBottomItem(id)
         });
 
-        vectorLayer.on('mouseover', (e, state = true) => SnapshotsController.hoverContour(e, state));
-        vectorLayer.on('mouseout', (e, state = false) => SnapshotsController.hoverContour(e, state));
+        vectorLayer.on('mouseover', (e, state = true) => ContoursController.hoverContour(e, state));
+        vectorLayer.on('mouseout', (e, state = false) => ContoursController.hoverContour(e, state));
 
-        store.on('snapshots:researchedMap', this._addContoursOnMap.bind(this));
-        store.on('snapshots:researchedMap', this._zoomToSnapshotsOnMap.bind(this));
-        store.on('snapshots:addToCartMap', this._redrawSnapshot.bind(this));
-        store.on('snapshots:addAllToCartMap', this._redrawSnapshots.bind(this));
-        store.on('snapshots:setHoveredMap', this._redrawSnapshot.bind(this));
-        store.on('snapshots:setSelectedMap', this._redrawSnapshot.bind(this));
-        store.on('snapshots:setAllSelectedMap', this._redrawSnapshots.bind(this));
-        store.on('snapshots:removeSelectedFavoritesMap', this._redrawSnapshots.bind(this));
-        store.on('snapshots:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
-        store.on('snapshots:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
+        store.on('contours:researchedMap', this._addContoursOnMap.bind(this));
+        store.on('contours:researchedMap', this._zoomToContoursOnMap.bind(this));
+        store.on('contours:addToCartMap', this._redrawContour.bind(this));
+        store.on('contours:addAllToCartMap', this._redrawContours.bind(this));
+        store.on('contours:setHoveredMap', this._redrawContour.bind(this));
+        store.on('contours:setSelectedMap', this._redrawContour.bind(this));
+        store.on('contours:setAllSelectedMap', this._redrawContours.bind(this));
+        store.on('contours:removeSelectedFavoritesMap', this._redrawContours.bind(this));
+        store.on('contours:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
+        store.on('contours:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
     }
 
     _addContoursOnMap() {
@@ -63,8 +63,8 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const application = this.getApplication();
         const store = application.getStore();
 
-        const snapshots = store.getSerializedData('snapshots');
-        const items = snapshots.map(({properties}) => properties);
+        const contours = store.getSerializedData('contours');
+        const items = contours.map(({properties}) => properties);
 
         this._vectorLayer.removeData();
         this._vectorLayer.addData(items);
@@ -75,23 +75,23 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const application = this.getApplication();
         const store = application.getStore();
 
-        const item = store.getData('snapshots', gmxId);
+        const item = store.getData('contours', gmxId);
         const {properties} = item;
 
         const bounds  = this.getBounds([properties]);
         this._map.fitBounds(bounds, { animate: false });
     }
 
-    _zoomToSnapshotsOnMap() {
+    _zoomToContoursOnMap() {
 
         const application = this.getApplication();
         const store = application.getStore();
 
         const propertyIndex = getCorrectIndex('result');
 
-        const snapshots = store.getSerializedData('snapshots');
+        const contours = store.getSerializedData('contours');
 
-        const seriaLizedSnapShots = snapshots.map(({properties}) => properties);
+        const seriaLizedSnapShots = contours.map(({properties}) => properties);
         const resultItems = seriaLizedSnapShots.filter(properties => properties[propertyIndex]);
 
         if (resultItems.length < 1) {
@@ -104,12 +104,12 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         }
     }
 
-    _redrawSnapshot(gmxId) {
+    _redrawContour(gmxId) {
 
         this._vectorLayer.redrawItem(gmxId);
     }
 
-    _redrawSnapshots() {
+    _redrawContours() {
 
         this._vectorLayer.repaint();
     }
@@ -119,16 +119,16 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const {detail: {current}} = e;
 
         this._currentTab = current;
-        this._redrawSnapshots();
+        this._redrawContours();
     }
 
     _toggleQuicklooks() {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const snapshots = store.getSerializedData('snapshots');
+        const contours = store.getSerializedData('contours');
         const currentTab = this._currentTab;
-        const snapshotController = application.getBridgeController('snapshot');
+        const contourController = application.getBridgeController('contour');
 
         const resultIndex = getCorrectIndex('result');
         const cartIndex = getCorrectIndex('cart');
@@ -139,7 +139,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             return;
         }
 
-        snapshots.forEach(item => {
+        contours.forEach(item => {
 
             const {properties = []} = item;
             const visibleValue = properties[visibleIndex];
@@ -159,7 +159,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
                 isVisible = properties[cartIndex] && visibleValue === 'visible';
             }
 
-            snapshotController.showQuicklookOnMap(indexValue, isVisible);
+            contourController.showQuicklookOnMap(indexValue, isVisible);
         });
     }
 

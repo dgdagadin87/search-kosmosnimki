@@ -1,3 +1,5 @@
+import 'nodelist-foreach-polyfill';
+
 import './services/css/css';
 import './services/translations/translations';
 
@@ -37,7 +39,7 @@ const application = new Application({
                 'indexBy': 'id'
             },
             {
-                'key': 'snapshots',
+                'key': 'contours',
                 'isTable': true,
                 'indexBy': 'gmx_id'
             },

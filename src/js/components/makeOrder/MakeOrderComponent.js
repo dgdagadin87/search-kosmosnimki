@@ -54,11 +54,11 @@ export default class MakeOrderComponent extends BaseCompositedComponent {
         const userInfo = store.getData('userInfo');
         const selectedIndex = getCorrectIndex('selected');
         const cartIndex = getCorrectIndex('cart');
-        const snapshots = store.getSerializedData('snapshots');
+        const contours = store.getSerializedData('contours');
         const loginDialogComponent = this.getChildComponent('loginDialog');
         const orderDialogComponent = this.getChildComponent('orderDialog');
 
-        const selectedCarts = snapshots.filter(item => {
+        const selectedCarts = contours.filter(item => {
             const {properties} = item;
             if (!properties) {
                 return false;

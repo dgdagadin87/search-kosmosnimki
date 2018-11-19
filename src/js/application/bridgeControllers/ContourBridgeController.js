@@ -12,7 +12,7 @@ import {normalizeGeometry} from '../../utils/commonUtils';
 import {MAX_CART_SIZE, LAYER_ATTRIBUTES} from '../../config/constants/constants';
 
 
-export default class SnapshotBridgeController extends BaseBridgeController {
+export default class ContourBridgeController extends BaseBridgeController {
 
     constructor(...config) {
 
@@ -27,28 +27,28 @@ export default class SnapshotBridgeController extends BaseBridgeController {
             const application = this.getApplication();
             const appEvents = application.getAppEvents();
             const store = application.getStore();
-            const snapshot = store.getData('snapshots', gmxId);
+            const contour = store.getData('contours', gmxId);
 
-            if (snapshot) {
+            if (contour) {
 
-                const {properties = []} = snapshot;
+                const {properties = []} = contour;
                 const visibleChangedState = getVisibleChangedState(show, properties); // TODO
 
                 if (visibleChangedState) {
-                    snapshot['properties'] = properties;
-                    store.updateData('snapshots', {id: gmxId, content: snapshot}, ['snapshots:showQuicklookList']);
+                    contour['properties'] = properties;
+                    store.updateData('contours', {id: gmxId, content: contour}, ['contours:showQuicklookList']);
 
                     this.showQuicklookOnMap(gmxId, show)
                     .then(() => {                    
                         //this._update_list_item (id, this._compositeLayer.getItem (id));
-                        appEvents.trigger('snapshots:showQuicklookList', gmxId);
+                        appEvents.trigger('contours:showQuicklookList', gmxId);
                         resolve();
                     })
                     .catch(e => console.log(e));
                 }
             }
             else {
-                console.warn('snapshot with id =', id, ' not found.');
+                console.warn('contour with id =', id, ' not found.');
             }
         });
     }
@@ -66,8 +66,8 @@ export default class SnapshotBridgeController extends BaseBridgeController {
             const clipCoordsIndex = getCorrectIndex('clip_coords');
             const visibleIndex = getCorrectIndex('visibleIndex');
             const x1Index = getCorrectIndex('x1');
-            const currentSnapshot = store.getData('snapshots', id);
-            let {quicklook, properties = []} = currentSnapshot;
+            const currentContour = store.getData('contours', id);
+            let {quicklook, properties = []} = currentContour;
 
             if (isVisible) {
                 if (!quicklook) {/* ... */}
@@ -76,9 +76,9 @@ export default class SnapshotBridgeController extends BaseBridgeController {
                     quicklook.addTo(this._map);
                     //this._vectorLayer.bringToTopItem(id);
                     store.updateData(
-                        'snapshots',
-                        {id: gmx_id, content: currentSnapshot},
-                        ['snapshots:showQuicklookList', 'snapshots:bringToTop']
+                        'contours',
+                        {id: gmx_id, content: currentContour},
+                        ['contours:showQuicklookList', 'contours:bringToTop']
                     );
                     resolve();
                 }
@@ -86,11 +86,11 @@ export default class SnapshotBridgeController extends BaseBridgeController {
             else {
                 if (quicklook) {
                     map.removeLayer(quicklook);
-                    currentSnapshot.quicklook = null;
-                    store.updateData('snapshots', {id: id, content: currentSnapshot}, ['snapshots:showQuicklookList']);
+                    currentContour.quicklook = null;
+                    store.updateData('contours', {id: id, content: currentContour}, ['contours:showQuicklookList']);
                 }
 
-                appEvents.trigger('snapshots:bringToBottom', id);
+                appEvents.trigger('contours:bringToBottom', id);
                 resolve();
             }
         });
@@ -118,24 +118,24 @@ export default class SnapshotBridgeController extends BaseBridgeController {
             mode = 'fromList';
         }
 
-        const snapshot = store.getData('snapshots', gmxId);
+        const contour = store.getData('contours', gmxId);
 
-        if (snapshot) {
+        if (contour) {
 
-            const {properties} = snapshot;
+            const {properties} = contour;
         
             properties[hoverIndex] = state;
 
-            snapshot['properties'] = properties;
+            contour['properties'] = properties;
 
             let events = [];
 
             if (mode === 'fromMap') {
-                events.push('snapshots:setHovered');
+                events.push('contours:setHovered');
             }
-            events.push('snapshots:setHoveredMap');
+            events.push('contours:setHoveredMap');
 
-            store.updateData('snapshots', {id: gmxId, content: snapshot}, events);
+            store.updateData('contours', {id: gmxId, content: contour}, events);
         }
         else {
             window.console.warn(`${gmxId} - undefined`);
@@ -149,7 +149,7 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const appEvents = application.getAppEvents();
 
-        appEvents.trigger('snapshots:zoomMap', gmxId);
+        appEvents.trigger('contours:zoomMap', gmxId);
 
         // ... show ql ... //
     }
@@ -160,8 +160,8 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const store = application.getStore();
         const visibleIndex = getCorrectIndex('visible');
-        const currentSnapshot = store.getData('snapshots', gmxId);
-        const {properties = []} = currentSnapshot;
+        const currentContour = store.getData('contours', gmxId);
+        const {properties = []} = currentContour;
         const visible = properties[visibleIndex];
 
         let showState = false;
@@ -187,7 +187,7 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         const selectedIndex = getCorrectIndex('selected');
 
         const {detail: {gmx_id: gmxId}} = e;
-        let item = store.getData('snapshots', gmxId);
+        let item = store.getData('contours', gmxId);
 
         let {properties} = item;
 
@@ -197,11 +197,11 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         item['properties'] = properties;
 
         store.updateData(
-            'snapshots',
+            'contours',
             {id: gmxId, content: item},
             [
-                'snapshots:setSelected',
-                'snapshots:setSelectedMap'
+                'contours:setSelected',
+                'contours:setSelectedMap'
             ]
         );
     }
@@ -215,7 +215,7 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         const cartIndex = getCorrectIndex('cart');
         const gmxIdIndex = getCorrectIndex('gmx_id');
 
-        const data = store.getSerializedData('snapshots');
+        const data = store.getSerializedData('contours');
         const cartData = data.filter(item => item['properties'][cartIndex]);
 
         const selectedState = !cartData.every(item => item['properties'][selectedIndex]);
@@ -232,11 +232,11 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         });
 
         store.updateData(
-            'snapshots',
+            'contours',
             dataToUpdate,
             [
-                'snapshots:setAllSelected',
-                'snapshots:setAllSelectedMap'
+                'contours:setAllSelected',
+                'contours:setAllSelectedMap'
             ]
         );
     }
@@ -250,14 +250,14 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         const cartIndex = getCorrectIndex('cart');
         const selectedIndex = getCorrectIndex('selected');
 
-        const allData = store.getSerializedData('snapshots');
+        const allData = store.getSerializedData('contours');
         const filteredAllData = allData.filter(item => {
             const {properties} = item;
             return properties[cartIndex];
         });
 
         const { gmx_id: gmxId } = e.detail;
-        let item = store.getData('snapshots', gmxId);
+        let item = store.getData('contours', gmxId);
 
         let {properties} = item;
         let isCart = properties[cartIndex];
@@ -274,11 +274,11 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         item['properties'] = properties;
 
         store.updateData(
-            'snapshots',
+            'contours',
             {id: gmxId, content: item},
             [
-                'snapshots:addToCart',
-                'snapshots:addToCartMap'
+                'contours:addToCart',
+                'contours:addToCartMap'
             ]);
     }
 
@@ -291,7 +291,7 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         const cartIndex = getCorrectIndex('cart');
         const selectedIndex = getCorrectIndex('selected');
 
-        const rawData = store.getData('snapshots');
+        const rawData = store.getData('contours');
         const dataArray = Object.keys(rawData).map(itemId => rawData[itemId]);
 
         const areSomeNotInCart = dataArray.some(item => {
@@ -321,11 +321,11 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         );
 
         store.rewriteData(
-            'snapshots',
+            'contours',
             dataToRewrite,
             [
-                'snapshots:addAllToCart',
-                'snapshots:addAllToCartMap',
+                'contours:addAllToCart',
+                'contours:addAllToCartMap',
             ]
         );
     }
@@ -339,7 +339,7 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         const cartIndex = getCorrectIndex('cart');
         const gmxIdIndex = getCorrectIndex('gmx_id');
 
-        const data = store.getSerializedData('snapshots');
+        const data = store.getSerializedData('contours');
         const cartData = data.filter(item => item['properties'][cartIndex] && item['properties'][selectedIndex]);
 
         if (cartData.length < 1) {
@@ -359,11 +359,11 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         });
 
         store.updateData(
-            'snapshots',
+            'contours',
             dataToUpdate,
             [
-                'snapshots:removeSelectedFavorites',
-                'snapshots:removeSelectedFavoritesMap'
+                'contours:removeSelectedFavorites',
+                'contours:removeSelectedFavoritesMap'
             ]
         );
     }
@@ -376,7 +376,7 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         const resultIndex = getCorrectIndex('result');
         const cartIndex = getCorrectIndex('cart');
 
-        const snapShotsData = store.getData('snapshots');
+        const snapShotsData = store.getData('contours');
         const keysToRemove = Object.keys(snapShotsData);
 
         if (keysToRemove.length < 1) {
@@ -404,11 +404,11 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         });
 
         store.removeData(
-            'snapshots',
+            'contours',
             idsToRemove,
             [
-                'snapshots:researched',
-                'snapshots:researchedMap'
+                'contours:researched',
+                'contours:researchedMap'
             ]
         )
 
@@ -486,7 +486,7 @@ export default class SnapshotBridgeController extends BaseBridgeController {
             return preparedContours;
         },[]);
 
-        const oldData = store.getData('snapshots');
+        const oldData = store.getData('contours');
         const mergedData = this._mergeResults(oldData, contours);
 
         const resultsForAdding = Object.keys(mergedData).map(gmxId => {
@@ -500,11 +500,11 @@ export default class SnapshotBridgeController extends BaseBridgeController {
         });
 
         store.rewriteData(
-            'snapshots',
+            'contours',
             resultsForAdding,
             [
-                'snapshots:researchedMap',
-                'snapshots:researched'
+                'contours:researchedMap',
+                'contours:researched'
                 
             ]
         );
