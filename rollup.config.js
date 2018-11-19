@@ -7,6 +7,7 @@ import pkg from './package.json';
 import serve from 'rollup-plugin-serve';
 import { uglify } from "rollup-plugin-uglify";
 import livereload from 'rollup-plugin-livereload';
+import svelte from 'rollup-plugin-svelte';
 
 export default [
     {
@@ -22,6 +23,7 @@ export default [
         },   
         external: ['leaflet', 'leaflet-geomixer', 'moment'], 
         plugins: [
+            svelte(),
             resolve({jsnext: true, main: true, module: false, browser: false}),
             commonjs(),
             css({dest: 'dist/bundle.css', minified: true}),

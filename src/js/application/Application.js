@@ -1,5 +1,3 @@
-import "@babel/polyfill";
-
 import Translations from 'scanex-translations';
 
 import {
