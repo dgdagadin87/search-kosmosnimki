@@ -59,7 +59,7 @@ class SearchOptions extends EventTarget {
         </div>
       </div>
     </div>
-    <div class="no-select search-options-satellites" style="padding-right:15px;"></div>`;
+    <div class="no-select search-options-satellites" style="padding-right:10px;"></div>`;
 
     this._content.classList.add('search-options-content');
     this._satellitesContainer = this._container.querySelector('.search-options-satellites');    
@@ -181,10 +181,26 @@ class SearchOptions extends EventTarget {
   }
   _initSliders(){    
     this._cloudSlider = new RangeWidget(this._container.querySelector('.search-options-clouds-value'), {min: 0, max: 100});
-    this._cloudSlider.values = [0, 100];   
+    this._cloudSlider.values = [0, 100]; 
+    
+    this._cloudSlider.addEventListener('stop', e => { 
+
+      let event = document.createEvent('Event');
+      event.detail = this.criteria;
+      event.initEvent('change', false, false);
+      this.dispatchEvent(event);
+    });
 
     this._angleSlider = new RangeWidget( this._container.querySelector('.search-options-angle-value'), {min: 0, max: 60});
     this._angleSlider.values = [0, 60];
+
+    this._angleSlider.addEventListener('stop', e => { 
+
+      let event = document.createEvent('Event');
+      event.detail = this.criteria;
+      event.initEvent('change', false, false);
+      this.dispatchEvent(event);
+    });
 
     /*this._resolutionSlider = new RangeWidget(this._container.querySelector('.search-options-resolution-value'), {min: 0.3, max: 20, mode: 'float'});
     this._resolutionSlider.values = [0.3, 20];
@@ -212,6 +228,7 @@ class SearchOptions extends EventTarget {
 
     this._satellites.on('change', () => {
       let event = document.createEvent('Event');
+      event.detail = this.criteria;
       event.initEvent('change', false, false);
       this.dispatchEvent(event);
     })

@@ -39,10 +39,10 @@ div.satellite-col {
     left: 5px;
 }
 .search-options div.toggleControl.opened {
-    background: url('assets/down.gif');
+    background: url('img/down.gif');
 }
 .search-options div.toggleControl.closed {
-    background: url('assets/right.gif');
+    background: url('img/right.gif');
 }
 .search-options .satellite-segment-container {
     border:1px solid #ddd;

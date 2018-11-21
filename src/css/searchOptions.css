@@ -204,8 +204,8 @@
     cursor: pointer;
 }
 .search-options-annually-control.annually-unchecked {
-    background: url('assets/annually-unchecked.png');
+    background: url('img/annually-unchecked.png');
 }
 .search-options-annually-control.annually-checked {
-    background: url('assets/annually-checked.png');
+    background: url('img/annually-checked.png');
 }
