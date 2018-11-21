@@ -47,8 +47,8 @@ export default class Map {
         const application = this.getApplication();
         const globalEvents = application.getAppEvents();
 
-        globalEvents.on('system:components:created', () => this._resizeMap());
-        globalEvents.on('system:components:created', () => this._setMapPaggingTop());
+        globalEvents.on('system:uiElements:created', () => this._resizeMap());
+        globalEvents.on('system:uiElements:created', () => this._setMapPaggingTop());
         globalEvents.on('system:window:resize', () => this._resizeMap());
     }
 
@@ -102,7 +102,7 @@ export default class Map {
     _setMapPaggingTop() {
 
         const application = this.getApplication();
-        const sideBarComponent = application.getComponent('sidebar');
+        const sideBarComponent = application.getUiElement('sidebar');
         const sidebarView = sideBarComponent.getView();
         const sidebarContainer = sidebarView.getContainer();
 

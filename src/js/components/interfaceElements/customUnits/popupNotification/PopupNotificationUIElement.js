@@ -2,10 +2,10 @@ import NotificationWidget from 'scanex-notify-widget';
 
 import { NOTIFICATION_HIDE_TIMEOUT } from 'js/config/constants/constants';
 
-import BaseComponent from 'js/base/BaseComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
 
-export default class PopupNotificationComponent extends BaseComponent {
+export default class PopupNotificationUIElement extends BaseUIElement {
 
     init() {
 

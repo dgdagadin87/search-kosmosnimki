@@ -1,6 +1,6 @@
 import Translations from 'scanex-translations';
 
-import BaseCompositedComponent from 'js/base/BaseCompositedComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
 import { RESULT_MAX_COUNT_PLUS_ONE } from 'js/config/constants/constants';
 
@@ -17,7 +17,7 @@ import DownloadDialogComponent from './components/downloadDialog/DownloadDialogC
 import View from './view/View';
 
 
-export default class SidebarComponent extends BaseCompositedComponent {
+export default class SidebarUIElement extends BaseUIElement {
 
     init() {
 
@@ -90,7 +90,7 @@ export default class SidebarComponent extends BaseCompositedComponent {
         store.on('contours:removeSelectedFavorites', () => manageTabsState(view, store, 'clearFavorites'));
 
         globalEvents.on('system:window:resize', () => this._resizeSidebar());
-        globalEvents.on('system:components:created', () => this._resizeSidebar());
+        globalEvents.on('system:uiElements:created', () => this._resizeSidebar());
         globalEvents.on('sidebar:cart:limit', () => this._cartLimitMessage());
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());

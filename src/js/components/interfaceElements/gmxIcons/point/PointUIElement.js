@@ -1,30 +1,30 @@
 import Translations from 'scanex-translations';
 
-import BaseComponent from 'js/base/BaseComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
 
-export default class PolygonComponent extends BaseComponent {
+export default class PointUIElement extends BaseUIElement {
 
     init() {
 
         const map = this.getMap();
 
-        const controlText = Translations.getText('controls.polygon');
+        const controlText = Translations.getText('controls.point');
 
-        const polygonControl = new L.Control.gmxIcon({
-            id: 'polygon', 
+        const pointControl = new L.Control.gmxIcon({
+            id: 'point', 
             position: 'drawControls', 
             title: controlText, 
             togglable: true,
             imagePath: './dist/',
         });
 
-        polygonControl.on('statechange', this._handleStateChange.bind(this));
+        pointControl.on('statechange', this._handleStateChange.bind(this));
 
-        this._view = polygonControl;
+        this._view = pointControl;
 
-        map.gmxControlsManager.add(polygonControl);
-        map.addControl(polygonControl);
+        map.gmxControlsManager.add(pointControl);
+        map.addControl(pointControl);
 
         this._bindEvents();
     }
@@ -38,7 +38,7 @@ export default class PolygonComponent extends BaseComponent {
         gmxDrawing.on('drawstop', this._omMapDrawStop.bind(this));
         events.on('gmxIcons:clearActive', (id) => {
             const control = this.getView();
-            if (id !== 'polygon') {
+            if (id !== 'point') {
                 control.setActive(false);
             }
         });
@@ -56,11 +56,11 @@ export default class PolygonComponent extends BaseComponent {
         const {target} = e;
         const {options} = target;
 
-        if (this._getActiveIcon() === 'polygon') {
+        if (this._getActiveIcon() === 'point') {
             this._setActive();
         }
         else if (options.isActive) {
-            this._setActive('polygon');
+            this._setActive('point');
         }
 
         this._setActiveIcon(target, options.isActive);
@@ -68,16 +68,16 @@ export default class PolygonComponent extends BaseComponent {
 
     _setActiveIcon (control, isActive) {
 
-        const polygonControl = this.getView();
+        const pointControl = this.getView();
 
         this._rewriteActiveIcon(null);
 
-        const flag = control === polygonControl && (isActive || polygonControl.options.isActive);
+        const flag = control === pointControl && (isActive || pointControl.options.isActive);
 
-        polygonControl.setActive(flag);
+        pointControl.setActive(flag);
 
         if (flag) {
-            this._rewriteActiveIcon('polygon');
+            this._rewriteActiveIcon('point');
         }
     }
 
@@ -88,8 +88,8 @@ export default class PolygonComponent extends BaseComponent {
 
         gmxDrawing.bringToFront();   
 
-        if (controlName === 'polygon' && isActive) {
-            gmxDrawing.create('Polygon');
+        if (controlName === 'point' && isActive) {
+            gmxDrawing.create('Point');
         }
     }
 
@@ -108,7 +108,7 @@ export default class PolygonComponent extends BaseComponent {
         const store = application.getStore();
 
         store.rewriteData('activeIcon', value);
-        appEvents.trigger('gmxIcons:clearActive', 'polygon');
+        appEvents.trigger('gmxIcons:clearActive', 'point');
     }
 
 }

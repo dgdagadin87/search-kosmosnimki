@@ -1,10 +1,10 @@
 import LanguageWidget from 'scanex-lang-widget';
 import Translations from 'scanex-translations';
 
-import BaseComponent from 'js/base/BaseComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
 
-export default class LangWidgetComponent extends BaseComponent {
+export default class LangWidgetUIElement extends BaseUIElement {
 
     init() {
 

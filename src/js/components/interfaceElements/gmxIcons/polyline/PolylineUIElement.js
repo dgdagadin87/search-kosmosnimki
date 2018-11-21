@@ -1,9 +1,9 @@
 import Translations from 'scanex-translations';
 
-import BaseComponent from 'js/base/BaseComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
 
-export default class PolylineComponent extends BaseComponent {
+export default class PolylineUIElement extends BaseUIElement {
 
     init() {
 

@@ -1,4 +1,4 @@
-import BaseCompositedComponent from 'js/base/BaseCompositedComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
 import LoginDialogComponent from './components/loginDialog/LoginDialogComponent';
 import OrderDialogComponent from './components/orderDialog/OrderDialogComponent';
@@ -7,7 +7,7 @@ import SuccessDialogComponent from './components/successDialog/SuccessDialogComp
 import { getCorrectIndex, propertiesToItem } from 'js/utils/commonUtils';
 
 
-export default class MakeOrderComponent extends BaseCompositedComponent {
+export default class MakeOrderUIElement extends BaseUIElement {
 
     init() {
 

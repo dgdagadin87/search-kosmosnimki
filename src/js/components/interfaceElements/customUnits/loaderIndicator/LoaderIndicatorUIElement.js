@@ -1,9 +1,9 @@
 import LoaderWidget from 'scanex-loader-widget';
 
-import BaseComponent from 'js/base/BaseComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
 
-export default class LoaderIndicatorComponent extends BaseComponent {
+export default class LoaderIndicatorUIElement extends BaseUIElement {
 
     init() {
 

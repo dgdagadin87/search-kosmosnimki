@@ -1,7 +1,7 @@
-import BaseComponent from 'js/base/BaseComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
 
-export default class BaseLayesrComponent extends BaseComponent {
+export default class BaseLayesrUIElement extends BaseUIElement {
 
     init() {
 

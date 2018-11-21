@@ -1,20 +1,29 @@
 import Translations from 'scanex-translations';
 
-import BaseCompositedComponent from 'js/base/BaseCompositedComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
-import ButtonComponent from './components/button/ButtonComponent';
 import DialogComponent from './components/dialog/DialogComponent';
 
 
-export default class DownloadComponent extends BaseCompositedComponent {
+export default class DownloadUIElement extends BaseUIElement {
 
     init() {
 
+        const map = this.getMap();
+
+        const downloadControl = new L.Control.gmxIcon({
+            id: 'download',
+            position: 'searchControls',
+            title: Translations.getText('controls.download'),
+            stateChange: this._onShowClick.bind(this)
+        });
+
+        this._view = downloadControl;
+
+        map.gmxControlsManager.add(this._view);
+        map.addControl(this._view);
+
         this.initChildren([
-            {
-                index: 'button',
-                constructor: ButtonComponent
-            },
             {
                 index: 'dialog',
                 constructor: DialogComponent
@@ -26,10 +35,8 @@ export default class DownloadComponent extends BaseCompositedComponent {
 
     _bindEvents() {
 
-        const buttonComponent = this.getChildComponent('button');
         const dialogComponent = this.getChildComponent('dialog');
 
-        buttonComponent.events.on('click:show', this._onShowClick.bind(this));
         dialogComponent.events.on('click:apply', this._onApplyClick.bind(this));
         dialogComponent.events.on('click:cancel', this._onCancelClick.bind(this));
     }

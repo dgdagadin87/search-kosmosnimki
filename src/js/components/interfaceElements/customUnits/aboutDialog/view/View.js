@@ -6,7 +6,7 @@ import { getWindowCenter } from 'js/utils/commonUtils';
 import { VERSION, VERSION_DATE } from 'js/config/constants/constants';
 
 
-class About extends FloatingPanel {
+class View extends FloatingPanel {
     constructor (container, {text, events}) {
         const {left, top} = getWindowCenter();
         super(container, {id: 'about.dialog', left, top, modal: true});

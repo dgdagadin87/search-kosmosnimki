@@ -4,8 +4,6 @@ import 'nodelist-foreach-polyfill';
 import './services/css/css';
 import './services/translations/translations';
 
-import { isMobile } from './utils/commonUtils';
-
 import Application from './application/Application';
 
 import DrawingBridgeController from './components/bridgeControllers/DrawingBridgeController';
@@ -16,137 +14,27 @@ import ContourLayerManager from './components/layersManagers/ContoursLayerManage
 
 import ShapeLoaderAddon from './addons/shapeLoader/ShapeLoaderAddon';
 
-import LoaderIndicatorComponent from './components/interfaceElements/customUnits/loaderIndicator/LoaderIndicatorComponent';
-import PopupNotificationComponent from './components/interfaceElements/customUnits/popupNotification/PopupNotificationComponent';
-import ErrorDialogComponent from './components/interfaceElements/customUnits/errorDialog/ErrorDialogComponent';
-import HelpingButtonComponent from './components/interfaceElements/customUnits/helpingButton/HelpingButtonComponent';
-import UserInformationComponent from './components/interfaceElements/customUnits/userInformation/UserInformationComponent';
-import LanguageSelectComponent from './components/interfaceElements/customUnits/languageSelect/LanguageSelectComponent';
-import MakeOrderComponent from './components/interfaceElements/customUnits/makeOrder/MakeOrderComponent';
-import AboutDialogComponent from './components/interfaceElements/customUnits/aboutDialog/AboutDialogComponent';
+import LoaderIndicatorUiElement from './components/interfaceElements/customUnits/loaderIndicator/LoaderIndicatorUiElement';
+import PopupNotificationUiElement from './components/interfaceElements/customUnits/popupNotification/PopupNotificationUiElement';
+import ErrorDialogUiElement from './components/interfaceElements/customUnits/errorDialog/ErrorDialogUiElement';
+import HelpingButtonUiElement from './components/interfaceElements/customUnits/helpingButton/HelpingButtonUiElement';
+import UserInformationUiElement from './components/interfaceElements/customUnits/userInformation/UserInformationUiElement';
+import LanguageSelectUiElement from './components/interfaceElements/customUnits/languageSelect/LanguageSelectUiElement';
+import MakeOrderUiElement from './components/interfaceElements/customUnits/makeOrder/MakeOrderUiElement';
 
-import PointComponent from './components/interfaceElements/gmxIcons/point/PointComponent';
-import PolylineComponent from './components/interfaceElements/gmxIcons/polyline/PolylineComponent';
-import PolygonComponent from './components/interfaceElements/gmxIcons/polygon/PolygonComponent';
-import RectangleComponent from './components/interfaceElements/gmxIcons/rectangle/RectangleComponent';
-import BoxZoomComponent from './components/interfaceElements/gmxIcons/boxZoom/BoxZoomComponent';
-import UploadComponent from './components/interfaceElements/gmxIcons/upload/UploadComponent';
-import DownloadComponent from './components/interfaceElements/gmxIcons/download/DownloadComponent';
+import PointUiElement from './components/interfaceElements/gmxIcons/point/PointUiElement';
+import PolylineUiElement from './components/interfaceElements/gmxIcons/polyline/PolylineUiElement';
+import PolygonUiElement from './components/interfaceElements/gmxIcons/polygon/PolygonUiElement';
+import RectangleUiElement from './components/interfaceElements/gmxIcons/rectangle/RectangleUiElement';
+import BoxZoomUiElement from './components/interfaceElements/gmxIcons/boxZoom/BoxZoomUiElement';
+import UploadUiElement from './components/interfaceElements/gmxIcons/upload/UploadUiElement';
+import DownloadUiElement from './components/interfaceElements/gmxIcons/download/DownloadUiElement';
 
-import MapTypeSwitcherComponent from './components/interfaceElements/mapWidgets/mapTypeSwitcher/MapTypeSwitcherComponent';
-import ZoomComponent from './components/interfaceElements/mapWidgets/zoom/ZoomComponent';
-import SidebarComponent from './components/interfaceElements/mapWidgets/sidebar/SidebarComponent';
-import DrawingObjectsComponent from './components/interfaceElements/mapWidgets/drawingObjects/DrawingObjectsComponent';
+import BaseLayersUiElement from './components/interfaceElements/mapWidgets/baseLayers/BaseLayersUiElement';
+import ZoomUiElement from './components/interfaceElements/mapWidgets/zoom/ZoomUiElement';
+import SidebarUiElement from './components/interfaceElements/mapWidgets/sidebar/SidebarUiElement';
+import DrawingObjectsUiElement from './components/interfaceElements/mapWidgets/drawingObjects/DrawingObjectsUiElement';
 
-
-const isMobileGadget = isMobile();
-
-let interfaceElements = [];
-
-// custom elements
-interfaceElements.push({
-    type: 'customUnit',
-    index: 'loaderIndicator',
-    constructor: LoaderIndicatorComponent
-});
-interfaceElements.push({
-    type: 'custom',
-    index: 'popupNotificator',
-    constructor: PopupNotificationComponent
-});
-interfaceElements.push({
-    type: 'customUnit',
-    index: 'errorDialog',
-    constructor: ErrorDialogComponent
-});
-interfaceElements.push({
-    type: 'customUnit',
-    index: 'helpingButton',
-    constructor: HelpingButtonComponent
-});
-interfaceElements.push({
-    type: 'customUnit',
-    index: 'userInformation',
-    constructor: UserInformationComponent
-});
-interfaceElements.push({
-    type: 'customUnit',
-    index: 'languageSelect',
-    constructor: LanguageSelectComponent
-});
-interfaceElements.push({
-    type: 'customUnit',
-    index: 'makeOrder',
-    constructor: MakeOrderComponent
-});
-interfaceElements.push({
-    type: 'customUnit',
-    index: 'about',
-    constructor: AboutDialogComponent
-});
-
-// gmx icons
-interfaceElements.push({
-    type: 'gmxIcon',
-    index: 'point',
-    constructor: PointComponent
-});
-if (!isMobileGadget) {
-    interfaceElements.push({
-        type: 'gmxIcon',
-        index: 'polyline',
-        constructor: PolylineComponent
-    });
-    interfaceElements.push({
-        type: 'gmxIcon',
-        index: 'polygon',
-        constructor: PolygonComponent
-    });
-    interfaceElements.push({
-        type: 'gmxIcon',
-        index: 'rectangle',
-        constructor: RectangleComponent
-    });
-}
-interfaceElements.push({
-    type: 'gmxIcon',
-    index: 'upload',
-    constructor: UploadComponent
-});
-interfaceElements.push({
-    type: 'gmxIcon',
-    index: 'download',
-    constructor: DownloadComponent
-});
-if (!isMobileGadget) {
-    interfaceElements.push({
-        type: 'gmxIcon',
-        index: 'boxZoom',
-        constructor: BoxZoomComponent
-    });
-}
-
-// mapWidgets
-interfaceElements.push({
-    type: 'mapWidget',
-    index: 'mapTypeSwitcher',
-    constructor: MapTypeSwitcherComponent
-});
-interfaceElements.push({
-    type: 'mapWidget',
-    index: 'zoom',
-    constructor: ZoomComponent
-});
-interfaceElements.push({
-    type: 'mapWidget',
-    index: 'drawingObjects',
-    constructor: DrawingObjectsComponent
-});
-interfaceElements.push({
-    type: 'mapWidget',
-    index: 'sidebar',
-    constructor: SidebarComponent
-});
 
 const application = new Application({
 
@@ -224,7 +112,102 @@ const application = new Application({
     ],
 
     // components
-    components: interfaceElements
+    uiElements: [
+        {
+            type: 'customUnit',
+            index: 'loaderIndicator',
+            constructor: LoaderIndicatorUiElement
+        },
+        {
+            type: 'custom',
+            index: 'popupNotificator',
+            constructor: PopupNotificationUiElement
+        },
+        {
+            type: 'customUnit',
+            index: 'errorDialog',
+            constructor: ErrorDialogUiElement
+        },
+        {
+            type: 'customUnit',
+            index: 'helpingButton',
+            constructor: HelpingButtonUiElement
+        },
+        {
+            type: 'customUnit',
+            index: 'userInformation',
+            constructor: UserInformationUiElement
+        },
+        {
+            type: 'customUnit',
+            index: 'languageSelect',
+            constructor: LanguageSelectUiElement
+        },
+        {
+            type: 'customUnit',
+            index: 'makeOrder',
+            constructor: MakeOrderUiElement
+        },
+        {
+            type: 'gmxIcon',
+            index: 'point',
+            constructor: PointUiElement
+        },
+        {
+            type: 'gmxIcon',
+            index: 'polyline',
+            constructor: PolylineUiElement,
+            mobile: false
+        },
+        {
+            type: 'gmxIcon',
+            index: 'polygon',
+            constructor: PolygonUiElement,
+            mobile: false
+        },
+        {
+            type: 'gmxIcon',
+            index: 'rectangle',
+            constructor: RectangleUiElement,
+            mobile: false
+        },
+        {
+            type: 'gmxIcon',
+            index: 'upload',
+            constructor: UploadUiElement
+        },
+        {
+            type: 'gmxIcon',
+            index: 'download',
+            constructor: DownloadUiElement
+        },
+        {
+            type: 'gmxIcon',
+            index: 'boxZoom',
+            constructor: BoxZoomUiElement,
+            mobile: false
+        },
+        {
+            type: 'mapWidget',
+            index: 'baseLayers',
+            constructor: BaseLayersUiElement
+        },
+        {
+            type: 'mapWidget',
+            index: 'zoom',
+            constructor: ZoomUiElement
+        },
+        {
+            type: 'mapWidget',
+            index: 'drawingObjects',
+            constructor: DrawingObjectsUiElement
+        },
+        {
+            type: 'mapWidget',
+            index: 'sidebar',
+            constructor: SidebarUiElement
+        }
+    ]
 
 });
 

@@ -1,8 +1,7 @@
 import Translations from 'scanex-translations';
 
-import BaseCompositedComponent from 'js/base/BaseCompositedComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
-import ButtonComponent from './components/button/ButtonComponent';
 import DialogComponent from './components/dialog/DialogComponent';
 
 import {MAX_UPLOAD_OBJECTS, MAX_UPLOAD_POINTS} from 'js/config/constants/constants';
@@ -10,15 +9,25 @@ import {MAX_UPLOAD_OBJECTS, MAX_UPLOAD_POINTS} from 'js/config/constants/constan
 import {getShapefileObject, getCoordinatesCount} from 'js/utils/commonUtils';
 
 
-export default class UploadComponent extends BaseCompositedComponent {
+export default class UploadUIElement extends BaseUIElement {
 
     init() {
 
+        const map = this.getMap();
+
+        const uploadControl = new L.Control.gmxIcon({
+            id: 'upload',
+            position: 'searchControls',
+            title: Translations.getText('controls.upload'),
+            stateChange: this._onShowClick.bind(this)
+        });
+
+        this._view = uploadControl;
+
+        map.gmxControlsManager.add(this._view);
+        map.addControl(this._view);
+
         this.initChildren([
-            {
-                index: 'button',
-                constructor: ButtonComponent
-            },
             {
                 index: 'dialog',
                 constructor: DialogComponent
@@ -30,10 +39,8 @@ export default class UploadComponent extends BaseCompositedComponent {
 
     _bindEvents() {
 
-        const buttonComponent = this.getChildComponent('button');
         const dialogComponent = this.getChildComponent('dialog');
 
-        buttonComponent.events.on('click:show', this._onShowClick.bind(this));
         dialogComponent.events.on('click:apply', this._onApplyClick.bind(this));
     }
 

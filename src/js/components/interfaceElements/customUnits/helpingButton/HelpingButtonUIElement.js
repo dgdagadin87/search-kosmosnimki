@@ -1,9 +1,11 @@
-import BaseComponent from 'js/base/BaseComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
 import { createContainer } from 'js/utils/commonUtils';
 
+import ABoutDialogComponent from './components/aboutDialog/AboutDialogComponent';
 
-export default class HelpingButtonComponent extends BaseComponent {
+
+export default class HelpingButtonUIElement extends BaseUIElement {
 
     init() {
 
@@ -12,6 +14,13 @@ export default class HelpingButtonComponent extends BaseComponent {
         this._view = createContainer();
         this._view.classList.add('help-button');
         this._container.appendChild(this._view);
+
+        this.initChildren([
+            {
+                index: 'dialog',
+                constructor: ABoutDialogComponent
+            }
+        ])
 
         this._bindEvents();
     }
@@ -23,10 +32,9 @@ export default class HelpingButtonComponent extends BaseComponent {
 
     _onClickHandler() {
 
-        const app = this.getApplication();
-        const appEvents = app.getAppEvents();
+        const dialog = this.getChildComponent('dialog');
 
-        appEvents.trigger('helpButton:click');
+        dialog.show();
     }
 
 }

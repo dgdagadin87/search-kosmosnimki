@@ -30,7 +30,7 @@ export default class BaseLayersComponent extends BaseComponent {
         const application = this.getApplication();
         const globalEvents = application.getAppEvents();
 
-        globalEvents.on('system:components:created', () => this._shiftControl());
+        globalEvents.on('system:uiElements:created', () => this._shiftControl());
         globalEvents.on('sidebar:tab:afterchange', () => this._shiftControl());
     }
 
@@ -67,7 +67,7 @@ export default class BaseLayersComponent extends BaseComponent {
         const map = this.getMap();
 
         const application = this.getApplication();
-        const sideBarComponent = application.getComponent('sidebar');
+        const sideBarComponent = application.getUiElement('sidebar');
 
         const { width } = sideBarComponent.getView().getContainer().getBoundingClientRect();
 

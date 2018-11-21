@@ -1,11 +1,11 @@
-import BaseComponent from 'js/base/BaseComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
-import About from './_inner/About';
+import About from './view/View';
 
 import { createContainer } from 'js/utils/commonUtils';
 
 
-export default class AboutDialogComponent extends BaseComponent {
+export default class AboutDialogUIElement extends BaseUIElement {
 
     init() {
 

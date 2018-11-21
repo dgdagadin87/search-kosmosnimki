@@ -8,13 +8,13 @@ import {
     VERSION_PATH
 } from '../config/constants/constants';
 
+import { isMobile } from 'js/utils/commonUtils';
+
 import RequestManager from './requestManager/RequestManager';
 
 import DataStore from './searchDataStore/SearchDataStore';
 
 import MapComponent from './map/Map';
-
-
 
 import Events from './events/Events';
 
@@ -46,7 +46,7 @@ class Application {
 
         this._initAddons();
 
-        this._addComponents();
+        this._initUiElements();
 
         this._bindEvents();
     }
@@ -220,28 +220,32 @@ class Application {
         }
     }
 
-    _addComponents() {
+    _initUiElements() {
 
-        const {components = []} = this._config;
+        const isMobileGadget = isMobile();
+        const {uiElements = []} = this._config;
         const appEvents = this.getAppEvents();
 
-        this._components = {};
+        this._uiElements = {};
 
-        for (let i = 0; i < components.length; i++ ) {
+        for (let i = 0; i < uiElements.length; i++ ) {
 
-            const currentComponent = components[i];
-            const {index, constructor} = currentComponent;
+            const currentElement = uiElements[i];
+            const {index, constructor, mobile = true} = currentElement;
 
-            this._components[index] = new constructor({
-                name: index,
-                application: this,
-                map: this.getMap()
-            });
+            if ( (isMobileGadget && mobile) || !isMobileGadget) {
 
-            this._components[index].init();
+                this._uiElements[index] = new constructor({
+                    name: index,
+                    application: this,
+                    map: this.getMap()
+                });
+    
+                this._uiElements[index].init();
+            }
         }
 
-        appEvents.trigger('system:components:created');
+        appEvents.trigger('system:uiElements:created');
     }
 
     _errorHandle(e) {
@@ -251,21 +255,21 @@ class Application {
 
     showLoader(state = false) {
 
-        const loaderWidget = this.getComponent('loaderIndicator');
+        const loaderWidget = this.getUiElement('loaderIndicator');
 
         loaderWidget.show(state);
     }
 
     showNotification(message = '') {
 
-        const notificationWidget = this.getComponent('popupNotificator');
+        const notificationWidget = this.getUiElement('popupNotificator');
 
         notificationWidget.show(message);
     }
 
     showError(errorText) {
 
-        const errorDialog = this.getComponent('errorDialog');
+        const errorDialog = this.getUiElement('errorDialog');
 
         errorDialog.show(errorText);
     }
@@ -290,9 +294,9 @@ class Application {
         return this._addons[index];
     }
 
-    getComponent(index) {
+    getUiElement(index) {
 
-        return this._components[index];
+        return this._uiElements[index];
     }
 
     getStore() {

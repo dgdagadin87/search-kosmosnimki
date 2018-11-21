@@ -1,9 +1,9 @@
-import BaseComponent from 'js/base/BaseComponent';
+import BaseUIElement from 'js/base/BaseUIElement';
 
 import View from './view/View';
 
 
-export default class ErrorDialogComponent extends BaseComponent {
+export default class ErrorDialogUIElement extends BaseUIElement {
 
     init() {
 
