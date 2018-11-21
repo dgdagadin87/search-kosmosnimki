@@ -1,6 +1,6 @@
-import { ACCESS_USER_ROLE } from '../../../../config/constants/constants';
+import { ACCESS_USER_ROLE } from 'js/config/constants/constants';
 
-import { stRange, toQuery, getBbox } from '../../../../utils/commonUtils';
+import { stRange, toQuery, getBbox } from 'js/utils/commonUtils';
 
 
 export default class AdapterCore {

@@ -8,6 +8,8 @@ import serve from 'rollup-plugin-serve';
 import { uglify } from "rollup-plugin-uglify";
 import livereload from 'rollup-plugin-livereload';
 import svelte from 'rollup-plugin-svelte';
+import includePaths from 'rollup-plugin-includepaths';
+ 
 
 export default [
     {
@@ -25,6 +27,12 @@ export default [
         plugins: [
             svelte(),
             resolve({jsnext: true, main: true, module: false, browser: false}),
+            includePaths({
+                include: {},
+                paths: ['src'],
+                external: [],
+                extensions: ['.js', '.html']
+            }),
             commonjs(),
             css({dest: 'dist/bundle.css', minified: true}),
             cpy([

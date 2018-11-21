@@ -14,15 +14,7 @@ import DataStore from './searchDataStore/SearchDataStore';
 
 import MapComponent from './map/Map';
 
-import DrawingBridgeController from './bridgeControllers/DrawingBridgeController';
-import ContourBridgeController from './bridgeControllers/ContourBridgeController';
 
-import DrawingLayerManager from './layersManagers/DrawingsLayerManager';
-import ContourLayerManager from './layersManagers/ContoursLayerManager';
-
-import LoaderIndicatorComponent from './components/loaderIndicator/LoaderIndicatorComponent';
-import PopupNotificationComponent from './components/popupNotification/PopupNotificationComponent';
-import ErrorDialogComponent from './components/errorDialog/ErrorDialogComponent';
 
 import Events from './events/Events';
 
@@ -176,30 +168,39 @@ class Application {
 
     _initBridgeControllers() {
 
-        this._drawingBridgeController = new DrawingBridgeController({
-            application: this,
-            map: this.getMap()
-        });
+        const {bridgeControllers = []} = this._config;
 
-        this._contourBridgeController = new ContourBridgeController({
-            application: this,
-            map: this.getMap()
-        });
+        this._bridgeControllers = {};
+
+        for (let i = 0; i < bridgeControllers.length; i++ ) {
+
+            const currentController = bridgeControllers[i];
+            const {index, constructor} = currentController;
+
+            this._bridgeControllers[index] = new constructor({
+                map: this.getMap(),
+                application: this
+            });
+        }
     }
 
     _initLayersManagers() {
 
-        this._drawingLayerManager = new DrawingLayerManager({
-            map: this.getMap(),
-            application: this,
-            store: this._dataStore
-        });
+        const {layersManagers = []} = this._config;
 
-        this._contourLayerManager = new ContourLayerManager({
-            map: this.getMap(),
-            application: this,
-            store: this._dataStore
-        });
+        this._layersManagers = {};
+
+        for (let i = 0; i < layersManagers.length; i++ ) {
+
+            const currentManager = layersManagers[i];
+            const {index, constructor} = currentManager;
+
+            this._layersManagers[index] = new constructor({
+                map: this.getMap(),
+                application: this,
+                store: this._dataStore
+            });
+        }
     }
 
     _initAddons() {
@@ -221,41 +222,10 @@ class Application {
 
     _addComponents() {
 
-        this._components = {};
-
-        this._addApplicationComponents();
-        this._addUserComponents();
-    }
-
-    _addApplicationComponents() {
-
-        const baseConfig = {
-            application: this,
-            map: this.getMap()
-        };
-
-        this._components['loaderIndicator'] = new LoaderIndicatorComponent({
-            name: 'loadIndicator',
-            ...baseConfig
-        });
-        this._components['loaderIndicator'].init();
-
-        this._components['popupNotificator'] = new PopupNotificationComponent({
-            name: 'popupNotificator',
-            ...baseConfig
-        });
-        this._components['popupNotificator'].init();
-
-        this._components['errorDialog'] = new ErrorDialogComponent({
-            name: 'errorDialog',
-            ...baseConfig
-        });
-        this._components['errorDialog'].init();
-    }
-
-    _addUserComponents() {
-
         const {components = []} = this._config;
+        const appEvents = this.getAppEvents();
+
+        this._components = {};
 
         for (let i = 0; i < components.length; i++ ) {
 
@@ -270,8 +240,6 @@ class Application {
 
             this._components[index].init();
         }
-
-        const appEvents = this.getAppEvents();
 
         appEvents.trigger('system:components:created');
     }
@@ -307,6 +275,16 @@ class Application {
         return this._requestManager;
     }
 
+    getBridgeController(name) {
+
+        return this._bridgeControllers[name];
+    }
+
+    getLayersManager(name) {
+
+        return this._layersManagers[name];
+    }
+
     getAddon(index) {
 
         return this._addons[index];
@@ -340,11 +318,6 @@ class Application {
     getAppEvents() {
 
         return this._events;
-    }
-
-    getBridgeController(name) {
-
-        return this['_' + name + 'BridgeController'];
     }
 
 }

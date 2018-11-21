@@ -1,6 +1,6 @@
-import BaseDataStore from '../../base/BaseDataStore';
+import BaseDataStore from 'js/base/BaseDataStore';
 
-import { getCorrectIndex, propertiesToItem, fromGmx } from '../../utils/commonUtils';
+import { getCorrectIndex, propertiesToItem, fromGmx } from 'js/utils/commonUtils';
 
 
 export default class SearchDataStore extends BaseDataStore {
