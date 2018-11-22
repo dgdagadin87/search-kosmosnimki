@@ -5,22 +5,14 @@ import {
     getVisibleChangedState,
     makeCloseTo,
     splitComplexId,
-    flatten
+    flatten,
+    normalizeGeometry
 } from 'js/utils/commonUtils';
-import {normalizeGeometry} from 'js/utils/commonUtils';
 
-import {MAX_CART_SIZE, LAYER_ATTRIBUTES} from 'js/config/constants/constants';
+import {MAX_CART_SIZE, LAYER_ATTRIBUTES, QUICKLOOK} from 'js/config/constants/constants';
 
 
 export default class ContourBridgeController extends BaseBridgeController {
-
-    constructor(...config) {
-
-        super(...config);
-
-        this._qlUrl = '//search.kosmosnimki.ru/QuickLookImage.ashx',
-        this._qlSize = { width: 600, height: 600 };
-    }
 
     _showQuicklook (gmxId, show) {
         return new Promise(resolve => {
@@ -36,12 +28,11 @@ export default class ContourBridgeController extends BaseBridgeController {
 
                 if (visibleChangedState) {
                     contour['properties'] = properties;
-                    store.updateData('contours', {id: gmxId, content: contour}, ['contours:showQuicklookList']);
+                    store.updateData('contours', {id: gmxId, content: contour}, ['contours:showQuicklookOnList']);
 
                     this.showQuicklookOnMap(gmxId, show)
-                    .then(() => {                    
-                        //this._update_list_item (id, this._compositeLayer.getItem (id));
-                        appEvents.trigger('contours:showQuicklookList', gmxId);
+                    .then(() => {
+                        appEvents.trigger('contours:showQuicklookOnList', gmxId);
                         resolve();
                     })
                     .catch(e => console.log(e));
@@ -61,25 +52,70 @@ export default class ContourBridgeController extends BaseBridgeController {
             const application = this.getApplication();
             const appEvents = application.getAppEvents();
             const store = application.getStore();
+            const gmxIdIndex = getCorrectIndex('gmx_id');
             const sceneIdIndex = getCorrectIndex('sceneid');
             const platformIndex = getCorrectIndex('platform');
             const clipCoordsIndex = getCorrectIndex('clip_coords');
-            const visibleIndex = getCorrectIndex('visibleIndex');
+            const visibleIndex = getCorrectIndex('visible');
             const x1Index = getCorrectIndex('x1');
-            const currentContour = store.getData('contours', id);
+            let currentContour = store.getData('contours', id);
             let {quicklook, properties = []} = currentContour;
 
             if (isVisible) {
-                if (!quicklook) {/* ... */}
+
+                if (!quicklook) {
+                    
+                    const sceneid = splitComplexId(properties[sceneIdIndex]).id;
+                    const platform = properties[platformIndex];
+                    const {url, width, height} = QUICKLOOK;
+                    const imageUrl = `${url}?sceneid=${sceneid}&platform=${platform}&width=${width}&height=${height}`;
+                    const {lng} = map.getCenter();
+                    const clipCoords = normalizeGeometry(properties[clipCoordsIndex], lng);
+                    const [ x1,y1, x2,y2, x3,y3, x4,y4 ] = properties.slice(x1Index, x1Index + 8);
+                    const anchors = [
+                        [makeCloseTo(lng, x1),y1],
+                        [makeCloseTo(lng, x2),y2],
+                        [makeCloseTo(lng, x3),y3],
+                        [makeCloseTo(lng, x4),y4]
+                    ];
+
+                    quicklook = L.imageTransform(imageUrl, flatten(anchors, true), { 
+                        clip: clipCoords,
+                        disableSetClip: true,
+                        pane: 'tilePane'
+                    });                    
+                    quicklook.on('load', () => {
+                        const gmxId = properties[gmxIdIndex];
+                        properties[visibleIndex] = 'visible';
+                        currentContour = { ...currentContour, properties };
+                        store.updateData(
+                            'contours',
+                            {id: gmxId, content: currentContour},
+                            ['contours:showQuicklookOnList', 'contours:bringToTop']
+                        );
+                        resolve();
+                    });
+                    quicklook.on('error', () => {
+                        const gmxId = properties[gmxIdIndex];
+                        properties[visibleIndex] = 'failed';
+                        map.removeLayer(quicklook);
+                        if (currentContour) {
+                            currentContour = { ...currentContour, properties, quicklook: null };
+                            store.updateData('contours', {id: gmxId, content: currentContour}, ['contours:showQuicklookOnList']);
+                        }
+                        resolve();
+                    });
+
+                    quicklook.addTo(map);
+                    currentContour = { ...currentContour, properties, quicklook };
+                    store.updateData('contours', {id , content: currentContour}, ['contours:showQuicklookOnList']);
+                }
                 else {
                     properties[visibleIndex] = 'visible';
-                    quicklook.addTo(this._map);
-                    //this._vectorLayer.bringToTopItem(id);
-                    store.updateData(
-                        'contours',
-                        {id: gmx_id, content: currentContour},
-                        ['contours:showQuicklookList', 'contours:bringToTop']
-                    );
+                    quicklook.addTo(map);
+
+                    currentContour = { ...currentContour, properties, quicklook };
+                    store.updateData('contours', {id, content: currentContour}, ['contours:bringToTop']);
                     resolve();
                 }
             }
@@ -87,7 +123,7 @@ export default class ContourBridgeController extends BaseBridgeController {
                 if (quicklook) {
                     map.removeLayer(quicklook);
                     currentContour.quicklook = null;
-                    store.updateData('contours', {id: id, content: currentContour}, ['contours:showQuicklookList']);
+                    store.updateData('contours', {id, content: currentContour}, [/*'contours:showQuicklookOnList'*/]);
                 }
 
                 appEvents.trigger('contours:bringToBottom', id);
@@ -151,7 +187,8 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         appEvents.trigger('contours:zoomMap', gmxId);
 
-        // ... show ql ... //
+        const event = {detail: {gmx_id: gmxId}};
+        this.showQuicklookOnListAndMap(event);
     }
 
     showQuicklookOnListAndMap(e) {
@@ -163,6 +200,10 @@ export default class ContourBridgeController extends BaseBridgeController {
         const currentContour = store.getData('contours', gmxId);
         const {properties = []} = currentContour;
         const visible = properties[visibleIndex];
+
+        if (visible === 'loading') {
+            return;
+        }
 
         let showState = false;
 
@@ -399,7 +440,7 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         let idsToRemove = [];
         dataToRemove.forEach(([id]) => {
-            // ... delete quicklook layer from map ... //
+            this.showQuicklookOnMap(id, false);
             idsToRemove.push(id);
         });
 
@@ -505,7 +546,6 @@ export default class ContourBridgeController extends BaseBridgeController {
             [
                 'contours:researchedMap',
                 'contours:researched'
-                
             ]
         );
     }

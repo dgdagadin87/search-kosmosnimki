@@ -148,6 +148,12 @@ const WEST_HEMISPHERE2 = L.bounds(
     L.point(0, 90)
 );
 
+const QUICKLOOK = {
+    url: '//search.kosmosnimki.ru/QuickLookImage.ashx',
+    width: 600,
+    height: 600
+}
+
 export {
     ACCESS_LAYER_ID,
     ACCESS_USER_ROLE,
@@ -175,5 +181,6 @@ export {
     LOAD_MAP_PARAMS,
     EAST_HEMISPHERE,
     WEST_HEMISPHERE,
-    WEST_HEMISPHERE2
+    WEST_HEMISPHERE2,
+    QUICKLOOK
 };

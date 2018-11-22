@@ -34,13 +34,13 @@ export default class ResultListComponent extends BaseComponent {
 
         appEvents.on('sidebar:tab:resize', (e) => this._resizeList(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
-        appEvents.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
+        appEvents.on('contours:showQuicklookOnList', this._redrawItemOnList.bind(this));
 
         store.on('contours:researched', this._updateList.bind(this));
         store.on('contours:addAllToCart', this._updateList.bind(this));
         store.on('contours:removeSelectedFavorites', this._updateList.bind(this));
         store.on('contours:addToCart', this._redrawItemOnList.bind(this));
-        store.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
+        store.on('contours:showQuicklookOnList', this._redrawItemOnList.bind(this));
         store.on('contours:setHovered', this._highliteItemOnList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));

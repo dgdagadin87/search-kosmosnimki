@@ -36,12 +36,8 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         appEvents.on('sidebar:tab:change', this._setCurrentTab.bind(this));
         appEvents.on('sidebar:tab:change', this._toggleQuicklooks.bind(this));
         appEvents.on('contours:zoomMap', this._zoomToContourOnMap.bind(this));
-        appEvents.on('contours:bringToTop', (id) => {
-            this._vectorLayer.bringToTopItem(id)
-        });
-        appEvents.on('contours:bringToBottom', (id) => {
-            this._vectorLayer.bringToBottomItem(id)
-        });
+        appEvents.on('contours:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
+        appEvents.on('contours:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
 
         vectorLayer.on('mouseover', (e, state = true) => ContoursController.hoverContour(e, state));
         vectorLayer.on('mouseout', (e, state = false) => ContoursController.hoverContour(e, state));

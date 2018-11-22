@@ -24,19 +24,19 @@ export default class DrawingObjectsUIElement extends BaseUIElement {
         const application = this.getApplication();
         const store = application.getStore();
 
-        const DrawingBridgeController = application.getBridgeController('drawing');
+        const DrawingController = application.getBridgeController('drawing');
 
         const componentWidget = this._view.widget;
 
         store.on('drawings:updateList', this._updateList.bind(this));
 
-        componentWidget.addEventListener('editDrawing', (e) => DrawingBridgeController.editDrawingOnMapAndList(e));
-        componentWidget.addEventListener('zoomToObject', (e) => DrawingBridgeController.zoomToDrawingOnMap(e));
+        componentWidget.addEventListener('editDrawing', (e) => DrawingController.editDrawingOnMapAndList(e));
+        componentWidget.addEventListener('zoomToObject', (e) => DrawingController.zoomToDrawingOnMap(e));
 
-        componentWidget.addEventListener('toggleDrawing', (e, mode = 'row') => DrawingBridgeController.toggleDrawingsOnMapAndList(e, mode));
-        componentWidget.addEventListener('toggleAllDrawings', (e, mode = 'all') => DrawingBridgeController.toggleDrawingsOnMapAndList(e, mode));
-        componentWidget.addEventListener('deleteDrawing', (e, mode = 'row') => DrawingBridgeController.deleteDrawingsOnMapAndList(e, mode));
-        componentWidget.addEventListener('deleteAllDrawings', (e, mode = 'all') => DrawingBridgeController.deleteDrawingsOnMapAndList(e, mode));
+        componentWidget.addEventListener('toggleDrawing', (e, mode = 'row') => DrawingController.toggleDrawingsOnMapAndList(e, mode));
+        componentWidget.addEventListener('toggleAllDrawings', (e, mode = 'all') => DrawingController.toggleDrawingsOnMapAndList(e, mode));
+        componentWidget.addEventListener('deleteDrawing', (e, mode = 'row') => DrawingController.deleteDrawingsOnMapAndList(e, mode));
+        componentWidget.addEventListener('deleteAllDrawings', (e, mode = 'all') => DrawingController.deleteDrawingsOnMapAndList(e, mode));
     }
 
     _updateList() {

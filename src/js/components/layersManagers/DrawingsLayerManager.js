@@ -17,11 +17,11 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const {gmxDrawing} = this._map;
         const application = this.getApplication();
 
-        const DrawingBridgeController = application.getBridgeController('drawing');
+        const DrawingController = application.getBridgeController('drawing');
 
-        gmxDrawing.on('drawstop', (rawItem) => DrawingBridgeController.addDrawingOnList(rawItem));
-        gmxDrawing.on('editstop', (rawItem) => DrawingBridgeController.editDrawingOnList(rawItem));
-        gmxDrawing.on('dragend', (rawItem) => DrawingBridgeController.editDrawingOnList(rawItem));
+        gmxDrawing.on('drawstop', (rawItem) => DrawingController.addDrawingOnList(rawItem));
+        gmxDrawing.on('editstop', (rawItem) => DrawingController.editDrawingOnList(rawItem));
+        gmxDrawing.on('dragend', (rawItem) => DrawingController.editDrawingOnList(rawItem));
     }
 
 }

@@ -228,7 +228,7 @@ class FavoritesList extends EventTarget {
                 this.dispatchEvent(event);
                 break;
             case 'visible':               
-                event.initEvent('showVisible', false, false);
+                event.initEvent('setVisible', false, false);
                 event.detail = item;
                 this.dispatchEvent(event);
                 break;

@@ -31,7 +31,7 @@ export default class ResultListComponent extends BaseComponent {
         const application = this.getApplication();
         const appEvents = application.getAppEvents();
         const store = application.getStore();
-        const ContourBridgeController = application.getBridgeController('contour');
+        const ContourController = application.getBridgeController('contour');
         const view = this.getView();
 
         appEvents.on('sidebar:tab:resize', (e) => this._resizeFavoritesList(e));
@@ -40,16 +40,18 @@ export default class ResultListComponent extends BaseComponent {
         store.on('contours:addAllToCart', this._updateList.bind(this));
         store.on('contours:addToCart', this._updateList.bind(this));
         store.on('contours:setSelected', this._redrawItemOnList.bind(this));
+        store.on('contours:showQuicklookOnList', this._redrawItemOnList.bind(this));
+        store.on('contours:setHovered', this._highliteItemOnList.bind(this));
         store.on('contours:setAllSelected', this._updateList.bind(this));
         store.on('contours:removeSelectedFavorites', this._updateList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
-        view.addEventListener('setSelected', (e) => ContourBridgeController.setSelectedOnListAndMap(e));
-        view.addEventListener('setAllSelected', (e) => ContourBridgeController.setAllSelectedOnListAndMap(e));
-        view.addEventListener('click', (e) => ContourBridgeController.zoomToContourOnMap(e));
-        view.addEventListener('setVisible', (e) => ContourBridgeController.showQuicklookOnListAndMap(e));
-        view.addEventListener('mouseover', (e, state = true) => ContourBridgeController.hoverContour(e, state));
-        view.addEventListener('mouseout', (e, state = false) => ContourBridgeController.hoverContour(e, state));
+        view.addEventListener('setSelected', (e) => ContourController.setSelectedOnListAndMap(e));
+        view.addEventListener('setAllSelected', (e) => ContourController.setAllSelectedOnListAndMap(e));
+        view.addEventListener('click', (e) => ContourController.zoomToContourOnMap(e));
+        view.addEventListener('setVisible', (e) => ContourController.showQuicklookOnListAndMap(e));
+        view.addEventListener('mouseover', (e, state = true) => ContourController.hoverContour(e, state));
+        view.addEventListener('mouseout', (e, state = false) => ContourController.hoverContour(e, state));
     }
 
     _onTabChangeHandler(e) {

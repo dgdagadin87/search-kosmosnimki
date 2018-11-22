@@ -78,6 +78,7 @@ export default class SidebarUIElement extends BaseUIElement {
         const view = this.getView();
 
         view.on('change', e => {
+            this._changeTabBorder(e);
             globalEvents.trigger('sidebar:tab:change', e);
             globalEvents.trigger('sidebar:tab:afterchange', e);
         });
@@ -129,7 +130,7 @@ export default class SidebarUIElement extends BaseUIElement {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const ContourBridgeController = application.getBridgeController('contour');
+        const ContourController = application.getBridgeController('contour');
         const downloadDialogComponent = this.getChildComponent('downloadDialog');
         const isLoadingCancelled = store.getData('cancelLoading');
 
@@ -145,7 +146,7 @@ export default class SidebarUIElement extends BaseUIElement {
             }
             else if (0 < resultLength && resultLength < RESULT_MAX_COUNT_PLUS_ONE) {
 
-                ContourBridgeController.addContoursOnMapAndList(result);
+                ContourController.addContoursOnMapAndList(result);
             }
             else {
 
@@ -186,12 +187,25 @@ export default class SidebarUIElement extends BaseUIElement {
         appEvents.trigger('sidebar:tab:resize');
     }
 
+    _changeTabBorder(e) {
+
+        const {detail: {current}} = e;
+        const tabs = document.querySelectorAll('.tabs > div');
+
+        tabs.forEach(tab => tab.classList.remove('active-sidebar-tab'));
+
+        if (current) {
+            const currentTab = document.querySelector('[data-tab-id="' + current + '"]');
+            currentTab.classList.add('active-sidebar-tab');
+        }
+    }
+
     _clearResults() {
 
         const application = this.getApplication();
-        const ContourBridgeController = application.getBridgeController('contour');
+        const ContourController = application.getBridgeController('contour');
 
-        ContourBridgeController.clearSnapShotsOnResults();
+        ContourController.clearSnapShotsOnResults();
     }
 
     _showImageDetails(e, bBox) {

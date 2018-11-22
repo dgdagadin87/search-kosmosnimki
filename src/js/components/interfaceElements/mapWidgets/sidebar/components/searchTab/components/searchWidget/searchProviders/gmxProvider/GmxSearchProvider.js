@@ -33,7 +33,7 @@ export default class GmxSearchProvider extends BaseSearchProvider {
     _onFetchHandler(e) {
 
         const application = this.getApplication();
-        const contourBridgeController = application.getBridgeController('contour');
+        const ContourController = application.getBridgeController('contour');
         const {detail: result} = e;
         const {values = []} = result;
 
@@ -43,8 +43,8 @@ export default class GmxSearchProvider extends BaseSearchProvider {
             return;
         }
 
-        contourBridgeController.clearSnapShotsOnResults();
-        contourBridgeController.addContoursOnMapAndList(result);
+        ContourController.clearSnapShotsOnResults();
+        ContourController.addContoursOnMapAndList(result);
     }
 
 }

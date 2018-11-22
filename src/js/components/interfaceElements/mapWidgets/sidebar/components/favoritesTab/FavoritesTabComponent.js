@@ -30,7 +30,7 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         const store = application.getStore();
         const removeButton = this._getFavoritesRemoveButton();
         const orderButton = this._getFavoritesOrderButton();
-        const ContourBridgeController = application.getBridgeController('contour');
+        const ContourController = application.getBridgeController('contour');
 
         store.on('contours:addToCart', this._onAddToCartHandler.bind(this));
         store.on('contours:addAllToCart', this._onAddToCartHandler.bind(this));
@@ -38,7 +38,7 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         store.on('contours:setAllSelected', this._onSetSelectedHandler.bind(this));
         store.on('contours:removeSelectedFavorites', this._onAddToCartHandler.bind(this));
 
-        removeButton.addEventListener('click', (e) => ContourBridgeController.removeSelectedFavoritesFromListAndMap(e));
+        removeButton.addEventListener('click', (e) => ContourController.removeSelectedFavoritesFromListAndMap(e));
         orderButton.addEventListener('click', (e) => this.events.trigger('makeOrder:click', e));
     }
 
