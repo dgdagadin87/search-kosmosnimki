@@ -117,3 +117,12 @@
     background-repeat: no-repeat;
     background-image: url('img/block.png');
 }
+
+.result-list .table-list-col .cart-add:hover{
+    border-radius: 3px;
+    box-shadow: 0px 1px 7.84px 0.16px rgba(0, 0, 0, 0.5);
+}
+
+.results-header .quicklooks-cart-active:hover {
+    box-shadow: 0px 1px 7.84px 0.16px rgba(0, 0, 0, 0.5);
+}
