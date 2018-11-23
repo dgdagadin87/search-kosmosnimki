@@ -97,7 +97,7 @@ export default class UploadUIElement extends BaseUIElement {
                     values.forEach (item => {
                         item[geometryIndex] = L.gmxUtil.convertGeometry (item[geometryIndex], false, true);
                     });
-                    contourController.clearSnapShotsOnResults();
+                    contourController.clearContoursOnResults();
                     contourController.addContoursOnMapAndList(results);
                 }
                 break;
@@ -111,9 +111,8 @@ export default class UploadUIElement extends BaseUIElement {
     _errorHandler(e) {
 
         const application = this.getApplication();
-        const errorText = e.toString();
 
-        application.showError(errorText);
+        application.showError(Translations.getText('errors.upload'));
 
         window.console.error(e);
     }

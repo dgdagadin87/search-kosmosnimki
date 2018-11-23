@@ -7,7 +7,7 @@ import { getPanelHeight, propertiesToItem, getCorrectIndex } from 'js/utils/comm
 import View from './view/View';
 
 
-export default class ResultListComponent extends BaseComponent {
+export default class FavoritesListComponent extends BaseComponent {
 
     init() {
 
@@ -36,6 +36,7 @@ export default class ResultListComponent extends BaseComponent {
 
         appEvents.on('sidebar:tab:resize', (e) => this._resizeFavoritesList(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
+        appEvents.on('contours:showQuicklookOnList', this._redrawItemOnList.bind(this));
 
         store.on('contours:addAllToCart', this._updateList.bind(this));
         store.on('contours:addToCart', this._updateList.bind(this));
@@ -44,6 +45,7 @@ export default class ResultListComponent extends BaseComponent {
         store.on('contours:setHovered', this._highliteItemOnList.bind(this));
         store.on('contours:setAllSelected', this._updateList.bind(this));
         store.on('contours:removeSelectedFavorites', this._updateList.bind(this));
+        store.on('contours:addVisibleToFavorites', this._updateList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
         view.addEventListener('setSelected', (e) => ContourController.setSelectedOnListAndMap(e));

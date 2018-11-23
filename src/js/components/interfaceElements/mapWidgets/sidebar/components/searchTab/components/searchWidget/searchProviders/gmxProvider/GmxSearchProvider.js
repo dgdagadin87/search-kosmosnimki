@@ -43,7 +43,7 @@ export default class GmxSearchProvider extends BaseSearchProvider {
             return;
         }
 
-        ContourController.clearSnapShotsOnResults();
+        ContourController.clearContoursOnResults();
         ContourController.addContoursOnMapAndList(result);
     }
 

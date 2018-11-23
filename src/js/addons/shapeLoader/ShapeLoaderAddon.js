@@ -146,7 +146,7 @@ class ShapeLoader {
             }
             else {
                 if (idsList.length > 0) {
-                    requestManager.requestGetShapeMetadata(this._metadataUrl, {idsList, WrapStyle: 'None'})
+                    requestManager.requestGetShapeMetadata(this._metadataUrl, {ids: idsList, WrapStyle: 'None'})
                     .then(response => {
                         if (response.Status === 'ok') {
                             state.result = response.Result;
@@ -397,7 +397,9 @@ class ShapeLoader {
 
     _removeFileInput() {
 
-        this._fileInput.remove();
+        if (this._fileInput) {
+            this._fileInput.remove();
+        }
         this._fileInput = null;
     }
 

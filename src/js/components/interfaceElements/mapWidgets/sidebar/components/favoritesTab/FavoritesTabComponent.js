@@ -37,6 +37,7 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         store.on('contours:setSelected', this._onSetSelectedHandler.bind(this));
         store.on('contours:setAllSelected', this._onSetSelectedHandler.bind(this));
         store.on('contours:removeSelectedFavorites', this._onAddToCartHandler.bind(this));
+        store.on('contours:addVisibleToFavorites', this._onAddToCartHandler.bind(this));
 
         removeButton.addEventListener('click', (e) => ContourController.removeSelectedFavoritesFromListAndMap(e));
         orderButton.addEventListener('click', (e) => this.events.trigger('makeOrder:click', e));

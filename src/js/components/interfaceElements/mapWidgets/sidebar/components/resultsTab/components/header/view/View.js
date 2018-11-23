@@ -49,11 +49,11 @@ export default class View {
         resultsNumSpan.innerText = number;
     }
 
-    updateQuickLooksCartButton(number) {
+    updateQuickLooksCartButton(hasVisibleResults) {
 
         const quickLooksCartButton = this.getQuickLooksCartButton();
         
-        if (number > 0){
+        if (hasVisibleResults){
             quickLooksCartButton.classList.add('quicklooks-cart-active');
             quickLooksCartButton.classList.remove('quicklooks-cart-passive');
         }

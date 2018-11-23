@@ -20,8 +20,7 @@ export default class ErrorDialogView {
             left,
             top, modal: true, header: false,
         });
-        
-        this._main.content.innerHTML = `${Translations.getText('favorites.limit')}`;
+
         this._main.footer.innerHTML = `<button class="dialog-close-button">${Translations.getText('alerts.close')}</button>`;
 
         this.hide();
@@ -41,8 +40,9 @@ export default class ErrorDialogView {
         return this._container.querySelector('button.dialog-close-button');
     }
 
-    show() {
+    show(errorText) {
 
+        this._main.content.innerHTML = errorText;
         this._main.show();
     }
 

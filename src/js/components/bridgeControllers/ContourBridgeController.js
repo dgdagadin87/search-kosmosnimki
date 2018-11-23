@@ -30,7 +30,7 @@ export default class ContourBridgeController extends BaseBridgeController {
                     contour['properties'] = properties;
                     store.updateData('contours', {id: gmxId, content: contour}, ['contours:showQuicklookOnList']);
 
-                    this.showQuicklookOnMap(gmxId, show)
+                    this.showQuicklookOnMap(gmxId, show, true)
                     .then(() => {
                         appEvents.trigger('contours:showQuicklookOnList', gmxId);
                         resolve();
@@ -44,9 +44,9 @@ export default class ContourBridgeController extends BaseBridgeController {
         });
     }
 
-    showQuicklookOnMap(id, isVisible) {
+    showQuicklookOnMap(id, isVisible, single = false, removeQuicklook = false) {
 
-        return new Promise(resolve => {
+        return new Promise(redrawItemOnList => {
 
             const map = this.getMap();
             const application = this.getApplication();
@@ -88,12 +88,8 @@ export default class ContourBridgeController extends BaseBridgeController {
                         const gmxId = properties[gmxIdIndex];
                         properties[visibleIndex] = 'visible';
                         currentContour = { ...currentContour, properties };
-                        store.updateData(
-                            'contours',
-                            {id: gmxId, content: currentContour},
-                            ['contours:showQuicklookOnList', 'contours:bringToTop']
-                        );
-                        resolve();
+                        store.updateData('contours', {id: gmxId, content: currentContour},['contours:bringToTop']);
+                        redrawItemOnList();
                     });
                     quicklook.on('error', () => {
                         const gmxId = properties[gmxIdIndex];
@@ -101,14 +97,18 @@ export default class ContourBridgeController extends BaseBridgeController {
                         map.removeLayer(quicklook);
                         if (currentContour) {
                             currentContour = { ...currentContour, properties, quicklook: null };
-                            store.updateData('contours', {id: gmxId, content: currentContour}, ['contours:showQuicklookOnList']);
+                            let events = ['contours:bringToTop'];
+                            if (!single) {
+                                events.push('contours:showQuicklookOnList');
+                            }
+                            store.updateData('contours', {id: gmxId, content: currentContour}, events);
                         }
-                        resolve();
+                        redrawItemOnList();
                     });
 
                     quicklook.addTo(map);
                     currentContour = { ...currentContour, properties, quicklook };
-                    store.updateData('contours', {id , content: currentContour}, ['contours:showQuicklookOnList']);
+                    store.updateData('contours', {id , content: currentContour});
                 }
                 else {
                     properties[visibleIndex] = 'visible';
@@ -116,18 +116,20 @@ export default class ContourBridgeController extends BaseBridgeController {
 
                     currentContour = { ...currentContour, properties, quicklook };
                     store.updateData('contours', {id, content: currentContour}, ['contours:bringToTop']);
-                    resolve();
+                    redrawItemOnList();
                 }
             }
             else {
                 if (quicklook) {
                     map.removeLayer(quicklook);
-                    currentContour.quicklook = null;
-                    store.updateData('contours', {id, content: currentContour}, [/*'contours:showQuicklookOnList'*/]);
+                    if (removeQuicklook) {
+                        currentContour.quicklook = null;
+                    }
+                    store.updateData('contours', {id, content: currentContour});
                 }
 
                 appEvents.trigger('contours:bringToBottom', id);
-                resolve();
+                redrawItemOnList();
             }
         });
     }
@@ -191,9 +193,18 @@ export default class ContourBridgeController extends BaseBridgeController {
         this.showQuicklookOnListAndMap(event);
     }
 
-    showQuicklookOnListAndMap(e) {
+    showQuicklookOnListAndMap(e, fromMap = false) {
 
-        const {gmx_id: gmxId} = e.detail;
+        let gmxId;
+        if (!fromMap) {
+            const {gmx_id} = e.detail;
+            gmxId = gmx_id;
+        }
+        else {
+            let { gmx: {id}} = e;
+            gmxId = id;
+        }
+
         const application = this.getApplication();
         const store = application.getStore();
         const visibleIndex = getCorrectIndex('visible');
@@ -287,7 +298,6 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const appEvents = application.getAppEvents();
         const store = application.getStore();
-
         const cartIndex = getCorrectIndex('cart');
         const selectedIndex = getCorrectIndex('selected');
 
@@ -328,7 +338,6 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const appEvents = application.getAppEvents();
         const store = application.getStore();
-
         const cartIndex = getCorrectIndex('cart');
         const selectedIndex = getCorrectIndex('selected');
 
@@ -409,7 +418,54 @@ export default class ContourBridgeController extends BaseBridgeController {
         );
     }
 
-    clearSnapShotsOnResults() {
+    setVisibleToCart() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const cartIndex = getCorrectIndex('cart');
+        const visibleIndex = getCorrectIndex('visible');
+        const selectedIndex = getCorrectIndex('selected');
+        const gmxIdIndex = getCorrectIndex('gmx_id');
+
+        const allResults = store.getResults();
+        const cartResults = allResults.filter(item => item['properties'][cartIndex]);
+        const visibleResults = allResults.filter(item => {
+            const {properties = []} = item;
+            return properties[visibleIndex] === 'visible' && !properties[cartIndex];
+        });
+
+        if (visibleResults.length < 1) {
+            return;
+        }
+
+        if ( (cartResults.length + visibleResults) > MAX_CART_SIZE ) {
+            appEvents.trigger('sidebar:cart:limit');
+            return;
+        }
+
+        const dataToUpdate = visibleResults.map(item => {
+            const {properties} = item;
+            const gmxId = properties[gmxIdIndex];
+            properties[cartIndex] = true;
+            properties[selectedIndex] = true;
+            item['properties'] = properties;
+            return {
+                id: gmxId,
+                content: item
+            }
+        });
+
+        store.updateData(
+            'contours',
+            dataToUpdate,
+            [
+                'contours:addVisibleToFavorites',
+                'contours:addVisibleToFavoritesMap'
+            ]
+        );
+    }
+
+    clearContoursOnResults() {
 
         const application = this.getApplication();
         const store = application.getStore();
@@ -440,7 +496,7 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         let idsToRemove = [];
         dataToRemove.forEach(([id]) => {
-            this.showQuicklookOnMap(id, false);
+            this.showQuicklookOnMap(id, false, false, true);
             idsToRemove.push(id);
         });
 

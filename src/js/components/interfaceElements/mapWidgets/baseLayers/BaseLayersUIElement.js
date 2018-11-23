@@ -64,14 +64,16 @@ export default class BaseLayersComponent extends BaseComponent {
 
     _shiftControl() {
 
-        const map = this.getMap();
+        setTimeout(() => {
+            const map = this.getMap();
 
-        const application = this.getApplication();
-        const sideBarComponent = application.getUiElement('sidebar');
+            const application = this.getApplication();
+            const sideBarComponent = application.getUiElement('sidebar');
 
-        const { width } = sideBarComponent.getView().getContainer().getBoundingClientRect();
+            const { width } = sideBarComponent.getView().getContainer().getBoundingClientRect();
 
-        map.gmxControlsManager.get('iconLayers').getContainer().style.left = `${width + 30}px`;
+            map.gmxControlsManager.get('iconLayers').getContainer().style.left = `${width + 30}px`;
+        }, 0);
     }
 
 }

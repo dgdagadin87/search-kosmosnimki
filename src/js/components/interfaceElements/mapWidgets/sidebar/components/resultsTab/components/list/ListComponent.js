@@ -39,6 +39,7 @@ export default class ResultListComponent extends BaseComponent {
         store.on('contours:researched', this._updateList.bind(this));
         store.on('contours:addAllToCart', this._updateList.bind(this));
         store.on('contours:removeSelectedFavorites', this._updateList.bind(this));
+        store.on('contours:addVisibleToFavorites', this._updateList.bind(this));
         store.on('contours:addToCart', this._redrawItemOnList.bind(this));
         store.on('contours:showQuicklookOnList', this._redrawItemOnList.bind(this));
         store.on('contours:setHovered', this._highliteItemOnList.bind(this));

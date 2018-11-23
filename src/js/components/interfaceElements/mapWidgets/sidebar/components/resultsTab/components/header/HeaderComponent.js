@@ -1,6 +1,6 @@
 import BaseComponent from 'js/base/BaseComponent';
 
-import { getCorrectIndex } from 'js/utils/commonUtils';
+import { getCorrectIndex, propertiesToItem } from 'js/utils/commonUtils';
 
 import View from './view/View';
 
@@ -21,11 +21,18 @@ export default class HeaderComponent extends BaseComponent {
     _bindEvents() {
 
         const application = this.getApplication();
+        const appEvents = application.getAppEvents();
         const store = application.getStore();
         const clearButton = this._getClearResultsButton();
+        const quickLookCartButton = this._getQuickLooksCartButton();
 
         store.on('contours:researched', this._onStoreResearchHandler.bind(this));
+        store.on('contours:showQuicklookOnList', this._setQuickLooksCartState.bind(this));
+
+        appEvents.on('contours:showQuicklookOnList', this._setQuickLooksCartState.bind(this));
+
         clearButton.addEventListener('click', () => this.events.trigger('results:clear'));
+        quickLookCartButton.addEventListener('click', () => this.events.trigger('results:setVisibleToCart'));
     }
 
     _onStoreResearchHandler() {
@@ -33,14 +40,25 @@ export default class HeaderComponent extends BaseComponent {
         const application = this.getApplication();
         const store = application.getStore();
         const visibleIndex = getCorrectIndex('visible');
-        const allResults = store.getResults();
-        const visibleResults = allResults.filter(item => item['properties'][visibleIndex]);
 
+        const allResults = store.getResults();
+        const isVisibleResults = allResults.some(item => item['properties'][visibleIndex] === 'visible');
         const allLength = allResults.length;
-        const visibleLength = visibleResults.length;
 
         this._updateResultsNumber(allLength);
-        this._updateQuickLooksCartButton(visibleLength);
+        this._updateQuickLooksCartButton(isVisibleResults);
+    }
+
+    _setQuickLooksCartState() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const visibleIndex = getCorrectIndex('visible');
+
+        const allResults = store.getResults();
+        const isVisibleResults = allResults.some(item => item['properties'][visibleIndex] === 'visible');
+
+        this._updateQuickLooksCartButton(isVisibleResults);
     }
 
     _getResultsNumSpan() {
@@ -71,11 +89,11 @@ export default class HeaderComponent extends BaseComponent {
         view.updateResultsNumber(number);
     }
 
-    _updateQuickLooksCartButton(number) {
+    _updateQuickLooksCartButton(hasVisible) {
 
         const view = this.getView();
 
-        view.updateQuickLooksCartButton(number);
+        view.updateQuickLooksCartButton(hasVisible);
     }
 
 }

@@ -88,6 +88,7 @@ export default class SidebarUIElement extends BaseUIElement {
         store.on('contours:researched', () => manageTabsState(view, store, 'addToResults'));
         store.on('contours:addToCart', () => manageTabsState(view, store, 'addToFavorites'));
         store.on('contours:addAllToCart', () => manageTabsState(view, store, 'addToFavorites'));
+        store.on('contours:addVisibleToFavorites', () => manageTabsState(view, store, 'addToFavorites'));
         store.on('contours:removeSelectedFavorites', () => manageTabsState(view, store, 'clearFavorites'));
 
         globalEvents.on('system:window:resize', () => this._resizeSidebar());
@@ -96,6 +97,7 @@ export default class SidebarUIElement extends BaseUIElement {
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
         resultsHeaderComponent.events.on('results:clear', () => this._clearResults());
+        resultsHeaderComponent.events.on('results:setVisibleToCart', () => this._setVisibleToCart());
         resutsListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
@@ -205,7 +207,15 @@ export default class SidebarUIElement extends BaseUIElement {
         const application = this.getApplication();
         const ContourController = application.getBridgeController('contour');
 
-        ContourController.clearSnapShotsOnResults();
+        ContourController.clearContoursOnResults();
+    }
+
+    _setVisibleToCart() {
+
+        const application = this.getApplication();
+        const ContourController = application.getBridgeController('contour');
+
+        ContourController.setVisibleToCart();
     }
 
     _showImageDetails(e, bBox) {

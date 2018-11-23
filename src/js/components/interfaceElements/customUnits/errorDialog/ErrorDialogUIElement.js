@@ -19,10 +19,10 @@ export default class ErrorDialogUIElement extends BaseUIElement {
         this.events.on('cancel', () => this.hide());
     }
 
-    show() {
+    show(errorText) {
 
         const view = this.getView();
-        view.show();
+        view.show(errorText);
     }
 
     hide() {

@@ -39,6 +39,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         appEvents.on('contours:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
         appEvents.on('contours:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
 
+        vectorLayer.on('click', (e, fromMap = true) => ContoursController.showQuicklookOnListAndMap(e, fromMap));
         vectorLayer.on('mouseover', (e, state = true) => ContoursController.hoverContour(e, state));
         vectorLayer.on('mouseout', (e, state = false) => ContoursController.hoverContour(e, state));
 
@@ -50,6 +51,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         store.on('contours:setSelectedMap', this._redrawContour.bind(this));
         store.on('contours:setAllSelectedMap', this._redrawContours.bind(this));
         store.on('contours:removeSelectedFavoritesMap', this._redrawContours.bind(this));
+        store.on('contours:addVisibleToFavoritesMap', this._redrawContours.bind(this));
         store.on('contours:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
         store.on('contours:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
     }
@@ -214,17 +216,23 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         this._vectorLayer.disableFlip();
         this._vectorLayer.setFilter (tab_filter);
         this._vectorLayer.setStyleHook (item => {
+            let currentTab = this._currentTab;
             let {properties} = item;
             let color = Colors.Default;
             let lineWidth = 1;
+
+            if (currentTab === 'results' && properties[cartIndex]) {
+                lineWidth = 3;
+            }
             if (properties[hoverIndex]) {
                 color = properties[cartIndex] ? Colors.CartHilite : Colors.Hilite;
-                lineWidth = 3;
+                lineWidth = 5;
             }
             else {
                 color = properties[cartIndex] ? Colors.Cart : Colors.Default;
             }
             return { skipRasters: true, strokeStyle: color, lineWidth };
+
         });
         this._vectorLayer.addTo(this._map);
     }
