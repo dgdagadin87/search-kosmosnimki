@@ -35,6 +35,7 @@ export default class ResultListComponent extends BaseComponent {
         appEvents.on('sidebar:tab:resize', (e) => this._resizeList(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
         appEvents.on('contours:showQuicklookOnList', this._redrawItemOnList.bind(this));
+        appEvents.on('contours:scrollToRow', this._scrollToRow.bind(this));
 
         store.on('contours:researched', this._updateList.bind(this));
         store.on('contours:addAllToCart', this._updateList.bind(this));
@@ -102,6 +103,17 @@ export default class ResultListComponent extends BaseComponent {
         }
         else {
             view.dim(itemId);
+        }
+    }
+
+    _scrollToRow(gmxId, currentTab) {
+
+        const view = this.getView();
+
+        if (currentTab === TAB_RESULTS_NAME) {
+
+            view.scrollToRow(gmxId);
+            this._highliteItemOnList(gmxId);
         }
     }
 

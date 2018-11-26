@@ -14,7 +14,16 @@ import {MAX_CART_SIZE, LAYER_ATTRIBUTES, QUICKLOOK} from 'js/config/constants/co
 
 export default class ContourBridgeController extends BaseBridgeController {
 
-    _showQuicklook (gmxId, show) {
+    _getCurrentTab() {
+
+        const application = this.getApplication();
+        const sidebarUiElement = application.getUiElement('sidebar');
+        const sidebarView = sidebarUiElement.getView();
+
+        return sidebarView.getCurrent();
+    }
+
+    _showQuicklook (gmxId, show, fromMap = false) {
         return new Promise(resolve => {
             const application = this.getApplication();
             const appEvents = application.getAppEvents();
@@ -29,6 +38,11 @@ export default class ContourBridgeController extends BaseBridgeController {
                 if (visibleChangedState) {
                     contour['properties'] = properties;
                     store.updateData('contours', {id: gmxId, content: contour}, ['contours:showQuicklookOnList']);
+
+                    if (fromMap) {
+                        const currentTab = this._getCurrentTab();
+                        appEvents.trigger('contours:scrollToRow', gmxId, currentTab);
+                    }
 
                     this.showQuicklookOnMap(gmxId, show, true)
                     .then(() => {
@@ -229,7 +243,27 @@ export default class ContourBridgeController extends BaseBridgeController {
                 break;
         }
 
-        this._showQuicklook(gmxId, showState);
+        this._showQuicklook(gmxId, showState, fromMap);
+    }
+
+    showAllQuicklooksOnListAndMap() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const visibleIndex = getCorrectIndex('visible');
+        const gmxIdIndex = getCorrectIndex('gmx_id');
+
+        const favoritesData = store.getFavorites();
+        const visibleState = favoritesData.some(item => item['properties'][visibleIndex] === 'hidden');
+
+        let gmxIdList = [];
+        favoritesData.forEach(item => {
+            const {properties = []} = item;
+            const gmxId = properties[gmxIdIndex];
+            gmxIdList.push(gmxId);
+        });
+
+        gmxIdList.forEach(id => this._showQuicklook(id, visibleState, true));
     }
 
     setSelectedOnListAndMap(e) {

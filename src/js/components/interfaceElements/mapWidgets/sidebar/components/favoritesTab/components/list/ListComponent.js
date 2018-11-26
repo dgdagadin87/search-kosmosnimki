@@ -37,6 +37,7 @@ export default class FavoritesListComponent extends BaseComponent {
         appEvents.on('sidebar:tab:resize', (e) => this._resizeFavoritesList(e));
         appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
         appEvents.on('contours:showQuicklookOnList', this._redrawItemOnList.bind(this));
+        appEvents.on('contours:scrollToRow', this._scrollToRow.bind(this));
 
         store.on('contours:addAllToCart', this._updateList.bind(this));
         store.on('contours:addToCart', this._updateList.bind(this));
@@ -52,6 +53,7 @@ export default class FavoritesListComponent extends BaseComponent {
         view.addEventListener('setAllSelected', (e) => ContourController.setAllSelectedOnListAndMap(e));
         view.addEventListener('click', (e) => ContourController.zoomToContourOnMap(e));
         view.addEventListener('setVisible', (e) => ContourController.showQuicklookOnListAndMap(e));
+        view.addEventListener('setAllVisible', (e) => ContourController.showAllQuicklooksOnListAndMap(e));
         view.addEventListener('mouseover', (e, state = true) => ContourController.hoverContour(e, state));
         view.addEventListener('mouseout', (e, state = false) => ContourController.hoverContour(e, state));
     }
@@ -60,10 +62,7 @@ export default class FavoritesListComponent extends BaseComponent {
 
         const {detail: {current: currentTab}} = e;
 
-        if (currentTab === TAB_FAVORITES_NAME) {
-
-            this._resizeFavoritesList();
-        }
+        currentTab === TAB_FAVORITES_NAME && this._resizeFavoritesList();
     }
 
     _updateList() {
@@ -107,6 +106,17 @@ export default class FavoritesListComponent extends BaseComponent {
         }
         else {
             view.dim(itemId);
+        }
+    }
+
+    _scrollToRow(gmxId, currentTab) {
+
+        const view = this.getView();
+
+        if (currentTab === TAB_FAVORITES_NAME) {
+
+            view.scrollToRow(gmxId);
+            this._highliteItemOnList(gmxId);
         }
     }
 

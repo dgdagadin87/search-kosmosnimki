@@ -302,7 +302,7 @@ class FavoritesList extends EventTarget {
                     btn.classList.add('favorites-select-quicklooks-active');
                     btn.classList.remove('favorites-select-quicklooks-passive');
                 }
-                event.initEvent('visible:all', false, false);
+                event.initEvent('setAllVisible', false, false);
                 event.detail = state;
                 this.dispatchEvent(event);
                 break;
