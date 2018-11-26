@@ -12,7 +12,7 @@ import ContourBridgeController from './components/bridgeControllers/ContourBridg
 import DrawingLayerManager from './components/layersManagers/DrawingsLayerManager';
 import ContourLayerManager from './components/layersManagers/ContoursLayerManager';
 
-import ShapeLoaderAddon from './addons/shapeLoader/ShapeLoaderAddon';
+import ShapeLoaderAddon from './components/addons/shapeLoader/ShapeLoaderAddon';
 
 import LoaderIndicatorUiElement from './components/interfaceElements/customUnits/loaderIndicator/LoaderIndicatorUiElement';
 import PopupNotificationUiElement from './components/interfaceElements/customUnits/popupNotification/PopupNotificationUiElement';
