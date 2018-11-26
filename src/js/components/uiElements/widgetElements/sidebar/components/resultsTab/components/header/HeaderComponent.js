@@ -1,6 +1,6 @@
 import BaseComponent from 'js/base/BaseComponent';
 
-import { getCorrectIndex, propertiesToItem } from 'js/utils/commonUtils';
+import { getCorrectIndex } from 'js/utils/commonUtils';
 
 import View from './view/View';
 

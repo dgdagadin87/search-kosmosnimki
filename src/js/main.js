@@ -14,26 +14,26 @@ import ContourLayerManager from './components/layersManagers/ContoursLayerManage
 
 import ShapeLoaderAddon from './components/addons/shapeLoader/ShapeLoaderAddon';
 
-import LoaderIndicatorUiElement from './components/interfaceElements/customUnits/loaderIndicator/LoaderIndicatorUiElement';
-import PopupNotificationUiElement from './components/interfaceElements/customUnits/popupNotification/PopupNotificationUiElement';
-import ErrorDialogUiElement from './components/interfaceElements/customUnits/errorDialog/ErrorDialogUiElement';
-import HelpingButtonUiElement from './components/interfaceElements/customUnits/helpingButton/HelpingButtonUiElement';
-import UserInformationUiElement from './components/interfaceElements/customUnits/userInformation/UserInformationUiElement';
-import LanguageSelectUiElement from './components/interfaceElements/customUnits/languageSelect/LanguageSelectUiElement';
-import MakeOrderUiElement from './components/interfaceElements/customUnits/makeOrder/MakeOrderUiElement';
+import LoaderIndicatorUiElement from './components/uiElements/customElements/loaderIndicator/LoaderIndicatorUiElement';
+import PopupNotificationUiElement from './components/uiElements/customElements/popupNotification/PopupNotificationUiElement';
+import ErrorDialogUiElement from './components/uiElements/customElements/errorDialog/ErrorDialogUiElement';
+import HelpingButtonUiElement from './components/uiElements/customElements/helpingButton/HelpingButtonUiElement';
+import UserInformationUiElement from './components/uiElements/customElements/userInformation/UserInformationUiElement';
+import LanguageSelectUiElement from './components/uiElements/customElements/languageSelect/LanguageSelectUiElement';
+import MakeOrderUiElement from './components/uiElements/customElements/makeOrder/MakeOrderUiElement';
 
-import PointUiElement from './components/interfaceElements/gmxIcons/point/PointUiElement';
-import PolylineUiElement from './components/interfaceElements/gmxIcons/polyline/PolylineUiElement';
-import PolygonUiElement from './components/interfaceElements/gmxIcons/polygon/PolygonUiElement';
-import RectangleUiElement from './components/interfaceElements/gmxIcons/rectangle/RectangleUiElement';
-import BoxZoomUiElement from './components/interfaceElements/gmxIcons/boxZoom/BoxZoomUiElement';
-import UploadUiElement from './components/interfaceElements/gmxIcons/upload/UploadUiElement';
-import DownloadUiElement from './components/interfaceElements/gmxIcons/download/DownloadUiElement';
+import PointUiElement from './components/uiElements/iconElements/point/PointUiElement';
+import PolylineUiElement from './components/uiElements/iconElements/polyline/PolylineUiElement';
+import PolygonUiElement from './components/uiElements/iconElements/polygon/PolygonUiElement';
+import RectangleUiElement from './components/uiElements/iconElements/rectangle/RectangleUiElement';
+import BoxZoomUiElement from './components/uiElements/iconElements/boxZoom/BoxZoomUiElement';
+import UploadUiElement from './components/uiElements/iconElements/upload/UploadUiElement';
+import DownloadUiElement from './components/uiElements/iconElements/download/DownloadUiElement';
 
-import BaseLayersUiElement from './components/interfaceElements/mapWidgets/baseLayers/BaseLayersUiElement';
-import ZoomUiElement from './components/interfaceElements/mapWidgets/zoom/ZoomUiElement';
-import SidebarUiElement from './components/interfaceElements/mapWidgets/sidebar/SidebarUiElement';
-import DrawingObjectsUiElement from './components/interfaceElements/mapWidgets/drawingObjects/DrawingObjectsUiElement';
+import BaseLayersUiElement from './components/uiElements/widgetElements/baseLayers/BaseLayersUiElement';
+import ZoomUiElement from './components/uiElements/widgetElements/zoom/ZoomUiElement';
+import SidebarUiElement from './components/uiElements/widgetElements/sidebar/SidebarUiElement';
+import DrawingObjectsUiElement from './components/uiElements/widgetElements/drawingObjects/DrawingObjectsUiElement';
 
 
 const application = new Application({
@@ -114,7 +114,7 @@ const application = new Application({
     // components
     uiElements: [
         {
-            type: 'customUnit',
+            type: 'custom',
             index: 'loaderIndicator',
             constructor: LoaderIndicatorUiElement
         },
@@ -124,86 +124,86 @@ const application = new Application({
             constructor: PopupNotificationUiElement
         },
         {
-            type: 'customUnit',
+            type: 'custom',
             index: 'errorDialog',
             constructor: ErrorDialogUiElement
         },
         {
-            type: 'customUnit',
+            type: 'custom',
             index: 'helpingButton',
             constructor: HelpingButtonUiElement
         },
         {
-            type: 'customUnit',
+            type: 'custom',
             index: 'userInformation',
             constructor: UserInformationUiElement
         },
         {
-            type: 'customUnit',
+            type: 'custom',
             index: 'languageSelect',
             constructor: LanguageSelectUiElement
         },
         {
-            type: 'customUnit',
+            type: 'custom',
             index: 'makeOrder',
             constructor: MakeOrderUiElement
         },
         {
-            type: 'gmxIcon',
+            type: 'icon',
             index: 'point',
             constructor: PointUiElement
         },
         {
-            type: 'gmxIcon',
+            type: 'icon',
             index: 'polyline',
             constructor: PolylineUiElement,
             mobile: false
         },
         {
-            type: 'gmxIcon',
+            type: 'icon',
             index: 'polygon',
             constructor: PolygonUiElement,
             mobile: false
         },
         {
-            type: 'gmxIcon',
+            type: 'icon',
             index: 'rectangle',
             constructor: RectangleUiElement,
             mobile: false
         },
         {
-            type: 'gmxIcon',
+            type: 'icon',
             index: 'upload',
             constructor: UploadUiElement
         },
         {
-            type: 'gmxIcon',
+            type: 'icon',
             index: 'download',
             constructor: DownloadUiElement
         },
         {
-            type: 'gmxIcon',
+            type: 'icon',
             index: 'boxZoom',
             constructor: BoxZoomUiElement,
             mobile: false
         },
         {
-            type: 'mapWidget',
+            type: 'widget',
             index: 'baseLayers',
             constructor: BaseLayersUiElement
         },
         {
-            type: 'mapWidget',
+            type: 'widget',
             index: 'zoom',
             constructor: ZoomUiElement
         },
         {
-            type: 'mapWidget',
+            type: 'widget',
             index: 'drawingObjects',
             constructor: DrawingObjectsUiElement
         },
         {
-            type: 'mapWidget',
+            type: 'widget',
             index: 'sidebar',
             constructor: SidebarUiElement
         }
