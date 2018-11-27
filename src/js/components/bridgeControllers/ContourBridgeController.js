@@ -26,7 +26,7 @@ export default class ContourBridgeController extends BaseBridgeController {
     _showQuicklook (gmxId, show, fromMap = false) {
         return new Promise(resolve => {
             const application = this.getApplication();
-            const appEvents = application.getAppEvents();
+            const events = application.getServiceEvents();
             const store = application.getStore();
             const contour = store.getData('contours', gmxId);
 
@@ -37,16 +37,16 @@ export default class ContourBridgeController extends BaseBridgeController {
 
                 if (visibleChangedState) {
                     contour['properties'] = properties;
-                    store.updateData('contours', {id: gmxId, content: contour}, ['contours:showQuicklookOnList']);
+                    store.updateData('contours', {id: gmxId, content: contour}, ['contours:showQuicklookList']);
 
                     if (fromMap) {
                         const currentTab = this._getCurrentTab();
-                        appEvents.trigger('contours:scrollToRow', gmxId, currentTab);
+                        events.trigger('contours:scrollToRow', gmxId, currentTab);
                     }
 
                     this.showQuicklookOnMap(gmxId, show, true)
                     .then(() => {
-                        appEvents.trigger('contours:showQuicklookOnList', gmxId);
+                        events.trigger('contours:showQuicklookList', gmxId);
                         resolve();
                     })
                     .catch(e => console.log(e));
@@ -64,7 +64,7 @@ export default class ContourBridgeController extends BaseBridgeController {
 
             const map = this.getMap();
             const application = this.getApplication();
-            const appEvents = application.getAppEvents();
+            const serviceEvents = application.getServiceEvents();
             const store = application.getStore();
             const gmxIdIndex = getCorrectIndex('gmx_id');
             const sceneIdIndex = getCorrectIndex('sceneid');
@@ -113,7 +113,7 @@ export default class ContourBridgeController extends BaseBridgeController {
                             currentContour = { ...currentContour, properties, quicklook: null };
                             let events = ['contours:bringToTop'];
                             if (!single) {
-                                events.push('contours:showQuicklookOnList');
+                                events.push('contours:showQuicklookList');
                             }
                             store.updateData('contours', {id: gmxId, content: currentContour}, events);
                         }
@@ -142,7 +142,7 @@ export default class ContourBridgeController extends BaseBridgeController {
                     store.updateData('contours', {id, content: currentContour});
                 }
 
-                appEvents.trigger('contours:bringToBottom', id);
+                serviceEvents.trigger('contours:bringToBottom', id);
                 redrawItemOnList();
             }
         });
@@ -183,7 +183,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             let events = [];
 
             if (mode === 'fromMap') {
-                events.push('contours:setHovered');
+                events.push('contours:setHoveredList');
             }
             events.push('contours:setHoveredMap');
 
@@ -199,9 +199,9 @@ export default class ContourBridgeController extends BaseBridgeController {
         const {detail: {item: {gmx_id: gmxId}}} = e;
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
 
-        appEvents.trigger('contours:zoomMap', gmxId);
+        events.trigger('contours:zoomMap', gmxId);
 
         const event = {detail: {gmx_id: gmxId}};
         this.showQuicklookOnListAndMap(event);
@@ -321,7 +321,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             'contours',
             dataToUpdate,
             [
-                'contours:setAllSelected',
+                'contours:setAllSelectedList',
                 'contours:setAllSelectedMap'
             ]
         );
@@ -330,7 +330,7 @@ export default class ContourBridgeController extends BaseBridgeController {
     addToCartOnListAndMap(e) {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
         const store = application.getStore();
         const cartIndex = getCorrectIndex('cart');
         const selectedIndex = getCorrectIndex('selected');
@@ -348,7 +348,7 @@ export default class ContourBridgeController extends BaseBridgeController {
         let isCart = properties[cartIndex];
 
         if (filteredAllData.length + 1 > MAX_CART_SIZE && !isCart) {
-            appEvents.trigger('sidebar:cart:limit');
+            events.trigger('sidebar:cart:limit');
             return;
         }
 
@@ -362,15 +362,16 @@ export default class ContourBridgeController extends BaseBridgeController {
             'contours',
             {id: gmxId, content: item},
             [
-                'contours:addToCart',
+                'contours:addToCartList',
                 'contours:addToCartMap'
-            ]);
+            ]
+        );
     }
 
     addAllToCartOnListAndMap() {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
         const store = application.getStore();
         const cartIndex = getCorrectIndex('cart');
         const selectedIndex = getCorrectIndex('selected');
@@ -384,7 +385,7 @@ export default class ContourBridgeController extends BaseBridgeController {
         });
 
         if (areSomeNotInCart && dataArray.length > MAX_CART_SIZE) {
-            appEvents.trigger('sidebar:cart:limit');
+            events.trigger('sidebar:cart:limit');
             return;
         }
 
@@ -408,7 +409,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             'contours',
             dataToRewrite,
             [
-                'contours:addAllToCart',
+                'contours:addAllToCartList',
                 'contours:addAllToCartMap',
             ]
         );
@@ -418,7 +419,6 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         const application = this.getApplication();
         const store = application.getStore();
-
         const selectedIndex = getCorrectIndex('selected');
         const cartIndex = getCorrectIndex('cart');
         const gmxIdIndex = getCorrectIndex('gmx_id');
@@ -446,7 +446,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             'contours',
             dataToUpdate,
             [
-                'contours:removeSelectedFavorites',
+                'contours:removeSelectedFavoritesList',
                 'contours:removeSelectedFavoritesMap'
             ]
         );
@@ -472,7 +472,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             return;
         }
 
-        if ( (cartResults.length + visibleResults) > MAX_CART_SIZE ) {
+        if ( (cartResults.length + visibleResults.length) > MAX_CART_SIZE ) {
             appEvents.trigger('sidebar:cart:limit');
             return;
         }
@@ -493,7 +493,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             'contours',
             dataToUpdate,
             [
-                'contours:addVisibleToFavorites',
+                'contours:addVisibleToFavoritesList',
                 'contours:addVisibleToFavoritesMap'
             ]
         );
@@ -538,7 +538,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             'contours',
             idsToRemove,
             [
-                'contours:researched',
+                'contours:researchedList',
                 'contours:researchedMap'
             ]
         )
@@ -635,7 +635,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             resultsForAdding,
             [
                 'contours:researchedMap',
-                'contours:researched'
+                'contours:researchedList'
             ]
         );
     }

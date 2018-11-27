@@ -33,15 +33,10 @@ export default class RectangleUIElement extends BaseUIElement {
 
         const {gmxDrawing} = this.getMap();
         const application = this.getApplication();
-        const events = application.getAppEvents();
+        const events = application.getServiceEvents();
 
         gmxDrawing.on('drawstop', this._omMapDrawStop.bind(this));
-        events.on('gmxIcons:clearActive', (id) => {
-            const control = this.getView();
-            if (id !== 'rectangle') {
-                control.setActive(false);
-            }
-        });
+        events.on('gmxIcons:clearActive', (id) => id !== 'rectangle' && this.getView().setActive(false));
     }
 
     _omMapDrawStop(e) {
@@ -104,11 +99,11 @@ export default class RectangleUIElement extends BaseUIElement {
     _rewriteActiveIcon(value) {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
         const store = application.getStore();
 
         store.rewriteData('activeIcon', value);
-        appEvents.trigger('gmxIcons:clearActive', 'rectangle');
+        events.trigger('gmxIcons:clearActive', 'rectangle');
     }
 
 }

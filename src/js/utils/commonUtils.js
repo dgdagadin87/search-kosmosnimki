@@ -188,7 +188,7 @@ function getVisibleChangedState(show, properties) {
                 properties[visibleIndex] = 'loading';
                 changed = true;
                 break;
-            case 'loading':                
+            case 'loading':
                 properties[visibleIndex] = 'visible';
                 changed = true;
                 break;

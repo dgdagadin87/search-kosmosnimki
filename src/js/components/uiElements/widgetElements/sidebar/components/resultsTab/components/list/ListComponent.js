@@ -27,23 +27,23 @@ export default class ResultListComponent extends BaseComponent {
     _bindEvents() {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
         const store = application.getStore();
         const ContourController = application.getBridgeController('contour');
         const view = this.getView();
 
-        appEvents.on('sidebar:tab:resize', (e) => this._resizeList(e));
-        appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
-        appEvents.on('contours:showQuicklookOnList', this._redrawItemOnList.bind(this));
-        appEvents.on('contours:scrollToRow', this._scrollToRow.bind(this));
+        events.on('sidebar:tab:resize', (e) => this._resizeList(e));
+        events.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
+        events.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
+        events.on('contours:scrollToRow', this._scrollToRow.bind(this));
 
-        store.on('contours:researched', this._updateList.bind(this));
-        store.on('contours:addAllToCart', this._updateList.bind(this));
-        store.on('contours:removeSelectedFavorites', this._updateList.bind(this));
-        store.on('contours:addVisibleToFavorites', this._updateList.bind(this));
-        store.on('contours:addToCart', this._redrawItemOnList.bind(this));
-        store.on('contours:showQuicklookOnList', this._redrawItemOnList.bind(this));
-        store.on('contours:setHovered', this._highliteItemOnList.bind(this));
+        store.on('contours:researchedList', this._updateList.bind(this));
+        store.on('contours:addAllToCartList', this._updateList.bind(this));
+        store.on('contours:removeSelectedFavoritesList', this._updateList.bind(this));
+        store.on('contours:addVisibleToFavoritesList', this._updateList.bind(this));
+        store.on('contours:addToCartList', this._redrawItemOnList.bind(this));
+        store.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
+        store.on('contours:setHoveredList', this._highliteItemOnList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
         view.addEventListener('click', (e) => ContourController.zoomToContourOnMap(e));

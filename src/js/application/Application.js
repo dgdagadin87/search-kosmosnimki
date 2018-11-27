@@ -25,7 +25,9 @@ class Application {
 
         this._config = config;
 
-        this._events = new Events();
+        this._appEvents = new Events();
+
+        this._serviceEvents = new Events();
     }
 
     async start() {
@@ -321,7 +323,12 @@ class Application {
 
     getAppEvents() {
 
-        return this._events;
+        return this._appEvents;
+    }
+
+    getServiceEvents() {
+
+        return this._serviceEvents;
     }
 
 }

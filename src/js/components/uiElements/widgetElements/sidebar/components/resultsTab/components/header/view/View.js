@@ -16,6 +16,7 @@ export default class View {
             <div class="results-buttons">                
                 <i title="${Translations.getText('results.quicklooks.cart')}" class="quicklooks-cart"></i>
                 <i title="${Translations.getText('results.clear')}" class="results-clear"></i>
+                <a id="qqqqq" href="#">qqqqq</a>
             </div>
         </div>
         <div class="results-pane"></div>`;

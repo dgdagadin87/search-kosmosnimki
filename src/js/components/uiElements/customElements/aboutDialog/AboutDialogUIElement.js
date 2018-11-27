@@ -27,11 +27,11 @@ export default class AboutDialogUIElement extends BaseUIElement {
     _bindEvents() {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
 
         const { events: localEvents } = this;
 
-        appEvents.on('helpButton:click', () => {
+        events.on('helpButton:click', () => {
             this.getView().show();
         });
 

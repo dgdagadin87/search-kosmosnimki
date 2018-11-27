@@ -34,12 +34,11 @@ export default class SearchOptionsComponent extends BaseComponent {
     _bindEvents() {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
-
+        const events = application.getServiceEvents();
         const view = this.getView();
 
-        appEvents.on('sidebar:tab:resize', (e) => this._resizeSearchOptions(e));
-        appEvents.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
+        events.on('sidebar:tab:resize', (e) => this._resizeSearchOptions(e));
+        events.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
 
         view.addEventListener('change', (e) => this._onViewChangeSearchCriteria(e));
     }

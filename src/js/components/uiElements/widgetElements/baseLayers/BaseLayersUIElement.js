@@ -29,9 +29,10 @@ export default class BaseLayersComponent extends BaseComponent {
 
         const application = this.getApplication();
         const globalEvents = application.getAppEvents();
+        const serviceEvents = application.getServiceEvents();
 
         globalEvents.on('system:uiElements:created', () => this._shiftControl());
-        globalEvents.on('sidebar:tab:afterchange', () => this._shiftControl());
+        serviceEvents.on('sidebar:tab:change:map', () => this._shiftControl());
     }
 
     _setLanguage() {

@@ -29,12 +29,11 @@ export default class SearchTabComponent extends BaseCompositedComponent {
     _bindEvents() {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
         const store = application.getStore();
-
         const searchButton = this._getSearchButton();
 
-        appEvents.on('system:uiElements:created', this._enableSearchButton.bind(this));
+        events.on('system:uiElements:created', this._enableSearchButton.bind(this));
         store.on('store:searchCriteria:full:update', this._enableSearchButton.bind(this));
 
         searchButton.addEventListener('click', this._onSearchButtonClick.bind(this));

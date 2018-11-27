@@ -66,6 +66,7 @@ export default class SidebarUIElement extends BaseUIElement {
     _bindEvents() {
 
         const application = this.getApplication();
+        const serviceEvents = application.getServiceEvents();
         const globalEvents = application.getAppEvents();
         const store = application.getStore();
         const {gmxDrawing} = application.getMap();
@@ -77,27 +78,27 @@ export default class SidebarUIElement extends BaseUIElement {
         const downloadDialogComponent = this.getChildComponent('downloadDialog');
         const view = this.getView();
 
-        view.on('change', e => {
+        view.on('change', (e) => {
+            serviceEvents.trigger('sidebar:tab:change', e);
+            serviceEvents.trigger('sidebar:tab:change:map', e);
             this._changeTabBorder(e);
-            globalEvents.trigger('sidebar:tab:change', e);
-            globalEvents.trigger('sidebar:tab:afterchange', e);
         });
 
         gmxDrawing.on('drawstop', () => manageTabsState(view, store, 'stopDrawing'));
 
-        store.on('contours:researched', () => manageTabsState(view, store, 'addToResults'));
-        store.on('contours:addToCart', () => manageTabsState(view, store, 'addToFavorites'));
-        store.on('contours:addAllToCart', () => manageTabsState(view, store, 'addToFavorites'));
-        store.on('contours:addVisibleToFavorites', () => manageTabsState(view, store, 'addToFavorites'));
-        store.on('contours:removeSelectedFavorites', () => manageTabsState(view, store, 'clearFavorites'));
+        store.on('contours:researchedList', () => manageTabsState(view, store, 'addToResults'));
+        store.on('contours:addToCartList', () => manageTabsState(view, store, 'addToFavorites'));
+        store.on('contours:addAllToCartList', () => manageTabsState(view, store, 'addToFavorites'));
+        store.on('contours:addVisibleToFavoritesList', () => manageTabsState(view, store, 'addToFavorites'));
+        store.on('contours:removeSelectedFavoritesList', () => manageTabsState(view, store, 'clearFavorites'));
 
         globalEvents.on('system:window:resize', () => this._resizeSidebar());
         globalEvents.on('system:uiElements:created', () => this._resizeSidebar());
-        globalEvents.on('sidebar:cart:limit', () => this._cartLimitMessage());
+        serviceEvents.on('sidebar:cart:limit', () => this._cartLimitMessage());
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
         resultsHeaderComponent.events.on('results:clear', () => this._clearResults());
-        resultsHeaderComponent.events.on('results:setVisibleToCart', () => this._setVisibleToCart());
+        resultsHeaderComponent.events.on('results:setVisibleToFavorites', () => this._setVisibleToCart());
         resutsListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
@@ -181,12 +182,12 @@ export default class SidebarUIElement extends BaseUIElement {
     _resizeSidebar() {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
         const height = getTotalHeight([ '#header', '.leaflet-gmx-copyright' ]);
         const preparedHeight = `${document.body.getBoundingClientRect().height - height}px`
 
         document.body.querySelector('.scanex-sidebar').style.height = preparedHeight;
-        appEvents.trigger('sidebar:tab:resize');
+        events.trigger('sidebar:tab:resize');
     }
 
     _changeTabBorder(e) {
@@ -195,7 +196,6 @@ export default class SidebarUIElement extends BaseUIElement {
         const tabs = document.querySelectorAll('.tabs > div');
 
         tabs.forEach(tab => tab.classList.remove('active-sidebar-tab'));
-
         if (current) {
             const currentTab = document.querySelector('[data-tab-id="' + current + '"]');
             currentTab.classList.add('active-sidebar-tab');
@@ -227,9 +227,9 @@ export default class SidebarUIElement extends BaseUIElement {
     _onMakeOrderClick(e) {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
 
-        appEvents.trigger('makeOrder:click', e);
+        events.trigger('makeOrder:click', e);
     }
 
     _cartLimitMessage() {

@@ -32,7 +32,7 @@ export default class MakeOrderUIElement extends BaseUIElement {
     _bindEvents() {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
         const loginDialogComponent = this.getChildComponent('loginDialog');
         const orderDialogComponent = this.getChildComponent('orderDialog');
         const successDialogComponent = this.getChildComponent('successDialog');
@@ -40,7 +40,7 @@ export default class MakeOrderUIElement extends BaseUIElement {
         const orderEvents = orderDialogComponent.events;
         const successEvents = successDialogComponent.events;
 
-        appEvents.on('makeOrder:click', this._onMakeOrderClick.bind(this));
+        events.on('makeOrder:click', this._onMakeOrderClick.bind(this));
 
         loginEvents.on('login:click', this._onLoginButtonClick.bind(this));
         successEvents.on('success:click', this._onSuccessButtonClick.bind(this));

@@ -29,6 +29,7 @@ import RectangleUiElement from './components/uiElements/iconElements/rectangle/R
 import BoxZoomUiElement from './components/uiElements/iconElements/boxZoom/BoxZoomUiElement';
 import UploadUiElement from './components/uiElements/iconElements/upload/UploadUiElement';
 import DownloadUiElement from './components/uiElements/iconElements/download/DownloadUiElement';
+import PermalinkUiElement from './components/uiElements/iconElements/permalink/PermalinkUIElement';
 
 import BaseLayersUiElement from './components/uiElements/widgetElements/baseLayers/BaseLayersUiElement';
 import ZoomUiElement from './components/uiElements/widgetElements/zoom/ZoomUiElement';
@@ -170,6 +171,11 @@ const application = new Application({
             index: 'rectangle',
             constructor: RectangleUiElement,
             mobile: false
+        },
+        {
+            type: 'icon',
+            index: 'permalink',
+            constructor: PermalinkUiElement
         },
         {
             type: 'icon',

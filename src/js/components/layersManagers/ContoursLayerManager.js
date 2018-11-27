@@ -28,16 +28,16 @@ export default class DrawingsLayerManager extends BaseLayerManager {
     _bindEvents() {
 
         const application = this.getApplication();
-        const appEvents = application.getAppEvents();
+        const events = application.getServiceEvents();
         const store = application.getStore();
         const vectorLayer = this._vectorLayer;
         const ContoursController = application.getBridgeController('contour');
 
-        appEvents.on('sidebar:tab:change', this._setCurrentTab.bind(this));
-        appEvents.on('sidebar:tab:change', this._toggleQuicklooks.bind(this));
-        appEvents.on('contours:zoomMap', this._zoomToContourOnMap.bind(this));
-        appEvents.on('contours:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
-        appEvents.on('contours:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
+        events.on('sidebar:tab:change:map', this._setCurrentTab.bind(this));
+        events.on('sidebar:tab:change:map', this._toggleQuicklooks.bind(this));
+        events.on('contours:zoomMap', this._zoomToContourOnMap.bind(this));
+        events.on('contours:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
+        events.on('contours:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
 
         vectorLayer.on('click', (e, fromMap = true) => ContoursController.showQuicklookOnListAndMap(e, fromMap));
         vectorLayer.on('mouseover', (e, state = true) => ContoursController.hoverContour(e, state));
@@ -121,7 +121,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
     }
 
     _toggleQuicklooks() {
-
+console.log('qqqqqqqqqqqqqqqqqq');
         const application = this.getApplication();
         const store = application.getStore();
         const contours = store.getSerializedData('contours');
