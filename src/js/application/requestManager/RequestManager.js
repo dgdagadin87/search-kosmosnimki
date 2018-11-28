@@ -72,6 +72,11 @@ export default class RequestManager {
         return this._gmxResourceComponent.downloadCommonFile(url);
     }
 
+    requestCreatePermalink(params = {}) {
+
+        return this._gmxResourceComponent.createPermalink(params);
+    }
+
     requestShapeLoader(url, params = {}) {
 
         return fetch(url, params);

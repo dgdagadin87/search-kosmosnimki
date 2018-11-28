@@ -13,6 +13,7 @@ import DrawingLayerManager from './components/layersManagers/DrawingsLayerManage
 import ContourLayerManager from './components/layersManagers/ContoursLayerManager';
 
 import ShapeLoaderAddon from './components/addons/shapeLoader/ShapeLoaderAddon';
+import PermalinkManagerAddon from './components/addons/permalinkManager/PermalinkManagerAddon';
 
 import LoaderIndicatorUiElement from './components/uiElements/customElements/loaderIndicator/LoaderIndicatorUiElement';
 import PopupNotificationUiElement from './components/uiElements/customElements/popupNotification/PopupNotificationUiElement';
@@ -109,6 +110,10 @@ const application = new Application({
         {
             index: 'shapeLoader',
             constructor: ShapeLoaderAddon
+        },
+        {
+            index: 'permalinkManager',
+            constructor: PermalinkManagerAddon
         }
     ],
 

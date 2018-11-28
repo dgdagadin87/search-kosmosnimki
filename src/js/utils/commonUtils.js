@@ -450,6 +450,39 @@ function normalizeGeometry (geometry, lng) {
     }
 }
 
+function normalizeGeometryType (geometry) {
+
+    let {type} = geometry;
+
+    switch (type.toUpperCase()) {
+        case 'POINT':
+            geometry.type = 'Point';
+            break;
+        case 'MULTIPOINT':
+            geometry.type = 'MultiPoint';
+            break;
+        case 'LINESTRING':
+            geometry.type = 'LineString';
+            break;
+        case 'MULTILINESTRING':
+            geometry.type = 'MultiLineString';
+            break;
+        case 'POLYGON':
+            geometry.type = 'Polygon';
+            break;
+        case 'MULTIPOLYGON':
+            geometry.type = 'MultiPolygon';
+            break;
+        case 'GEOMETRYCOLLECTION':
+            geometry.type = 'GeometryCollection';
+            break;
+        default:
+            break;
+    }
+
+    return geometry;
+}
+
 function normalizePoint (lng, [x,y]) {
 
     return [makeCloseTo(lng, x),y];
@@ -616,6 +649,11 @@ function getCoordinatesCount(results) {
     return numOfCoordinates;
 }
 
+function getRootUrl () {
+    let {origin, pathname} = location;
+    return `${origin}${pathname}`;
+}
+
 export {
     isNumber,
     createContainer,
@@ -640,10 +678,12 @@ export {
     getDrawingObjectArea,
     splitOn180,
     normalizeGeometry,
+    normalizeGeometryType,
     isGeojsonFeature,
     isGeometry,
     getBbox,
     tileRange,
     getShapefileObject,
-    getCoordinatesCount
+    getCoordinatesCount,
+    getRootUrl
 };

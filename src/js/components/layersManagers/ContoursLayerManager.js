@@ -121,7 +121,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
     }
 
     _toggleQuicklooks() {
-console.log('qqqqqqqqqqqqqqqqqq');
+
         const application = this.getApplication();
         const store = application.getStore();
         const contours = store.getSerializedData('contours');

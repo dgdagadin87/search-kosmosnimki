@@ -51,6 +51,8 @@ class Application {
         this._initUiElements();
 
         this._bindEvents();
+
+        this._applyAddonsAfterIniting();
     }
 
     _bindEvents() {
@@ -207,6 +209,7 @@ class Application {
 
     _initAddons() {
 
+        const appEvents = this.getAppEvents();
         const {addons = []} = this._config;
 
         this._addons = {};
@@ -219,6 +222,8 @@ class Application {
             this._addons[index] = new constructor({
                 application: this
             });
+
+            appEvents.trigger(`system:addon:${index}:created`);
         }
     }
 
@@ -244,10 +249,23 @@ class Application {
                 });
     
                 this._uiElements[index].init();
+
+                appEvents.trigger(`system:ui:${index}:created`);
             }
         }
 
         appEvents.trigger('system:uiElements:created');
+    }
+
+    _applyAddonsAfterIniting() {
+
+        const {_addons} = this;
+
+        for (let addonKey in _addons) {
+            const addon = _addons[addonKey];
+            const {index, globalApply = false} = addon;
+            globalApply && globalApply(index);
+        }
     }
 
     _errorHandle(e) {

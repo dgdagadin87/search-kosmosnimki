@@ -1,0 +1,45 @@
+<div
+    class="dialog-permalink"
+    style="display: {hidden?'none':'block'}; top: 45px; left: 450px;"
+>
+{#if !loading}
+    <input ref:textInput type="text" value="{text}" />
+    <button on:click="onCopyClick()" class="copy-button">Копировать ссылку</button>
+{:else}
+    <span class="permalink-loader">Подождите, идет загрузка...</span>
+{/if}
+    <button on:click="onCancelClick()">Отмена</button>
+</div>
+
+<script>
+
+    export default {
+
+        data () {
+            return {
+                hidden: true,
+                loading: true,
+                text: ''
+            };
+        },
+
+        methods: {
+
+            onCancelClick() {
+
+                this.set({hidden: true});
+            },
+
+            onCopyClick() {
+
+                const input = this.refs.textInput;
+
+                this.fire('copy', input);
+                this.set({hidden: true});
+            }
+
+        }
+
+    }
+
+</script>

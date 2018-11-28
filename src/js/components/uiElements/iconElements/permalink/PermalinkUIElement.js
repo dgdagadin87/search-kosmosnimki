@@ -2,6 +2,8 @@ import Translations from 'scanex-translations';
 
 import BaseUIElement from 'js/base/BaseUIElement';
 
+import FormComponent from './components/form/FormComponent';
+
 
 export default class PermalinkUIElement extends BaseUIElement {
 
@@ -21,33 +23,53 @@ export default class PermalinkUIElement extends BaseUIElement {
         map.gmxControlsManager.add(this._view);
         map.addControl(this._view);
 
-        /*this.initChildren([
+        this.initChildren([
             {
-                index: 'dialog',
-                constructor: DialogComponent
+                index: 'form',
+                constructor: FormComponent
             }
-        ]);*/
+        ]);
 
         this._bindEvents();
     }
 
     _bindEvents() {
 
-        /*const dialogComponent = this.getChildComponent('dialog');
+        const formComponent = this.getChildComponent('form');
 
-        dialogComponent.events.on('click:apply', this._onApplyClick.bind(this));*/
+        formComponent.events.on('click:copy', this._onCopyClick.bind(this));
     }
 
     _onShowClick() {
 
-        console.log('onShow');
+        const application = this.getApplication();
+        const permalinkManager = application.getAddon('permalinkManager');
+        const formComponent = this.getChildComponent('form');
+
+        formComponent.showLoading();
+
+        permalinkManager.getPermalinkId()
+        .then(result => formComponent.showInput(result))
+        .catch(e => this._errorHandler(e))
+    }
+
+    _onCopyClick(input) {
+
+        const application = this.getApplication();
+        const notificationText = Translations.getText('alerts.permalink');
+
+        input.focus();
+        input.select();
+        document.execCommand('copy');
+        
+        application.showNotification(notificationText);
     }
 
     _errorHandler(e) {
 
         const application = this.getApplication();
 
-        application.showError(Translations.getText('errors.upload'));
+        application.showError(e.toString());
 
         window.console.error(e);
     }

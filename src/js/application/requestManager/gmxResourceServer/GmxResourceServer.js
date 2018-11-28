@@ -35,4 +35,9 @@ export default class GmxResourceServerService {
         return this._gmxResourceService.sendPostRequest(url);
     }
 
+    createPermalink(params = {}) {
+
+        return this._gmxResourceService.sendPostRequest('TinyReference/Create.ashx', params);
+    }
+
 }
