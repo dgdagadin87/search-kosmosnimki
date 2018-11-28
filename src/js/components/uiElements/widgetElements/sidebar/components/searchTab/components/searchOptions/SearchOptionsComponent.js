@@ -4,7 +4,7 @@ import { ACCESS_USER_ROLE, TAB_SEARCH_NAME } from 'js/config/constants/constants
 
 import {getTotalHeight} from 'js/utils/commonUtils';
 
-import SearchOptions from './view/SearchOptions';
+import View from './view/SearchOptions';
 
 
 export default class SearchOptionsComponent extends BaseComponent {
@@ -19,7 +19,7 @@ export default class SearchOptionsComponent extends BaseComponent {
 
         this._searchContainer = this.getParentComponent().getView();
 
-        this._view = new SearchOptions(
+        this._view = new View(
             this._searchContainer.querySelector('.search-options-pane'),
             { restricted }
         );
@@ -41,16 +41,17 @@ export default class SearchOptionsComponent extends BaseComponent {
         events.on('sidebar:tab:resize', (e) => this._resizeSearchOptions(e));
         events.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
         store.on('searchCriteria:fullUpdate', () => this._onCriteriaUpdate());
-
         view.addEventListener('change', (e) => this._onViewChangeSearchCriteria(e));
     }
 
     _onCriteriaUpdate() {
 
-        const view = this.getView();
+        const application = this.getApplication();
+        const store = application.getStore();
 
-        view.refresh();
-        this._resizeSearchOptions();
+        const searchCriteria = store.getData('searchCriteria');
+
+        this._view.criteria = searchCriteria;
     }
 
     _onTabChangeHandler(e) {
