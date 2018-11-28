@@ -23,14 +23,20 @@ export default class LangWidgetUIElement extends BaseUIElement {
 
     _bindEvents() {
 
-        // localEvents.on(...)
-        this.getView().addEventListener('change', e => {
+        const application = this.getApplication();
+        const permalinkManager = application.getAddon('permalinkManager');
+        const view = this.getView();
+
+        view.addEventListener('change', e => {
 
             const {detail: currentLanguage} = e;
 
             Translations.setLanguage(currentLanguage);
             L.gmxLocale.setLanguage(currentLanguage);
-            //localStorage.setItem('view_state', JSON.stringify(get_state()));
+            
+            const currentAppState = permalinkManager.getCurrentApplicationState();
+            permalinkManager.saveAppStateToLocalStorage(currentAppState);
+
             window.location.reload(true);
         });
     }

@@ -4,14 +4,16 @@
 >
 {#if !loading}
     <input ref:textInput type="text" value="{text}" />
-    <button on:click="onCopyClick()" class="copy-button">Копировать ссылку</button>
+    <button on:click="onCopyClick()" class="copy-button">{translate('alerts.clipboard')}</button>
 {:else}
-    <span class="permalink-loader">Подождите, идет загрузка...</span>
+    <span class="permalink-loader">{translate('alerts.wait')}</span>
 {/if}
-    <button on:click="onCancelClick()">Отмена</button>
+    <button on:click="onCancelClick()">{translate('alerts.cancel')}</button>
 </div>
 
 <script>
+
+    import Translations from 'scanex-translations';
 
     export default {
 
@@ -36,6 +38,14 @@
 
                 this.fire('copy', input);
                 this.set({hidden: true});
+            }
+
+        },
+
+        helpers: {
+
+            translate(key) {
+                return Translations.getText(key);
             }
 
         }

@@ -8,8 +8,6 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         super(props);
 
         this._bindEvents();
-
-        window.console.log('Drawings layer manager was initialized');
     }
 
     _bindEvents() {

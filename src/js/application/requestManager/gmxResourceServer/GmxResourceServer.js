@@ -40,4 +40,9 @@ export default class GmxResourceServerService {
         return this._gmxResourceService.sendPostRequest('TinyReference/Create.ashx', params);
     }
 
+    readPermalink(params = {}) {
+
+        return this._gmxResourceService.sendPostRequest('TinyReference/Get.ashx', params);
+    }
+
 }

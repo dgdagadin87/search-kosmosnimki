@@ -35,12 +35,22 @@ export default class SearchOptionsComponent extends BaseComponent {
 
         const application = this.getApplication();
         const events = application.getServiceEvents();
+        const store = application.getStore();
         const view = this.getView();
 
         events.on('sidebar:tab:resize', (e) => this._resizeSearchOptions(e));
         events.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
+        store.on('searchCriteria:fullUpdate', () => this._onCriteriaUpdate());
 
         view.addEventListener('change', (e) => this._onViewChangeSearchCriteria(e));
+    }
+
+    _onCriteriaUpdate() {
+
+        const view = this.getView();
+
+        view.refresh();
+        this._resizeSearchOptions();
     }
 
     _onTabChangeHandler(e) {
@@ -70,7 +80,7 @@ export default class SearchOptionsComponent extends BaseComponent {
         const application = this.getApplication();
         const store = application.getStore();
 
-        store.rewriteData('searchCriteria', changedSearchCriteria, ['store:searchCriteria:full:update']);
+        store.rewriteData('searchCriteria', changedSearchCriteria, ['searchCriteria:fullUpdate']);
     }
 
 }

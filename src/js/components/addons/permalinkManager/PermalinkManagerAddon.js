@@ -1,5 +1,6 @@
 import Translations from 'scanex-translations';
 
+import { LOCAL_STORAGE_KEY, DEFAULT_LANGUAGE } from 'js/config/constants/constants';
 import { normalizeGeometryType } from 'js/utils/commonUtils';
 
 
@@ -7,9 +8,49 @@ class PermalinkManager {
 
     constructor (config) {
 
-        const {application} = config;
+        const {application, name} = config;
 
+        this._name = name;
         this._application = application;
+    }
+
+    globalApply() {
+
+        const application = this.getApplication();
+        const systemEvents = application.getAppEvents();
+
+        this.applySavedStateToApplication();
+
+        systemEvents.trigger('system:' + this._name + ':applied');
+    }
+
+    applySavedStateToApplication() {
+
+        const localStorageState = this.getAppStateFromLocalStorage();
+
+        if (localStorageState) {
+            this._applyApplicationState(localStorageState);
+        }
+        else {
+
+        }
+    }
+
+    saveAppStateToLocalStorage(data) {
+
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+    }
+
+    getAppStateFromLocalStorage() {
+
+        const rawState = localStorage.getItem(LOCAL_STORAGE_KEY);
+
+        return JSON.parse(rawState);
+    }
+
+    removeAppStateFromLocalStorage() {
+
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
     }
 
     getPermalinkId() {
@@ -29,6 +70,32 @@ class PermalinkManager {
                 }
                 else {
                     reject(response);
+                }
+            })
+            .catch(e => reject(e));
+        });
+    }
+
+    readPermalink (permalinlId) {
+
+        return new Promise((resolve, reject) => { 
+    
+            const application = this.getApplication();
+            const requestManager = application.getRequestManager();
+
+            requestManager.requestReadPermalink({ id: permalinlId })
+            .then(response => {
+                const {Status: status, Result: result} = response;
+                if (status == 'ok') {
+                    try {                    
+                        resolve(JSON.parse(result));
+                    }
+                    catch (e) {
+                        reject(e);
+                    }				        
+                }
+                else {
+                    reject(response.Result);
                 }
             })
             .catch(e => reject(e));
@@ -86,9 +153,45 @@ class PermalinkManager {
         return this._application;
     }
 
-    globalApply() {
+    _applyApplicationState(state) {
 
-        console.log('permalink manager was applied');
+        const application = this.getApplication();
+        const store = application.getStore();
+        const drawingController = application.getBridgeController('drawing');
+
+        // remove from local storage
+        this.removeAppStateFromLocalStorage();
+
+        // language
+        Translations.setLanguage (state.lang || DEFAULT_LANGUAGE);
+        L.gmxLocale.setLanguage(state.lang || DEFAULT_LANGUAGE);
+
+        // search criteria
+        const searchCriteria = store.getData('searchCriteria');
+        const stateCriteria = state['searchCriteria'];
+        const {archive, date: [dateStart, dateEnd], annually, angle, clouds, stereo, satellites} = stateCriteria;
+
+        const dates = [moment(dateStart).toDate(), moment(dateEnd).toDate()];
+
+        const { satellites: {ms, pc} } = searchCriteria;
+        ms.forEach(s => s.checked = (satellites.ms.indexOf(s.id) >= 0));
+        pc.forEach(s => s.checked = (satellites.pc.indexOf(s.id) >= 0));
+
+        store.rewriteData(
+            'searchCriteria', {
+                archive,
+                date: dates,
+                annually,
+                angle,
+                clouds,
+                stereo,
+                satellites: {ms, pc}
+            }, ['searchCriteria:fullUpdate']
+        );
+
+        // drawings
+        const {drawingObjects = []} = state;
+        drawingController.addDrawingsOnListAndMapFromUploading(drawingObjects);
     }
 
     _getNormalizedData(dataKey) {

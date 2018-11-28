@@ -26,7 +26,7 @@ export default class AboutDialogComponent extends BaseComponent {
 
     show() {
 
-        this.getView().hide();
+        this.getView().show();
     }
 
     hide() {

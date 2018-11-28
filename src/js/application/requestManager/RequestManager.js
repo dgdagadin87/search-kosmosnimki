@@ -77,6 +77,11 @@ export default class RequestManager {
         return this._gmxResourceComponent.createPermalink(params);
     }
 
+    requestReadPermalink(params = {}) {
+
+        return this._gmxResourceComponent.readPermalink(params);
+    }
+
     requestShapeLoader(url, params = {}) {
 
         return fetch(url, params);

@@ -4,6 +4,7 @@ import LoginDialogComponent from './components/loginDialog/LoginDialogComponent'
 import OrderDialogComponent from './components/orderDialog/OrderDialogComponent';
 import SuccessDialogComponent from './components/successDialog/SuccessDialogComponent';
 
+import { HOME_LINK } from 'js/config/constants/constants';
 import { getCorrectIndex, propertiesToItem } from 'js/utils/commonUtils';
 
 
@@ -33,30 +34,30 @@ export default class MakeOrderUIElement extends BaseUIElement {
 
         const application = this.getApplication();
         const events = application.getServiceEvents();
-        const loginDialogComponent = this.getChildComponent('loginDialog');
-        const orderDialogComponent = this.getChildComponent('orderDialog');
-        const successDialogComponent = this.getChildComponent('successDialog');
-        const loginEvents = loginDialogComponent.events;
-        const orderEvents = orderDialogComponent.events;
-        const successEvents = successDialogComponent.events;
+        const {events: loginEvents} = this.getChildComponent('loginDialog');
+        const {events: orderEvents} = this.getChildComponent('orderDialog');
+        const {events: successEvents} = this.getChildComponent('successDialog');
 
         events.on('makeOrder:click', this._onMakeOrderClick.bind(this));
 
         loginEvents.on('login:click', this._onLoginButtonClick.bind(this));
         successEvents.on('success:click', this._onSuccessButtonClick.bind(this));
+        orderEvents.on('warningClick', this._onWarningClick.bind(this));
         orderEvents.on('submitOrder', this._onSubmitOrderClick.bind(this));
     }
 
     _onMakeOrderClick() {
 
         const application = this.getApplication();
+        const permalinkManager = application.getAddon('permalinkManager');
         const store = application.getStore();
-        const userInfo = store.getData('userInfo');
         const selectedIndex = getCorrectIndex('selected');
         const cartIndex = getCorrectIndex('cart');
-        const contours = store.getSerializedData('contours');
         const loginDialogComponent = this.getChildComponent('loginDialog');
         const orderDialogComponent = this.getChildComponent('orderDialog');
+
+        const userInfo = store.getData('userInfo');
+        const contours = store.getSerializedData('contours');
 
         const selectedCarts = contours.filter(item => {
             const {properties} = item;
@@ -83,7 +84,30 @@ export default class MakeOrderUIElement extends BaseUIElement {
             return propertiesToItem(properties);
         });
 
-        orderDialogComponent.show(preparedItems);
+        permalinkManager.getPermalinkId()
+        .then(result => orderDialogComponent.show(preparedItems, result))
+        .catch(e => this._errorHandler(e))
+    }
+
+    _onWarningClick(e) {
+
+        const application = this.getApplication();
+        const permalinkManager = application.getAddon('permalinkManager');
+        const {permalink} = e;
+        const matches = /link=([^&]+)/g.exec(permalink);
+
+        if (Array.isArray (matches) && matches.length > 0) {
+            const permalinkId = matches[1];
+            permalinkManager.readPermalink(permalinkId)
+            .then (response => {
+                permalinkManager.saveAppStateToLocalStorage(response);
+                window.location = HOME_LINK;
+            })
+            .catch(error => this._errorHandler(error));
+        }
+        else {
+            console.log('Permalink not set:', permalink);
+        }
     }
 
     _onSubmitOrderClick(e) {
@@ -109,18 +133,21 @@ export default class MakeOrderUIElement extends BaseUIElement {
                 window.console.error(response);
             }
         })
-        .catch(error => {
-            alert('Error! Watch in console');
-            window.console.error(error);
-        });
+        .catch(error => this._errorHandler(error));
     }
 
     _onLoginButtonClick() {
 
-        // ... if (!localStorage.getItem('view_state)) { ...  set localStore state ... } // TODO - permalink
-
+        const application = this.getApplication();
+        const permalinkManager = application.getAddon('permalinkManager');
         const authContainer = document.getElementById('auth');
         const loginButton = authContainer.querySelector('.authWidget-loginButton');
+
+        const currentAppState = permalinkManager.getCurrentApplicationState();
+        const savedState = permalinkManager.getAppStateFromLocalStorage();
+        if (!savedState) {
+            permalinkManager.saveAppStateToLocalStorage(currentAppState);
+        }
 
         loginButton.click();
     }
@@ -130,6 +157,15 @@ export default class MakeOrderUIElement extends BaseUIElement {
         const successDialogComponent = this.getChildComponent('successDialog');
 
         successDialogComponent.hide();
+    }
+
+    _errorHandler(e) {
+
+        const application = this.getApplication();
+
+        application.showError(e.toString());
+
+        window.console.error(e);
     }
 
 }

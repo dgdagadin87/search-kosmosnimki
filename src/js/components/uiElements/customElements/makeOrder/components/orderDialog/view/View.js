@@ -18,17 +18,6 @@ class Cart extends FloatingPanel {
         this._permalink = '';
         this.hide();
 
-        /*let dlgCartContainer = createContainer();
-        dlgCartContainer.classList.add('cart-dialog');        
-        this._dlgCart = new FloatingPanel(dlgCartContainer, { id: 'cart.dialog', left, top, modal: true });
-        this._dlgCart.hide();
-        this._dlgCart.content.innerHTML = 
-        `<div>${Translations.getText('cart.success.header')}</div>
-        <div>${Translations.getText('cart.success.content')}</div>
-        <div>${Translations.getText('cart.success.footer')}</div>`;
-        this._dlgCart.footer.innerHTML = `<button class="cart-close-button">${Translations.getText('cart.close')}</button>`;
-        this._dlgCart.footer.querySelector('button').addEventListener('click', e => { this._dlgCart.hide(); });*/
-
         this._requiredFields =
         this._internal ? [
             '.cart-customer input', '.cart-project input', '.cart-project-number', '.cart-person input',
@@ -152,21 +141,10 @@ class Cart extends FloatingPanel {
         </div>`;     
         
         this._content.querySelector('.cart-order-warning .link').addEventListener('click', e => {
-            let matches = /link=([^&]+)/g.exec(this.permalink);
-            if (Array.isArray (matches) && matches.length > 0) {
-                let [link,id,] = matches;
-                read_permalink(id)
-                .then (response => {                    
-                    localStorage.setItem('view_state', JSON.stringify(response));    
-                    window.location = this._link;
-                })
-                .catch(e => {
-                    console.log(e);
-                });
-            }
-            else {
-                console.log('Permalink not set:', this._permalink);
-            }
+            let event = document.createEvent('Event');
+            event.initEvent('warningClick', false, false);
+            event.permalink = this.permalink;
+            this.dispatchEvent(event);
         });
 
         this._submitButton = this._content.querySelector('.cart-order-submit');        
@@ -282,38 +260,7 @@ class Cart extends FloatingPanel {
                 throw 'unknown project type';
         }
     }
-    _submit(){                        
-        /*if (this._validate()) {
-            this._catalogResourceServer.sendPostRequest('CreateOrder.ashx', {
-                TinyReference: this.permalink,
-                ReceiveWay: '',
-                Customer: this._container.querySelector('.cart-customer input').value,
-                Project: this._internal ? this._container.querySelector('.cart-project input').value : '',
-                ProjectType: this._getProjectType(this._internal ?  this._container.querySelector('.cart-project-type select').value : 'commercial'),
-                ContractNumber: this._internal ? this._container.querySelector('input.cart-project-number').value : '',
-                Name: '',
-                Surname: this._container.querySelector('.cart-person input').value,
-                Organization: this._internal ? this._container.querySelector('.cart-company input').value : '',
-                Email: this._container.querySelector('.cart-email input').value,
-                Phone: '',
-                Comment: this._container.querySelector('.cart-comment textarea').value,
-                Scenes: this.items.map(item => item.sceneid).join(','),
-                Internal: this._internal,
-            })
-            .then(response => {      
-                this.hide();
-                if (response.Status === 'ok') {                    
-                    this._dlgCart.show();
-                }
-                else {
-                    console.log(response);
-                }
-            })
-            .catch(e => {
-                this.hide();
-                console.log(e)
-            });
-        }*/
+    _submit(){
         if (this._validate()) {
             const dataToSend = {
                 TinyReference: this.permalink,

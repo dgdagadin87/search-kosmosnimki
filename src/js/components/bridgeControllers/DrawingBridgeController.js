@@ -118,7 +118,7 @@ export default class DrawingBridgeController extends BaseBridgeController {
             }
         });
 
-        map.fitBounds(bounds, { animate: false });
+        bounds && map.fitBounds(bounds, { animate: false });
     }
 
     addDrawingOnMapAndListFromOsm(results = []) {
@@ -165,7 +165,7 @@ export default class DrawingBridgeController extends BaseBridgeController {
 
             const bounds = json.getBounds();
 
-            map.fitBounds(bounds);
+            bounds && map.fitBounds(bounds);
         }
     }
     /* Add drawing end */

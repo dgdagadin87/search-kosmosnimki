@@ -32,9 +32,7 @@ export default class HelpingButtonUIElement extends BaseUIElement {
 
     _onClickHandler() {
 
-        const dialog = this.getChildComponent('dialog');
-
-        dialog.show();
+        window.open ('https://scanex.github.io/Documentation/Catalog/index.html', '_blank');
     }
 
 }

@@ -10,6 +10,7 @@ class ShapeLoader {
     constructor (config) {
 
         const {
+            name,
             application,
             shapeLoaderUrl = SHAPE_LOADER_URL,
             metadataUrl = META_DATA_URL,
@@ -18,6 +19,7 @@ class ShapeLoader {
             csvFileUrl = CSV_FILE_URL
         } = config;
 
+        this._name = name;
         this._application = application;
 
         this._csvColumns = ['sceneid', 'stereo', 'platform', 'cloudness', 'tilt', 'acqdate'];

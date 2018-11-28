@@ -1,3 +1,5 @@
+const HOME_LINK = '//my.kosmosnimki.ru/Home/Settings';
+
 const ACCESS_LAYER_ID = '9077D16CFE374967A8C57C78095F34EA';
 const ACCESS_USER_ROLE = 'scanex';
 
@@ -155,6 +157,7 @@ const QUICKLOOK = {
 }
 
 export {
+    HOME_LINK,
     ACCESS_LAYER_ID,
     ACCESS_USER_ROLE,
     LOCAL_STORAGE_KEY,

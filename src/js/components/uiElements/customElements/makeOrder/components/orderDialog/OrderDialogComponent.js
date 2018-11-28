@@ -2,7 +2,7 @@ import BaseComponent from 'js/base/BaseComponent';
 
 import View from './view/View';
 
-import { getMapCenter, createContainer } from 'js/utils/commonUtils';
+import { getMapCenter, createContainer, getRootUrl } from 'js/utils/commonUtils';
 
 import { ACCESS_USER_ROLE } from 'js/config/constants/constants';
 
@@ -39,15 +39,16 @@ export default class OrderDialogComponent extends BaseComponent {
         const view = this.getView();
 
         view.addEventListener('editSettings', (e) => this.events.trigger('editSettings', e));
+        view.addEventListener('warningClick', (e) => this.events.trigger('warningClick', e));
         view.addEventListener('submitOrder', (e) => this.events.trigger('submitOrder', e));
     }
 
-    show(items) {
+    show(items, permalink) {
 
         const view = this.getView();
         
         view.items = items;
-        view.permalink = '_only_permalink'; // TODO - permalink
+        view.permalink = `${getRootUrl()}?link=${permalink}`;
 
         view.show();
     }

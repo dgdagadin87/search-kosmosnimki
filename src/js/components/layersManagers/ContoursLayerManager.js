@@ -21,8 +21,6 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         this._initVectorLayer();
 
         this._bindEvents();
-
-        window.console.log('Contours layer manager was initialized');
     }
 
     _bindEvents() {

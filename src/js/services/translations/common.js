@@ -61,7 +61,7 @@ Translations.addText('rus', {
         addToDrawingsHeader: 'Выберите колонку для названий объектов',
         addToDrawings: 'Добавить',
         wrongDrawings: 'Загруженные данные некорректны',
-
+        wait: 'Подождите, идет загрузка...'
     },
     search: {
         title: 'Параметры поиска',
@@ -155,7 +155,8 @@ Translations.addText('eng', {
         nothing: 'Nothing found',
         addToDrawingsHeader: 'Select column as an object name',
         addToDrawings: 'Add',
-        wrongDrawings: 'Wrong data was loaded'
+        wrongDrawings: 'Wrong data was loaded',
+        wait: 'Loading, wait please...'
     },
     search: {
         title: 'Search options', 

@@ -220,6 +220,7 @@ class Application {
             const {index, constructor} = currentAddon;
 
             this._addons[index] = new constructor({
+                name: index,
                 application: this
             });
 
@@ -263,8 +264,7 @@ class Application {
 
         for (let addonKey in _addons) {
             const addon = _addons[addonKey];
-            const {index, globalApply = false} = addon;
-            globalApply && globalApply(index);
+            addon['globalApply'] && addon.globalApply();
         }
     }
 
