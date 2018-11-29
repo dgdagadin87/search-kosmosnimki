@@ -4,8 +4,7 @@ import BaseUIElement from 'js/base/BaseUIElement';
 
 import { RESULT_MAX_COUNT_PLUS_ONE } from 'js/config/constants/constants';
 
-import {getTotalHeight} from 'js/utils/commonUtils';
-import {createDefaultCriteria, manageTabsState} from './utils/utils';
+import {getTotalHeight, createDefaultCriteria} from 'js/utils/commonUtils';
 
 import SearchTabComponent from './components/searchTab/SearchTabComponent';
 import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';
@@ -24,8 +23,6 @@ export default class SidebarUIElement extends BaseUIElement {
         this._setDefaultCriteria();
 
         const map = this.getMap();
-        const application = this.getApplication();
-        const store = application.getStore();
 
         this._view = new View({
             map
@@ -58,7 +55,7 @@ export default class SidebarUIElement extends BaseUIElement {
             }
         ]);
 
-        manageTabsState(this._view, store, 'start');
+        this._manageTabState('start');
 
         this._bindEvents();
     }
@@ -84,17 +81,18 @@ export default class SidebarUIElement extends BaseUIElement {
             this._changeTabBorder(e);
         });
 
-        gmxDrawing.on('drawstop', () => manageTabsState(view, store, 'stopDrawing'));
+        gmxDrawing.on('drawstop', () => this._manageTabState('stopDrawing'));
 
-        store.on('contours:researchedList', () => manageTabsState(view, store, 'addToResults'));
-        store.on('contours:addToCartList', () => manageTabsState(view, store, 'addToFavorites'));
-        store.on('contours:addAllToCartList', () => manageTabsState(view, store, 'addToFavorites'));
-        store.on('contours:addVisibleToFavoritesList', () => manageTabsState(view, store, 'addToFavorites'));
-        store.on('contours:removeSelectedFavoritesList', () => manageTabsState(view, store, 'clearFavorites'));
+        store.on('contours:researchedList', () => this._manageTabState('addToResults'));
+        store.on('contours:addToCartList', () => this._manageTabState('addToFavorites'));
+        store.on('contours:addAllToCartList', () => this._manageTabState('addToFavorites'));
+        store.on('contours:addVisibleToFavoritesList', () => this._manageTabState('addToFavorites'));
+        store.on('contours:removeSelectedFavoritesList', () => this._manageTabState('clearFavorites'));
 
         globalEvents.on('system:window:resize', () => this._resizeSidebar());
         globalEvents.on('system:uiElements:created', () => this._resizeSidebar());
         serviceEvents.on('sidebar:cart:limit', () => this._cartLimitMessage());
+        serviceEvents.on('sidebar:setCurrentTab', (tab) => this._manageTabState('applyAppState', tab));
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
         resultsHeaderComponent.events.on('results:clear', () => this._clearResults());
@@ -103,13 +101,6 @@ export default class SidebarUIElement extends BaseUIElement {
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
         downloadDialogComponent.events.on('downloadApply:click', () => this._onDownloadApplyClick());
-
-        //serviceEvents.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
-        //store.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
-    }
-
-    _redrawItemOnList() {
-        console.log('redraweddd');
     }
 
     _searchResults() {
@@ -178,7 +169,7 @@ export default class SidebarUIElement extends BaseUIElement {
     }
 
     _setDefaultCriteria() {
-        
+
         const application = this.getApplication();
         const store = application.getStore();
         const defaultCriteria = createDefaultCriteria();
@@ -274,6 +265,82 @@ export default class SidebarUIElement extends BaseUIElement {
             }                
         })
         .catch(this._showError.bind(this));
+    }
+
+    _manageTabState(state, tabName = false) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const sidebar = this.getView();
+    
+        const hasResultData = store.hasResults();
+        const hasFavoritesData = store.hasFavorites();
+    
+        if (state === 'start') {
+            sidebar.disable('results');
+            sidebar.disable('favorites');
+            return;
+        }
+
+        if (state === 'applyAppState') {
+            if (hasResultData) {
+                sidebar.enable('results');
+            }
+            if (hasFavoritesData) {
+                sidebar.enable('favorites');
+            }
+            sidebar.setCurrent(tabName);
+            return;
+        }
+    
+        if (state === 'stopDrawing') {
+            if (!sidebar.getCurrent()) {               
+                sidebar.setCurrent('search');
+            }
+            return;
+        }
+    
+        if (state === 'clearResults') {
+            sidebar.disable('results');
+            sidebar.setCurrent('search');
+            return;
+        }
+    
+        if (state === 'addToResults') {
+            if (hasResultData) {
+                sidebar.enable('results');
+                sidebar.setCurrent('results');
+            }
+            else {
+                sidebar.disable('results');
+                sidebar.setCurrent('search');
+            }
+            return;
+        }
+    
+        if (state === 'addToFavorites') {
+            if (hasFavoritesData > 0) {
+                sidebar.enable('favorites');
+            }
+            else {
+                sidebar.disable('favorites');
+                sidebar.setCurrent('results');
+            }
+            return;
+        }
+    
+        if (state === 'clearFavorites') {
+            if (hasFavoritesData) {
+                sidebar.enable('favorites');
+                sidebar.setCurrent('favorites');
+            }
+            else {
+                sidebar.disable('favorites');
+                const currentTab = hasResultData ? 'results' : 'search';
+                sidebar.setCurrent(currentTab);
+            }
+            return;
+        }
     }
 
     _showError(e) {

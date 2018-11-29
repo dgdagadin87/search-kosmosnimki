@@ -28,6 +28,7 @@ export default class HeaderComponent extends BaseComponent {
         const qqq = this._view._main.querySelector('#qqqqq');
 
         store.on('contours:researchedList', this._onStoreResearchHandler.bind(this));
+        store.on('contours:startResearchedList', this._onStoreResearchHandler.bind(this));
         store.on('contours:showQuicklookList', this._setQuickLooksCartState.bind(this));
 
         events.on('contours:showQuicklookList', this._setQuickLooksCartState.bind(this));

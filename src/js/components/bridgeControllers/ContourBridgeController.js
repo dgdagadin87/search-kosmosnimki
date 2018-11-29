@@ -559,7 +559,7 @@ export default class ContourBridgeController extends BaseBridgeController {
 
     }
 
-    addContoursOnMapAndList(result) {
+    addContoursOnMapAndList(result, fromApplyingState = false) {
 
         const application = this.getApplication();
         const store = application.getStore();
@@ -644,14 +644,17 @@ export default class ContourBridgeController extends BaseBridgeController {
             };
         });
 
-        store.rewriteData(
-            'contours',
-            resultsForAdding,
-            [
-                'contours:researchedMap',
-                'contours:researchedList'
-            ]
-        );
+        let eventList = [];
+        if (!fromApplyingState) {
+            eventList.push('contours:researchedMap');
+            eventList.push('contours:researchedList');
+        }
+        else {
+            eventList.push('contours:startResearchedMap');
+            eventList.push('contours:startResearchedList');
+        }
+
+        store.rewriteData('contours', resultsForAdding, eventList);
     }
 
     getApplication() {

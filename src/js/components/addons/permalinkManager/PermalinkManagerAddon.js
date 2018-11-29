@@ -1,6 +1,12 @@
 import Translations from 'scanex-translations';
 
-import { LOCAL_STORAGE_KEY, DEFAULT_LANGUAGE } from 'js/config/constants/constants';
+import {
+    LOCAL_STORAGE_KEY,
+    DEFAULT_LANGUAGE,
+    LAYER_ATTRIBUTES,
+    LAYER_ATTR_TYPES
+} from 'js/config/constants/constants';
+
 import { normalizeGeometryType } from 'js/utils/commonUtils';
 
 
@@ -32,7 +38,13 @@ class PermalinkManager {
             this._applyApplicationState(localStorageState);
         }
         else {
-
+            const matches = /link=([^&]+)/g.exec(location.search);
+            if (Array.isArray (matches) && matches.length > 0) {
+                const permalinkId = matches[1];
+                this.readPermalink(permalinkId)
+                .then (response => this._applyApplicationState(response))
+                .catch(error => this._errorHandler(error));
+            }
         }
     }
 
@@ -157,7 +169,10 @@ class PermalinkManager {
 
         const application = this.getApplication();
         const store = application.getStore();
+        const map = application.getMap();
+        const serviceEvents = application.getServiceEvents();
         const drawingController = application.getBridgeController('drawing');
+        const contourController = application.getBridgeController('contour');
 
         // remove from local storage
         this.removeAppStateFromLocalStorage();
@@ -192,6 +207,94 @@ class PermalinkManager {
         // drawings
         const {drawingObjects = []} = state;
         drawingController.addDrawingsOnListAndMapFromUploading(drawingObjects);
+
+        // results
+        let items = state.items.reduce ((contours, item) => {
+            const {gmx_id: gmxId} = item;
+            contours[gmxId] = item;
+            contours[gmxId]['result'] = true;
+    
+            if (item.hasOwnProperty('visible')) {
+                const rawVisibleValue = item['visible'];
+                const visibleValue = ['visible', 'failed'].indexOf(rawVisibleValue) !== -1 ? 'visible' : rawVisibleValue;
+                contours[gmxId]['visible'] = visibleValue;
+            }
+    
+            return contours;
+        }, {});
+
+        // favorites
+        items = state.cart.reduce((contours, item) => {
+            const {gmx_id: gmxId} = item;
+            if (contours[gmxId]) {
+                contours[gmxId]['cart'] = true;
+                if (item.hasOwnProperty('selected')) {
+                    contours[gmxId]['selected'] = item['selected'];
+                }
+
+                if (item.hasOwnProperty('visible')) {
+                    const rawVisibleValue = item['visible'];
+                    const visibleValue = ['visible', 'failed'].indexOf(rawVisibleValue) !== -1 ? 'visible' : rawVisibleValue;
+                    contours[gmxId]['visible'] = visibleValue;
+                }            
+                else if (item.hasOwnProperty('quicklook')) {
+                    contours[gmxId]['visible'] = item['quicklook'];
+                }
+            }
+            else {
+                contours[gmxId] = item;
+                contours[gmx_id]['cart'] = true;
+            }
+
+            delete contours[gmxId]['checked'];
+            delete contours[gmxId]['quicklook'];
+
+            return contours;
+        }, items);
+
+        // common
+        let {fields, values, types} = Object.keys(items).reduce((result, gmxId) => {
+
+            let item = items[gmxId];
+
+            if (result.fields.length === 0) {
+                LAYER_ATTRIBUTES.forEach((k,i) => {
+                    if (['selected', 'visible', 'result', 'cart'].indexOf(k) !== -1 || item.hasOwnProperty(k)) {
+                        result.fields.push(k);
+                        result.types.push(LAYER_ATTR_TYPES[i]);
+                    }
+                });
+            }
+            
+            let values = result.fields.map(k => {
+                if (item[k]) {
+                    if(k === 'visible') {
+                        return item[k] === 'loading' ? 'visible' : item[k];
+                    }
+                    else {
+                        return item[k];
+                    }
+                } 
+                else {
+                    return false;
+                }
+            });
+            
+            values.push(L.gmxUtil.convertGeometry(item['geoJSON'], false, true));
+            result.values.push(values);
+
+            return result;
+        }, {fields: [], values: [], types: []});
+
+        contourController.clearContoursOnResults();
+        contourController.addContoursOnMapAndList({fields, values, types}, true);
+
+        serviceEvents.trigger('sidebar:setCurrentTab', state.activeTabId);
+
+        // map
+        const {x, y, z} = state.position;
+        const center = L.Projection.Mercator.unproject({y, x});
+        map.setView(center, 17 - z);
     }
 
     _getNormalizedData(dataKey) {

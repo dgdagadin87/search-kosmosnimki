@@ -43,6 +43,8 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
         store.on('contours:researchedMap', this._addContoursOnMap.bind(this));
         store.on('contours:researchedMap', this._zoomToContoursOnMap.bind(this));
+        store.on('contours:startResearchedMap', this._addContoursOnMap.bind(this));
+        store.on('contours:startResearchedMap', this._zoomToContoursOnMap.bind(this));
         store.on('contours:addToCartMap', this._redrawContour.bind(this));
         store.on('contours:addAllToCartMap', this._redrawContours.bind(this));
         store.on('contours:setHoveredMap', this._redrawContour.bind(this));

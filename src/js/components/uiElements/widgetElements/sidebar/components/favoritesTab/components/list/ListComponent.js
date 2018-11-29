@@ -41,7 +41,6 @@ export default class FavoritesListComponent extends BaseComponent {
         events.on('contours:scrollToRow', this._scrollToRow.bind(this));
 
         store.on('contours:addAllToCartList', this._updateList.bind(this));
-        store.on('contours:addToCartList', this._updateList.bind(this));
         store.on('contours:setSelected', this._redrawItemOnList.bind(this));
         store.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
         store.on('contours:allQuicklooksList', this._redrawItemOnList.bind(this));
@@ -49,6 +48,8 @@ export default class FavoritesListComponent extends BaseComponent {
         store.on('contours:setAllSelectedList', this._updateList.bind(this));
         store.on('contours:removeSelectedFavoritesList', this._updateList.bind(this));
         store.on('contours:addVisibleToFavoritesList', this._updateList.bind(this));
+        store.on('contours:addToCartList', this._updateList.bind(this));
+        store.on('contours:startResearchedList', this._updateList.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
         view.addEventListener('setSelected', (e) => ContourController.setSelectedOnListAndMap(e));

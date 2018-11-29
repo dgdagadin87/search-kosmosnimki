@@ -36,6 +36,7 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         store.on('contours:addAllToCartList', this._onAddToCartHandler.bind(this));
         store.on('contours:setSelected', this._onSetSelectedHandler.bind(this));
         store.on('contours:setAllSelectedList', this._onSetSelectedHandler.bind(this));
+        store.on('contours:startResearchedList', this._onAddToCartHandler.bind(this));
         store.on('contours:removeSelectedFavoritesList', this._onAddToCartHandler.bind(this));
         store.on('contours:addVisibleToFavoritesList', this._onAddToCartHandler.bind(this));
 

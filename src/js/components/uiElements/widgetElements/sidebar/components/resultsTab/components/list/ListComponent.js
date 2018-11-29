@@ -38,6 +38,7 @@ export default class ResultListComponent extends BaseComponent {
         events.on('contours:scrollToRow', this._scrollToRow.bind(this));
 
         store.on('contours:researchedList', this._updateList.bind(this));
+        store.on('contours:startResearchedList', this._updateList.bind(this));
         store.on('contours:addAllToCartList', this._updateList.bind(this));
         store.on('contours:removeSelectedFavoritesList', this._updateList.bind(this));
         store.on('contours:addVisibleToFavoritesList', this._updateList.bind(this));
