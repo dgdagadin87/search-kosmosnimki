@@ -5,7 +5,7 @@ import { createContainer } from 'js/utils/commonUtils';
 import ABoutDialogComponent from './components/aboutDialog/AboutDialogComponent';
 
 
-export default class HelpingButtonUIElement extends BaseUIElement {
+export default class HelpButtonUIElement extends BaseUIElement {
 
     init() {
 

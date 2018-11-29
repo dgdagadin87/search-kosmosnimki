@@ -22,12 +22,12 @@ export default class UserInformationUIElement extends BaseUIElement {
     _bindEvents() {
 
         const application = this.getApplication();
-        const permalinkManager = application.getAddon('permalinkManager');
+        const appStateManager = application.getAddon('appStateManager');
         const view = this.getView();
 
         view.addEventListener('logout', () => {
-            const currentAppState = permalinkManager.getCurrentApplicationState();
-            permalinkManager.saveAppStateToLocalStorage(currentAppState);
+            const currentAppState = appStateManager.getCurrentApplicationState();
+            appStateManager.saveAppStateToLocalStorage(currentAppState);
             window.location.reload(true);
         });
     }

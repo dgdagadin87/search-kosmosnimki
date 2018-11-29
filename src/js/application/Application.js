@@ -275,7 +275,7 @@ class Application {
 
     showLoader(state = false) {
 
-        const loaderWidget = this.getUiElement('loaderIndicator');
+        const loaderWidget = this.getUiElement('loadingIndicator');
 
         loaderWidget.show(state);
     }

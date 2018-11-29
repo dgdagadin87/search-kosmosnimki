@@ -8,7 +8,7 @@ import { HOME_LINK } from 'js/config/constants/constants';
 import { getCorrectIndex, propertiesToItem } from 'js/utils/commonUtils';
 
 
-export default class MakeOrderUIElement extends BaseUIElement {
+export default class OderCreatorUIElement extends BaseUIElement {
 
     init() {
 
@@ -49,7 +49,7 @@ export default class MakeOrderUIElement extends BaseUIElement {
     _onMakeOrderClick() {
 
         const application = this.getApplication();
-        const permalinkManager = application.getAddon('permalinkManager');
+        const appStateManager = application.getAddon('appStateManager');
         const store = application.getStore();
         const selectedIndex = getCorrectIndex('selected');
         const cartIndex = getCorrectIndex('cart');
@@ -84,7 +84,7 @@ export default class MakeOrderUIElement extends BaseUIElement {
             return propertiesToItem(properties);
         });
 
-        permalinkManager.getPermalinkId()
+        appStateManager.getPermalinkId()
         .then(result => orderDialogComponent.show(preparedItems, result))
         .catch(e => this._errorHandler(e))
     }
@@ -92,15 +92,15 @@ export default class MakeOrderUIElement extends BaseUIElement {
     _onWarningClick(e) {
 
         const application = this.getApplication();
-        const permalinkManager = application.getAddon('permalinkManager');
+        const appStateManager = application.getAddon('appStateManager');
         const {permalink} = e;
         const matches = /link=([^&]+)/g.exec(permalink);
 
         if (Array.isArray (matches) && matches.length > 0) {
             const permalinkId = matches[1];
-            permalinkManager.readPermalink(permalinkId)
+            appStateManager.readPermalink(permalinkId)
             .then (response => {
-                permalinkManager.saveAppStateToLocalStorage(response);
+                appStateManager.saveAppStateToLocalStorage(response);
                 window.location = HOME_LINK;
             })
             .catch(error => this._errorHandler(error));
@@ -139,14 +139,14 @@ export default class MakeOrderUIElement extends BaseUIElement {
     _onLoginButtonClick() {
 
         const application = this.getApplication();
-        const permalinkManager = application.getAddon('permalinkManager');
+        const appStateManager = application.getAddon('appStateManager');
         const authContainer = document.getElementById('auth');
         const loginButton = authContainer.querySelector('.authWidget-loginButton');
 
-        const currentAppState = permalinkManager.getCurrentApplicationState();
-        const savedState = permalinkManager.getAppStateFromLocalStorage();
+        const currentAppState = appStateManager.getCurrentApplicationState();
+        const savedState = appStateManager.getAppStateFromLocalStorage();
         if (!savedState) {
-            permalinkManager.saveAppStateToLocalStorage(currentAppState);
+            appStateManager.saveAppStateToLocalStorage(currentAppState);
         }
 
         loginButton.click();

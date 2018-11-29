@@ -10,7 +10,7 @@ import {
 import { normalizeGeometryType } from 'js/utils/commonUtils';
 
 
-class PermalinkManager {
+class AppStateManager {
 
     constructor (config) {
 
@@ -326,4 +326,4 @@ class PermalinkManager {
 
 }
 
-export default PermalinkManager;
+export default AppStateManager;

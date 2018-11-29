@@ -43,12 +43,12 @@ export default class PermalinkUIElement extends BaseUIElement {
     _onShowClick() {
 
         const application = this.getApplication();
-        const permalinkManager = application.getAddon('permalinkManager');
+        const appStateManager = application.getAddon('appStateManager');
         const formComponent = this.getChildComponent('form');
 
         formComponent.showLoading();
 
-        permalinkManager.getPermalinkId()
+        appStateManager.getPermalinkId()
         .then(result => formComponent.showInput(result))
         .catch(e => this._errorHandler(e))
     }

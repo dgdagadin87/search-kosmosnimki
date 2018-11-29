@@ -13,15 +13,15 @@ import DrawingLayerManager from './components/layersManagers/DrawingsLayerManage
 import ContourLayerManager from './components/layersManagers/ContoursLayerManager';
 
 import ShapeLoaderAddon from './components/addons/shapeLoader/ShapeLoaderAddon';
-import PermalinkManagerAddon from './components/addons/permalinkManager/PermalinkManagerAddon';
+import AppStateManagerAddon from './components/addons/appStateManager/AppStateManagerAddon';
 
-import LoaderIndicatorUiElement from './components/uiElements/customElements/loaderIndicator/LoaderIndicatorUiElement';
+import LoadingIndicatorUiElement from './components/uiElements/customElements/loadingIndicator/LoadingIndicatorUiElement';
 import PopupNotificationUiElement from './components/uiElements/customElements/popupNotification/PopupNotificationUiElement';
 import ErrorDialogUiElement from './components/uiElements/customElements/errorDialog/ErrorDialogUiElement';
-import HelpingButtonUiElement from './components/uiElements/customElements/helpingButton/HelpingButtonUiElement';
-import UserInformationUiElement from './components/uiElements/customElements/userInformation/UserInformationUiElement';
+import HelpButtonUiElement from './components/uiElements/customElements/helpButton/HelpButtonUiElement';
+import AuthInformationUiElement from './components/uiElements/customElements/authInformation/AuthInformationUiElement';
 import LanguageSelectUiElement from './components/uiElements/customElements/languageSelect/LanguageSelectUiElement';
-import MakeOrderUiElement from './components/uiElements/customElements/makeOrder/MakeOrderUiElement';
+import OrderCreatorUiElement from './components/uiElements/customElements/orderCreator/OrderCreatorUiElement';
 
 import PointUiElement from './components/uiElements/iconElements/point/PointUiElement';
 import PolylineUiElement from './components/uiElements/iconElements/polyline/PolylineUiElement';
@@ -116,8 +116,8 @@ const application = new Application({
             constructor: ShapeLoaderAddon
         },
         {
-            index: 'permalinkManager',
-            constructor: PermalinkManagerAddon
+            index: 'appStateManager',
+            constructor: AppStateManagerAddon
         }
     ],
 
@@ -125,8 +125,8 @@ const application = new Application({
     uiElements: [
         {
             type: 'custom',
-            index: 'loaderIndicator',
-            constructor: LoaderIndicatorUiElement
+            index: 'loadingIndicator',
+            constructor: LoadingIndicatorUiElement
         },
         {
             type: 'custom',
@@ -140,13 +140,13 @@ const application = new Application({
         },
         {
             type: 'custom',
-            index: 'helpingButton',
-            constructor: HelpingButtonUiElement
+            index: 'helpButton',
+            constructor: HelpButtonUiElement
         },
         {
             type: 'custom',
-            index: 'userInformation',
-            constructor: UserInformationUiElement
+            index: 'authInformation',
+            constructor: AuthInformationUiElement
         },
         {
             type: 'custom',
@@ -155,8 +155,8 @@ const application = new Application({
         },
         {
             type: 'custom',
-            index: 'makeOrder',
-            constructor: MakeOrderUiElement
+            index: 'orderCreator',
+            constructor: OrderCreatorUiElement
         },
         {
             type: 'icon',

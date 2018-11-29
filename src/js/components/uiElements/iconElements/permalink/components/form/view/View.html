@@ -26,7 +26,6 @@
         },
 
         methods: {
-
             onCancelClick() {
 
                 this.set({hidden: true});
@@ -39,15 +38,12 @@
                 this.fire('copy', input);
                 this.set({hidden: true});
             }
-
         },
 
         helpers: {
-
             translate(key) {
                 return Translations.getText(key);
             }
-
         }
 
     }

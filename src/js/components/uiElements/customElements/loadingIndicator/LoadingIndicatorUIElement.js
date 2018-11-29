@@ -3,7 +3,7 @@ import LoaderWidget from 'scanex-loader-widget';
 import BaseUIElement from 'js/base/BaseUIElement';
 
 
-export default class LoaderIndicatorUIElement extends BaseUIElement {
+export default class LoadingIndicatorUIElement extends BaseUIElement {
 
     init() {
 
