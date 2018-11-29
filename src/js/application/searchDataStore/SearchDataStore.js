@@ -101,6 +101,26 @@ export default class SearchDataStore extends BaseDataStore {
         return filteredData;
     }
 
+    getSelectedFavorites() {
+
+        const selectedIndex = getCorrectIndex('selected');
+        const cartIndex = getCorrectIndex('cart');
+        const contours = this.getSerializedData('contours');
+
+        const selectedFavorites = contours.filter(item => {
+            const {properties} = item;
+            if (!properties) {
+                return false;
+            }
+            if (properties[selectedIndex] && properties[cartIndex]) {
+                return true;
+            }
+            return false;
+        });
+
+        return selectedFavorites;
+    }
+
     getDrawings() {
 
         return this.getSerializedData('drawings');
@@ -113,9 +133,24 @@ export default class SearchDataStore extends BaseDataStore {
         }
 
         const {fields, values, types} = data;
-        const downloadCache = fromGmx ({fields, values, types});
+        const downloadCache = fromGmx({fields, values, types});
 
         this.rewriteData('downloadCache', downloadCache);
+    }
+
+    getMetaItem(key) {
+
+        const metaData = this.getData('meta');
+        
+        return metaData[key] || null;
+    }
+
+    setMetaItem(key, value, events = []) {
+
+        const metaData = this.getData('meta');
+        const dataToRewrite = { ...metaData, [key]: value };
+        
+        this.rewriteData('meta', dataToRewrite, events);
     }
 
 }

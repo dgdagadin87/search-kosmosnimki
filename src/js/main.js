@@ -49,10 +49,6 @@ const application = new Application({
                 'isTable': false
             },
             {
-                'key': 'about',
-                'isTable': false
-            },
-            {
                 'key': 'drawings',
                 'isTable': true,
                 'indexBy': 'id'
@@ -71,16 +67,14 @@ const application = new Application({
                 'isTable': false
             },
             {
-                'key': 'cancelLoading',
-                'isTable': false
-            },
-            {
-                'key': 'updateResults',
-                'isTable': false
-            },
-            {
-                'key': 'activeIcon',
-                'isTable': false
+                'key': 'meta',
+                'isTable': false,
+                'defaultValue': {
+                    about: '',
+                    cancelLoading: false,
+                    updateResults: false,
+                    activeIcon: null
+                }
             }
         ]
     },

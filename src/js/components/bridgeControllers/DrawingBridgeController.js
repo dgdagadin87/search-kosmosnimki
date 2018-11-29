@@ -173,12 +173,10 @@ export default class DrawingBridgeController extends BaseBridgeController {
     /* Edit drawing start */
     editDrawingOnList(rawItem) {
 
-        const {object} = rawItem;
-
-        const drawingId = object.options.uuid;
-
         const application = this.getApplication();
         const store = application.getStore();
+        const {object} = rawItem;
+        const drawingId = object.options.uuid;
 
         let currentDrawing = store.getData('drawings', drawingId);
 
@@ -195,7 +193,7 @@ export default class DrawingBridgeController extends BaseBridgeController {
                 currentDrawing.geoJSON = geoJSON;
                 currentDrawing.area = getDrawingObjectArea(geoJSON);
 
-                store.updateData('drawings', {id: drawingId, content: currentDrawing}, ['drawings:updateList']);
+                store.updateData('drawings', {id: drawingId, content: currentDrawing}, ['drawings:redrawItem']);
             }
             else {
 
@@ -213,7 +211,6 @@ export default class DrawingBridgeController extends BaseBridgeController {
 
         const application = this.getApplication();
         const store = application.getStore();
-
         const { id: drawingId, name: drawingName, color: drawingColor } = e.detail;
 
         let currentDrawing = store.getData('drawings', drawingId);
@@ -248,7 +245,7 @@ export default class DrawingBridgeController extends BaseBridgeController {
         currentDrawing['drawing'] = drawing;
 
         // setting drawing object in store
-        store.updateData('drawings', {id: drawingId, content: currentDrawing}, ['drawings:updateList']);
+        store.updateData('drawings', {id: drawingId, content: currentDrawing}, ['drawings:redrawItem']);
     }
     /* Edit drawing end */
 
@@ -310,24 +307,11 @@ export default class DrawingBridgeController extends BaseBridgeController {
     toggleDrawingsOnMapAndList(e, mode) {
 
         const map = this.getMap();
-
-        const app = this.getApplication();
-        const store = app.getStore();
-
+        const application = this.getApplication();
+        const store = application.getStore();
         const commonVisible = mode === 'all' ? e.detail : e.detail.visible;
 
-        let drawnObjects;
-
-        if (mode === 'row') {
-
-            const { id: drawingId } = e.detail;
-            drawnObjects = [store.getData('drawings', drawingId)];
-        }
-        else {
-
-            const rawDrawnObjects = store.getData('drawings');
-            drawnObjects = Object.keys(rawDrawnObjects).map(id => rawDrawnObjects[id]);
-        }
+        const drawnObjects = this._getDrawingObjects(store, mode, e);
 
         let contentForStore = [];
 
@@ -383,33 +367,17 @@ export default class DrawingBridgeController extends BaseBridgeController {
     deleteDrawingsOnMapAndList(e, mode) {
 
             const deleteDrawingFromMap = drawing => {
-    
                 if (drawing) {
                     drawing.remove();
                 } 
             }
+            const application = this.getApplication();
+            const store = application.getStore();
     
-            const app = this.getApplication();
-            const store = app.getStore();
-    
-            let drawnObjects;
-    
-            if (mode === 'row') {
-    
-                const { id: drawingId } = e.detail;
-    
-                drawnObjects = [store.getData('drawings', drawingId)];
-            }
-            else {
-    
-                const rawDrawnObjects = store.getData('drawings');
-                drawnObjects = Object.keys(rawDrawnObjects).map(id => rawDrawnObjects[id]);
-            }
+            const drawnObjects = this._getDrawingObjects(store, mode, e);
     
             drawnObjects.forEach(currentDrawn => {
-    
                 let { drawing: drawingObject } = currentDrawn;
-    
                 deleteDrawingFromMap(drawingObject);
             });
 
@@ -455,6 +423,22 @@ export default class DrawingBridgeController extends BaseBridgeController {
     getMap() {
 
         return this._map;
+    }
+
+    _getDrawingObjects(store, mode, e = {}) {
+
+        let drawnObjects;
+    
+        if (mode === 'row') {
+            const { id: drawingId } = e.detail;
+            drawnObjects = [store.getData('drawings', drawingId)];
+        }
+        else {
+            const rawDrawnObjects = store.getData('drawings');
+            drawnObjects = Object.keys(rawDrawnObjects).map(id => rawDrawnObjects[id]);
+        }
+
+        return drawnObjects;
     }
 
 }

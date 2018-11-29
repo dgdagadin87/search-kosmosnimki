@@ -78,6 +78,7 @@ export default class SidebarUIElement extends BaseUIElement {
         view.on('change', (e) => {
             serviceEvents.trigger('sidebar:tab:change', e);
             serviceEvents.trigger('sidebar:tab:change:map', e);
+            serviceEvents.trigger('sidebar:tab:change:meta', e);
             this._changeTabBorder(e);
         });
 
@@ -133,7 +134,7 @@ export default class SidebarUIElement extends BaseUIElement {
         const store = application.getStore();
         const ContourController = application.getBridgeController('contour');
         const downloadDialogComponent = this.getChildComponent('downloadDialog');
-        const isLoadingCancelled = store.getData('cancelLoading');
+        const isLoadingCancelled = store.getMetaItem('cancelLoading');
 
         if (!isLoadingCancelled) {
 
@@ -157,7 +158,7 @@ export default class SidebarUIElement extends BaseUIElement {
 
         application.showLoader(false);
 
-        store.rewriteData('cancelLoading', false);
+        store.setMetaItem('cancelLoading', false);
     }
 
     _endInitingSidebar() {
@@ -245,7 +246,7 @@ export default class SidebarUIElement extends BaseUIElement {
         const shapeLoader = application.getAddon('shapeLoader');
         const downloadDialogComponent = this.getChildComponent('downloadDialog');
 
-        store.rewriteData('cancelLoading', false);
+        store.setMetaItem('cancelLoading', false);
 
         downloadDialogComponent.hide();
         
@@ -256,7 +257,7 @@ export default class SidebarUIElement extends BaseUIElement {
 
             application.showLoader(false);
 
-            const cancelLoading = store.getData('cancelLoading');
+            const cancelLoading = store.getMetaItem('cancelLoading');
 
             if (!cancelLoading) {
 

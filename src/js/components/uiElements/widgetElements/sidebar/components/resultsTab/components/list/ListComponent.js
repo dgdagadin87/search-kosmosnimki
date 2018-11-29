@@ -62,10 +62,10 @@ export default class ResultListComponent extends BaseComponent {
         const {detail: {current: currentTab}} = e;
 
         if (currentTab === TAB_RESULTS_NAME) {
-            const willUpdateResults = store.getData('updateResults');
+            const willUpdateResults = store.getMetaItem('updateResults');
             const methodName = '_' + (willUpdateResults ? 'update' : 'resize') + 'List';
             this[methodName]();
-            store.rewriteData('updateResults', false);
+            store.setMetaItem('updateResults', false);
         }
     }
 
@@ -100,7 +100,6 @@ export default class ResultListComponent extends BaseComponent {
         const view = this.getView();
 
         const hoverIndex = getCorrectIndex('hover');
-
         const item = store.getData('contours', itemId);
         
         const {properties = []} = item;

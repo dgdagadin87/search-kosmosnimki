@@ -257,7 +257,7 @@ export default class ContourBridgeController extends BaseBridgeController {
         const favoritesData = store.getFavorites();
         const visibleState = favoritesData.some(item => item['properties'][visibleIndex] === 'hidden');
 
-        store.rewriteData('updateResults', true);
+        store.setMetaItem('updateResults', true);
 
         let gmxIdList = [];
         favoritesData.forEach(item => {

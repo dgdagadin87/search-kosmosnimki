@@ -24,7 +24,7 @@ export default class LoadingIndicatorUIElement extends BaseUIElement {
         const application = this.getApplication();
         const store = application.getStore();
 
-        store.rewriteData('cancelLoading', true, ['store:cancelLoading:full:update']);
+        store.setMetaItem('cancelLoading', true);
     }
 
     show(state = false) {

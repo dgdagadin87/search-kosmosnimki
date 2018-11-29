@@ -157,7 +157,7 @@ class Application {
         const text = await response.text();
         
         const store = this.getStore();
-        store.rewriteData('about', text);
+        store.setMetaItem('about', text);
     }
 
     async _initMap() {

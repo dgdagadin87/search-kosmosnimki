@@ -251,6 +251,9 @@ class DrawnObjects extends EventTarget {
         let height = this._container.querySelector('.table-list-header').getBoundingClientRect().height;
         this._container.querySelector('.table-list-body').style.maxHeight = `${total - height}px`;
     }
+    redrawItem (id, item) {
+        this._grid.redrawRow(id, item);
+    }
 }
 
 export default class View {

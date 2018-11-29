@@ -23,20 +23,18 @@ export default class DrawingObjectsUIElement extends BaseUIElement {
 
         const application = this.getApplication();
         const store = application.getStore();
-
         const DrawingController = application.getBridgeController('drawing');
-
-        const componentWidget = this._view.widget;
+        const view = this._view.widget;
 
         store.on('drawings:updateList', this._updateList.bind(this));
+        store.on('drawings:redrawItem', this._redrawItemOnList.bind(this));
 
-        componentWidget.addEventListener('editDrawing', (e) => DrawingController.editDrawingOnMapAndList(e));
-        componentWidget.addEventListener('zoomToObject', (e) => DrawingController.zoomToDrawingOnMap(e));
-
-        componentWidget.addEventListener('toggleDrawing', (e, mode = 'row') => DrawingController.toggleDrawingsOnMapAndList(e, mode));
-        componentWidget.addEventListener('toggleAllDrawings', (e, mode = 'all') => DrawingController.toggleDrawingsOnMapAndList(e, mode));
-        componentWidget.addEventListener('deleteDrawing', (e, mode = 'row') => DrawingController.deleteDrawingsOnMapAndList(e, mode));
-        componentWidget.addEventListener('deleteAllDrawings', (e, mode = 'all') => DrawingController.deleteDrawingsOnMapAndList(e, mode));
+        view.addEventListener('editDrawing', (e) => DrawingController.editDrawingOnMapAndList(e));
+        view.addEventListener('zoomToObject', (e) => DrawingController.zoomToDrawingOnMap(e));
+        view.addEventListener('toggleDrawing', (e, mode = 'row') => DrawingController.toggleDrawingsOnMapAndList(e, mode));
+        view.addEventListener('toggleAllDrawings', (e, mode = 'all') => DrawingController.toggleDrawingsOnMapAndList(e, mode));
+        view.addEventListener('deleteDrawing', (e, mode = 'row') => DrawingController.deleteDrawingsOnMapAndList(e, mode));
+        view.addEventListener('deleteAllDrawings', (e, mode = 'all') => DrawingController.deleteDrawingsOnMapAndList(e, mode));
     }
 
     _updateList() {
@@ -48,6 +46,17 @@ export default class DrawingObjectsUIElement extends BaseUIElement {
         this.getView().widget.items = data;
 
         this._resizeWidget();
+    }
+
+    _redrawItemOnList(itemId) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const view = this.getView();
+
+        const itemData = store.getData('drawings', itemId);
+
+        view.widget.redrawItem(itemId, itemData);
     }
 
     _resizeWidget() {

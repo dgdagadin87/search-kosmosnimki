@@ -93,7 +93,7 @@ export default class PolygonUIElement extends BaseUIElement {
         const application = this.getApplication();
         const store = application.getStore();
 
-        return store.getData('activeIcon');
+        return store.getMetaItem('activeIcon');
     }
 
     _rewriteActiveIcon(value) {
@@ -102,7 +102,7 @@ export default class PolygonUIElement extends BaseUIElement {
         const events = application.getServiceEvents();
         const store = application.getStore();
 
-        store.rewriteData('activeIcon', value);
+        store.setMetaItem('activeIcon', value);
         events.trigger('gmxIcons:clearActive', 'polygon');
     }
 

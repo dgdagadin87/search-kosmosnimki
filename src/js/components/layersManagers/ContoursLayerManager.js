@@ -2,7 +2,7 @@ import BaseLayerManager from 'js/base/BaseLayerManager';
 
 import {LAYER_ATTRIBUTES, LAYER_ATTR_TYPES} from 'js/config/constants/constants';
 
-import {getCorrectIndex, makeCloseTo, getBbox} from 'js/utils/commonUtils';
+import {getCorrectIndex, getBounds} from 'js/utils/commonUtils';
 
 
 const Colors = {
@@ -28,7 +28,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const application = this.getApplication();
         const events = application.getServiceEvents();
         const store = application.getStore();
-        const vectorLayer = this._vectorLayer;
+        const layer = this._vectorLayer;
         const ContoursController = application.getBridgeController('contour');
 
         events.on('sidebar:tab:change:map', this._setCurrentTab.bind(this));
@@ -37,9 +37,9 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         events.on('contours:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
         events.on('contours:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
 
-        vectorLayer.on('click', (e, fromMap = true) => ContoursController.showQuicklookOnListAndMap(e, fromMap));
-        vectorLayer.on('mouseover', (e, state = true) => ContoursController.hoverContour(e, state));
-        vectorLayer.on('mouseout', (e, state = false) => ContoursController.hoverContour(e, state));
+        layer.on('click', (e, fromMap = true) => ContoursController.showQuicklookOnListAndMap(e, fromMap));
+        layer.on('mouseover', (e, state = true) => ContoursController.hoverContour(e, state));
+        layer.on('mouseout', (e, state = false) => ContoursController.hoverContour(e, state));
 
         store.on('contours:researchedMap', this._addContoursOnMap.bind(this));
         store.on('contours:researchedMap', this._zoomToContoursOnMap.bind(this));
@@ -76,7 +76,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const item = store.getData('contours', gmxId);
         const {properties} = item;
 
-        const bounds  = this.getBounds([properties]);
+        const bounds  = getBounds([properties]);
         this._map.fitBounds(bounds, { animate: false });
     }
 
@@ -84,11 +84,9 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
         const application = this.getApplication();
         const store = application.getStore();
-
-        const propertyIndex = getCorrectIndex('result');
+        const propertyIndex = getCorrectIndex((this._currentTab === 'result' ? 'result' : 'favorites'));
 
         const contours = store.getSerializedData('contours');
-
         const seriaLizedSnapShots = contours.map(({properties}) => properties);
         const resultItems = seriaLizedSnapShots.filter(properties => properties[propertyIndex]);
 
@@ -96,7 +94,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             return;
         }
 
-        let bounds = this.getBounds(resultItems);      
+        let bounds = getBounds(resultItems);      
         if (bounds) {                        
             this._map.fitBounds(bounds, { animate: false });
         }
@@ -165,13 +163,11 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
         const hoverIndex = getCorrectIndex('hover');
         const cartIndex = getCorrectIndex('cart');
+        const resultIndex = getCorrectIndex('result');
 
         const tab_filter = ({properties}) => {
 
             const filtered = true;
-        
-            const resultIndex = getCorrectIndex('result');
-            const cartIndex = getCorrectIndex('cart');
         
             switch (this._currentTab) {
                 case 'results':
@@ -235,38 +231,6 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
         });
         this._vectorLayer.addTo(this._map);
-    }
-
-    _normBounds (x2,x4) {
-        if (x2 < 0 && x4 > 0) {
-            return [x2 + 360, x4];
-        }
-        else if (x2 > 0 && x4 < 0) {
-            return [x2, x4 + 360];
-        }
-    }
-
-    getBounds (items) {        
-        let bounds = items.reduce((a,properties) => {
-            const geometry = L.gmxUtil.convertGeometry(properties[properties.length - 1], true, true);
-            let [[x1,y1],[x2,y2],[x3,y3],[x4,y4]] = getBbox(geometry);            
-            let ne = L.latLng(y2,x2);
-            let sw = L.latLng(y4,x4);
-            let b = L.latLngBounds(ne, sw);
-            if (a === null) {            
-                a = b;
-            }
-            else {
-                a.extend(b);
-            }
-            return a;
-        }, null);
-        let ne = bounds.getNorthEast();
-        let sw = bounds.getSouthWest();
-        const lng = ne.lng;
-        ne = L.latLng (ne.lat, makeCloseTo(lng, ne.lng));
-        sw = L.latLng (sw.lat, makeCloseTo(lng, sw.lng));
-        return L.latLngBounds(ne, sw);
     }
 
 }

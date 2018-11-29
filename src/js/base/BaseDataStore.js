@@ -33,10 +33,11 @@ export default class DataStore {
 
     _createContainer(item) {
 
-        const {key, isTable = false, indexBy = ''} = item;
+        const {key, isTable = false, defaultValue = null, indexBy = ''} = item;
+        const defaultData = defaultValue ? defaultValue : (isTable ? {} : null);
 
         this._data[key] = {
-            data: isTable ? {} : null,
+            data: defaultData,
             config:{
                 indexBy,
                 isTable

@@ -679,6 +679,29 @@ function getCoordinatesCount(results) {
     return numOfCoordinates;
 }
 
+function getBounds (items) {        
+    let bounds = items.reduce((a,properties) => {
+        const geometry = L.gmxUtil.convertGeometry(properties[properties.length - 1], true, true);
+        let [[x1,y1],[x2,y2],[x3,y3],[x4,y4]] = getBbox(geometry);            
+        let ne = L.latLng(y2,x2);
+        let sw = L.latLng(y4,x4);
+        let b = L.latLngBounds(ne, sw);
+        if (a === null) {            
+            a = b;
+        }
+        else {
+            a.extend(b);
+        }
+        return a;
+    }, null);
+    let ne = bounds.getNorthEast();
+    let sw = bounds.getSouthWest();
+    const lng = ne.lng;
+    ne = L.latLng (ne.lat, makeCloseTo(lng, ne.lng));
+    sw = L.latLng (sw.lat, makeCloseTo(lng, sw.lng));
+    return L.latLngBounds(ne, sw);
+}
+
 function getRootUrl () {
     let {origin, pathname} = location;
     return `${origin}${pathname}`;
@@ -716,5 +739,6 @@ export {
     tileRange,
     getShapefileObject,
     getCoordinatesCount,
+    getBounds,
     getRootUrl
 };

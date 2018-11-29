@@ -5,7 +5,7 @@ import OrderDialogComponent from './components/orderDialog/OrderDialogComponent'
 import SuccessDialogComponent from './components/successDialog/SuccessDialogComponent';
 
 import { HOME_LINK } from 'js/config/constants/constants';
-import { getCorrectIndex, propertiesToItem } from 'js/utils/commonUtils';
+import { propertiesToItem } from 'js/utils/commonUtils';
 
 
 export default class OderCreatorUIElement extends BaseUIElement {
@@ -51,24 +51,11 @@ export default class OderCreatorUIElement extends BaseUIElement {
         const application = this.getApplication();
         const appStateManager = application.getAddon('appStateManager');
         const store = application.getStore();
-        const selectedIndex = getCorrectIndex('selected');
-        const cartIndex = getCorrectIndex('cart');
         const loginDialogComponent = this.getChildComponent('loginDialog');
         const orderDialogComponent = this.getChildComponent('orderDialog');
 
         const userInfo = store.getData('userInfo');
-        const contours = store.getSerializedData('contours');
-
-        const selectedCarts = contours.filter(item => {
-            const {properties} = item;
-            if (!properties) {
-                return false;
-            }
-            if (properties[selectedIndex] && properties[cartIndex]) {
-                return true;
-            }
-            return false;
-        });
+        const selectedCarts = store.getSelectedFavorites();
 
         if (selectedCarts.length < 1) {
             return;
