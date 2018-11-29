@@ -56,9 +56,16 @@ export default class ResultListComponent extends BaseComponent {
 
     _onTabChangeHandler(e) {
 
+        const application = this.getApplication();
+        const store = application.getStore();
         const {detail: {current: currentTab}} = e;
 
-        currentTab === TAB_RESULTS_NAME && this._resizeList();
+        if (currentTab === TAB_RESULTS_NAME) {
+            const willUpdateResults = store.getData('updateResults');
+            const methodName = '_' + (willUpdateResults ? 'update' : 'resize') + 'List';
+            this[methodName]();
+            store.rewriteData('updateResults', false);
+        }
     }
 
     _updateList() {

@@ -37,12 +37,14 @@ export default class FavoritesListComponent extends BaseComponent {
         events.on('sidebar:tab:resize', (e) => this._resizeFavoritesList(e));
         events.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
         events.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
+        events.on('contours:allQuicklooksList', this._redrawItemOnList.bind(this));
         events.on('contours:scrollToRow', this._scrollToRow.bind(this));
 
         store.on('contours:addAllToCartList', this._updateList.bind(this));
         store.on('contours:addToCartList', this._updateList.bind(this));
         store.on('contours:setSelected', this._redrawItemOnList.bind(this));
         store.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
+        store.on('contours:allQuicklooksList', this._redrawItemOnList.bind(this));
         store.on('contours:setHoveredList', this._highliteItemOnList.bind(this));
         store.on('contours:setAllSelectedList', this._updateList.bind(this));
         store.on('contours:removeSelectedFavoritesList', this._updateList.bind(this));

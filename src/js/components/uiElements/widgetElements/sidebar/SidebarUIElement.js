@@ -103,6 +103,13 @@ export default class SidebarUIElement extends BaseUIElement {
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
         downloadDialogComponent.events.on('downloadApply:click', () => this._onDownloadApplyClick());
+
+        //serviceEvents.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
+        //store.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
+    }
+
+    _redrawItemOnList() {
+        console.log('redraweddd');
     }
 
     _searchResults() {

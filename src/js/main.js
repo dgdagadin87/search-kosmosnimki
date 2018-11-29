@@ -75,6 +75,10 @@ const application = new Application({
                 'isTable': false
             },
             {
+                'key': 'updateResults',
+                'isTable': false
+            },
+            {
                 'key': 'activeIcon',
                 'isTable': false
             }

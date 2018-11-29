@@ -249,12 +249,15 @@ export default class ContourBridgeController extends BaseBridgeController {
     showAllQuicklooksOnListAndMap() {
 
         const application = this.getApplication();
+        const events = application.getServiceEvents();
         const store = application.getStore();
         const visibleIndex = getCorrectIndex('visible');
         const gmxIdIndex = getCorrectIndex('gmx_id');
 
         const favoritesData = store.getFavorites();
         const visibleState = favoritesData.some(item => item['properties'][visibleIndex] === 'hidden');
+
+        store.rewriteData('updateResults', true);
 
         let gmxIdList = [];
         favoritesData.forEach(item => {
@@ -263,7 +266,18 @@ export default class ContourBridgeController extends BaseBridgeController {
             gmxIdList.push(gmxId);
         });
 
-        gmxIdList.forEach(id => this._showQuicklook(id, visibleState, true));
+        gmxIdList.forEach(id => {
+            const contour = store.getData('contours', id);
+            const {properties = []} = contour;
+            const visibleChangedState = getVisibleChangedState(visibleState, properties);
+            if (visibleChangedState) {
+                contour['properties'] = properties;
+                store.updateData('contours', {id, content: contour}, ['contours:allQuicklooksList']);
+                this.showQuicklookOnMap(id, visibleState, true)
+                .then(() => events.trigger('contours:allQuicklooksList', id))
+                .catch(e => console.log(e));
+            }
+        })
     }
 
     setSelectedOnListAndMap(e) {

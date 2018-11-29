@@ -41,7 +41,7 @@ export default class HeaderComponent extends BaseComponent {
 
             const d = [];
             for (var i = 0; i < 200; i++) {
-                if (i === 200) break;
+                if (i === 200 || i === a.length) break;
                 let f = a[i];
                 f['properties'][getCorrectIndex('cart')] = true;
                 let id = f['properties'][getCorrectIndex('gmx_id')]
