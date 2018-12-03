@@ -20,13 +20,9 @@ export default class SidebarUIElement extends BaseUIElement {
 
     init() {
 
-        this._setDefaultCriteria();
-
         const map = this.getMap();
 
-        this._view = new View({
-            map
-        });
+        this._view = new View({ map });
 
         this.initChildren([
             {
@@ -161,23 +157,6 @@ export default class SidebarUIElement extends BaseUIElement {
         store.setMetaItem('cancelLoading', false);
     }
 
-    _endInitingSidebar() {
-
-        const view = this.getView();
-        const container = view.getContainer();
-
-        container.classList.add('noselect');
-    }
-
-    _setDefaultCriteria() {
-
-        const application = this.getApplication();
-        const store = application.getStore();
-        const defaultCriteria = createDefaultCriteria();
-
-        store.rewriteData('searchCriteria', defaultCriteria);
-    }
-
     _resizeSidebar() {
 
         const application = this.getApplication();
@@ -263,7 +242,7 @@ export default class SidebarUIElement extends BaseUIElement {
 
                 store.setDownloadCache(data);
                 shapeLoader.download('results', 'results');
-            }                
+            }
         })
         .catch(this._showError.bind(this));
     }
@@ -295,7 +274,7 @@ export default class SidebarUIElement extends BaseUIElement {
         }
     
         if (state === 'stopDrawing') {
-            if (!sidebar.getCurrent()) {               
+            if (!sidebar.getCurrent()) {
                 sidebar.setCurrent('search');
             }
             return;

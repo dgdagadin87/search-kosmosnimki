@@ -1,14 +1,15 @@
 import Translations from 'scanex-translations';
-import { DataGrid } from 'scanex-datagrid';
+import ExtendedDataGrid from './ExtendedDataGrid';
 
 import { getSatelliteName, getPanelHeight } from 'js/utils/commonUtils';
 import EventTarget from 'scanex-event-target';
 
 
 class ResultList extends EventTarget {
-    constructor({ restricted }){
+    constructor({ application, restricted }){
         super();    
         this._cart = {};
+        this._application = application;
         this._restricted = restricted;
         this._container = document.querySelector('#map div.noselect.leaflet-control div.panes div.results-pane');
         this._container.classList.add('result-list');
@@ -195,9 +196,10 @@ class ResultList extends EventTarget {
             },
         };
 
-        this._grid = new DataGrid(
+        this._grid = new ExtendedDataGrid(
             this._container,
             {
+                application: this._application,
                 fields: this.fields, 
                 filter: item => Boolean (item.checked),
                 sortBy: {field: 'acqdate', asc: false},
@@ -230,6 +232,11 @@ class ResultList extends EventTarget {
 
     get fields () {
         return this._fields;
+    }
+
+    get sortBy() {
+
+        return this._grid._sortBy;
     }
 
     _onSort (e) {

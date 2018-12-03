@@ -97,7 +97,7 @@ export default class ContourBridgeController extends BaseBridgeController {
                         clip: clipCoords,
                         disableSetClip: true,
                         pane: 'tilePane'
-                    });                    
+                    });
                     quicklook.on('load', () => {
                         const gmxId = properties[gmxIdIndex];
                         properties[visibleIndex] = 'visible';

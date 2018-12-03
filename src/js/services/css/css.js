@@ -64,3 +64,6 @@ import 'scanex-notify-widget/dist/scanex-notify-widget.css';
 
 // pikaday
 import 'pikaday/css/pikaday.css';
+
+// extended grid
+import '../../../css/extendedDataGrid.css';

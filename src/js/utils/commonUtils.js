@@ -197,6 +197,20 @@ function createDefaultCriteria() {
     return defaultCriteria;
 }
 
+function createDefaultFilter() {
+
+    const now = new Date();
+    const dateStart = new Date(now.getFullYear(), 0, 1);
+    const dateEnd = now;
+
+    return {
+        date:  [ dateStart, dateEnd ],
+        clouds: [0, 100],
+        angle: [0, 60],
+        unChecked: []
+    };
+}
+
 function getPanelHeight (container, parts) {
 
     return parts.reduce((a,x) => {
@@ -707,6 +721,32 @@ function getRootUrl () {
     return `${origin}${pathname}`;
 }
 
+function getDifferenceBetweenDates(startDate, endDate) {
+
+    const startYear = startDate.getFullYear();
+    const startMonth = startDate.getMonth();
+    const startDay = startDate.getDate();
+
+    const endYear = endDate.getFullYear();
+    const endMonth = endDate.getMonth();
+    const endDay = endDate.getDate();
+
+    const startMomentDate = moment([startYear, startMonth, startDay]);
+    const endMomentDate = moment([endYear, endMonth, endDay]);
+
+    const monthDiff = startMomentDate.diff(endMomentDate, 'months');
+    const absMonthDiff = Math.abs(monthDiff);
+
+    if (absMonthDiff > 0) {
+        return `${absMonthDiff} мес`;
+    }
+
+    const dayDiff = startMomentDate.diff(endMomentDate, 'days');
+    const absDayDiff = Math.abs(dayDiff);
+
+    return `${absDayDiff} дн`;
+}
+
 export {
     isNumber,
     createContainer,
@@ -724,6 +764,7 @@ export {
     propertiesToItem,
     getSatelliteName,
     createDefaultCriteria,
+    createDefaultFilter,
     getPanelHeight,
     getVisibleChangedState,
     splitComplexId,
@@ -740,5 +781,6 @@ export {
     getShapefileObject,
     getCoordinatesCount,
     getBounds,
-    getRootUrl
+    getRootUrl,
+    getDifferenceBetweenDates
 };

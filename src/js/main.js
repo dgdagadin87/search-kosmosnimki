@@ -4,6 +4,8 @@ import 'nodelist-foreach-polyfill';
 import './services/css/css';
 import './services/translations/translations';
 
+import { createDefaultCriteria, createDefaultFilter } from './utils/commonUtils';
+
 import Application from './application/Application';
 
 import DrawingBridgeController from './components/bridgeControllers/DrawingBridgeController';
@@ -64,7 +66,16 @@ const application = new Application({
             },
             {
                 'key': 'searchCriteria',
-                'isTable': false
+                'isTable': false,
+                'defaultValue': createDefaultCriteria()
+            },
+            {
+                'key': 'clientFilter',
+                'isTable': false,
+                'defaultValue': {
+                    isChanged: false,
+                    filterData: createDefaultFilter()
+                }
             },
             {
                 'key': 'meta',

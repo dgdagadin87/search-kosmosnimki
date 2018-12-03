@@ -243,7 +243,7 @@ class AppStateManager {
             }
             else {
                 contours[gmxId] = item;
-                contours[gmx_id]['cart'] = true;
+                contours[gmxId]['cart'] = true;
             }
 
             delete contours[gmxId]['checked'];
@@ -322,6 +322,15 @@ class AppStateManager {
         const sidebarView = sidebarUiElement.getView();
 
         return sidebarView.getCurrent();
+    }
+
+    _errorHandler(e) {
+
+        const application = this.getApplication();
+
+        application.showError(e.toString());
+
+        window.console.error(e);
     }
 
 }

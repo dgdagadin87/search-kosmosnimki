@@ -18,6 +18,7 @@ export default class ResultListComponent extends BaseComponent {
         const restricted = userInfo['Role'] === ACCESS_USER_ROLE;
 
         this._view = new View({
+            application,
             restricted
         });
 
@@ -45,6 +46,7 @@ export default class ResultListComponent extends BaseComponent {
         store.on('contours:addToCartList', this._redrawItemOnList.bind(this));
         store.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
         store.on('contours:setHoveredList', this._highliteItemOnList.bind(this));
+        store.on('clientFilter:change', this._onClientFilterChange.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
         view.addEventListener('click', (e) => ContourController.zoomToContourOnMap(e));
@@ -67,6 +69,24 @@ export default class ResultListComponent extends BaseComponent {
             this[methodName]();
             store.setMetaItem('updateResults', false);
         }
+    }
+
+    _onClientFilterChange() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const clientFilter = store.getData('clientFilter');
+        const {filterData: {clouds = [0, 100]}} = clientFilter;
+        const resultsData = store.getResults(true);
+        const view = this.getView();
+
+        const filteredItems = resultsData.filter(item => {
+            const cloudsCriteria = clouds[0] <= item.cloudness && item.cloudness <= clouds[1];
+            return cloudsCriteria;
+        });
+
+        view.items = filteredItems;
+        this._resizeList();
     }
 
     _updateList() {
