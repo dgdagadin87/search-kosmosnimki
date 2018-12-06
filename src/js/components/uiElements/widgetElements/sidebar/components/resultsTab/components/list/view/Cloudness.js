@@ -20,6 +20,29 @@ export default class CloudnessFilter extends EventTarget {
         this._values = false;
 
         this._first = true;
+
+        this._bindEvents();
+    }
+
+    _bindEvents() {
+
+        const store = this._application.getStore();
+
+        store.on('contours:researchedList', () => {
+            this._first = true;
+        });
+        store.on('contours:startResearchedList', () => {
+            this._first = true;
+        });
+        store.on('contours:addAllToCartList', () => {
+            this._first = true;
+        });
+        store.on('contours:removeSelectedFavoritesList', () => {
+            this._first = true;
+        });
+        store.on('contours:addVisibleToFavoritesList', () => {
+            this._first = true;
+        });
     }
 
     _getSortBy() {
@@ -112,10 +135,6 @@ export default class CloudnessFilter extends EventTarget {
 
         column.querySelector('.on-hover-div').addEventListener('mouseover', this._onSortMouseOver.bind(this));
         column.querySelector('.on-hover-div').addEventListener('mouseout', this._onSortMouseOut.bind(this));
-
-        /*this._cloudSlider.addEventListener('stop', () => {
-            this._values = this._cloudSlider.values;
-        });*/
     }
 
     _prepareMinMaxValues() {
@@ -228,12 +247,6 @@ export default class CloudnessFilter extends EventTarget {
         togglableContent.style.visibility = 'hidden';
 
         this._setValues(currentValues);
-        //this._setClientFilter(this._values);
-
-
-        //let event = document.createEvent('Event');
-        //event.initEvent('clientFilter:apply', false, false);
-        //this.dispatchEvent(event);
     }
 
     _getValues() {
@@ -247,19 +260,10 @@ export default class CloudnessFilter extends EventTarget {
 
     _setValues(values) {
 
-        const store = this._application.getStore();
-        const clientFilter = store.getData('clientFilter');
-        const {filterData, isChanged} = clientFilter;
-
-        const dataToRewrite = {
-            isChanged,
-            filterData:{
-                ...filterData,
-                clouds: values
-            }
-        };
-
-        store.rewriteData('clientFilter', dataToRewrite, ['clientFilter:change']);
+        let event = document.createEvent('Event');
+        event.initEvent('changeClientFilter', false, false);
+        event.detail = {name: 'clouds', value: values};
+        this.dispatchEvent(event);
     }
 
 }

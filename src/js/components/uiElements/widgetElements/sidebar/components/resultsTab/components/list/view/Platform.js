@@ -34,22 +34,18 @@ export default class PlatformFilter extends EventTarget {
         return view['sortBy'];
     }
 
-    renderHeader(clear = false) {
+    renderHeader() {
 
         const sortBy = this._getSortBy();
 
-        if (clear) {
-            this._unChecked = [];
-            this._tmpUnchecked = [];
-        }
-        else {
-            this._tmpUnchecked = [...this._unChecked];
-        }
+        const unChecked = this._getValues();
+
+        this._tmpUnchecked = [...unChecked];
 
         this.prepareSatellites();
 
-        const appliedDisplay = this._unChecked.length > 0 ? 'block' : 'none';
-        const appliedClass = this._unChecked.length > 0 ? ' applied' : '';
+        const appliedDisplay = unChecked.length > 0 ? 'block' : 'none';
+        const appliedClass = unChecked.length > 0 ? ' applied' : '';
         const sortIconDisplay = sortBy['field'] === 'platform' ? ''  : ' style="visibility: hidden"';
 
         let platformsCount = 0;
@@ -63,7 +59,7 @@ export default class PlatformFilter extends EventTarget {
                 <div class="on-hover-div">
                     <div class="filterable-applied">
                         <div style="display: ${appliedDisplay};">
-                            <span class="checked">${platformsCount - this._unChecked.length}</span>/<span class="all">${platformsCount}</span>
+                            <span class="checked">${platformsCount - unChecked.length}</span>/<span class="all">${platformsCount}</span>
                         </div>
                     </div>
                     <span class="filterable-header-platform filterable-header${appliedClass}">${this._field['name']}</span>
@@ -110,14 +106,14 @@ export default class PlatformFilter extends EventTarget {
             item.checked && this._satellites.push(item);
         });
 
-        this._setClientFilter(this._satellites);
-
         if (forReturn) {
             return this._satellites;
         }
     }
 
     _getSatelliteList(cache) {
+
+        const unChecked = this._getValues();
 
         cache.sort((first, second) => {
             if(first['_name'] < second['_name']) {
@@ -128,21 +124,26 @@ export default class PlatformFilter extends EventTarget {
             }
             return 0;
         });
-
-        return cache.map((x) => {
+        console.log('--------------');
+        const satellites = cache.map((x) => {
             const {id, name,platforms} = x;
-            const isInUnchecked = platforms.some(platform => this._unChecked.indexOf(platform) !== -1 );
+            console.log(name, platforms);
+            const isInUnchecked = platforms.some(platform => unChecked.indexOf(platform) !== -1 );
             const checkedParam = !isInUnchecked ? 'checked="checked"' : '';
             return `<div class="satellite-col">
                         <input ${checkedParam} type="checkbox" id="sat_${id}" value="${id}" />
                         <label for="sat_${id}">${name}</label>
                     </div>`;
         }).join('');
+        console.log(unChecked)
+        return satellites;
     }
 
     _onColumnClick(e) {
 
         this._closeAll('platform');
+
+        const unChecked = this._getValues();
 
         const {target} = e;
 
@@ -158,7 +159,7 @@ export default class PlatformFilter extends EventTarget {
             else {
                 target.classList.remove('active');
                 filterContainer.style.visibility = 'hidden';
-                this._tmpUnchecked = [...this._unChecked];
+                this._tmpUnchecked = [...unChecked];
                 const satellitesContainer = this._container.querySelector('.search-options-satellites-ms');
                 satellitesContainer.innerHTML = this._getSatelliteList(this._satellites);
                 const satelliteCheckboxes = this._container.querySelectorAll('input[type="checkbox"]');
@@ -235,9 +236,11 @@ export default class PlatformFilter extends EventTarget {
                 }
             }
             else {
-                this._tmpUnchecked.splice(platform, 1);
+                this._tmpUnchecked.splice(this._tmpUnchecked.indexOf(platform), 1);
             }
         });
+
+        console.log(this._tmpUnchecked);
     }
 
     _onApplyClick(e) {
@@ -248,14 +251,15 @@ export default class PlatformFilter extends EventTarget {
         const togglableContent = parent.querySelector('.togglable-content');
         const filterableApplied = parent.querySelector('.filterable-applied > div');
 
-        this._unChecked = [...this._tmpUnchecked];
+        //this._unChecked = [...this._tmpUnchecked];
+        const unChecked = [...this._tmpUnchecked];
 
         filterableHeader.classList.remove('active');
 
-        if (this._unChecked.length > 0) {
+        if (unChecked.length > 0) {
             filterableHeader.classList.add('applied');
             filterableApplied.style.display = 'block';
-            filterableApplied.querySelector('.checked').innerText = (this._satellites.length - this._unChecked.length);
+            filterableApplied.querySelector('.checked').innerText = (this._satellites.length - unChecked.length);
             filterableApplied.querySelector('.all').innerText = this._satellites.length;
         }
         else {
@@ -269,17 +273,13 @@ export default class PlatformFilter extends EventTarget {
 
         this._satellites.forEach(item => {
             const {platforms} = item;
-            const arePlatformsInUnchecked = platforms.some(platform => this._unChecked.indexOf(platform) !== -1);
+            const arePlatformsInUnchecked = platforms.some(platform => unChecked.indexOf(platform) !== -1);
             if (!arePlatformsInUnchecked) {
                 newSatellites.push(item);
             }
         });
 
-        this._setClientFilter(newSatellites);
-
-        let event = document.createEvent('Event');
-        event.initEvent('clientFilter:apply', false, false);
-        this.dispatchEvent(event);
+        this._setValues(unChecked);
     }
 
     _getSatellitePlatformsById(satelliteId) {
@@ -287,6 +287,23 @@ export default class PlatformFilter extends EventTarget {
         const currentSatellite = this._satellites.filter(item => item['_id'] === satelliteId);
         
         return currentSatellite[0]['_platforms'];
+    }
+
+    _getValues() {
+
+        const store = this._application.getStore();
+        const clientFilter = store.getData('clientFilter');
+        const {filterData: {unChecked = []}} = clientFilter;
+
+        return unChecked;
+    }
+
+    _setValues(values) {
+
+        let event = document.createEvent('Event');
+        event.initEvent('changeClientFilter', false, false);
+        event.detail = {name: 'unChecked', value: values};
+        this.dispatchEvent(event);
     }
 
 }

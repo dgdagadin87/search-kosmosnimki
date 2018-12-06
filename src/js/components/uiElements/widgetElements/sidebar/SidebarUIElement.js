@@ -93,6 +93,7 @@ export default class SidebarUIElement extends BaseUIElement {
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
         resultsHeaderComponent.events.on('results:clear', () => this._clearResults());
+        resultsHeaderComponent.events.on('filter:clear', () => this._clearClientFilter());
         resultsHeaderComponent.events.on('results:setVisibleToFavorites', () => this._setVisibleToCart());
         resutsListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
@@ -117,6 +118,7 @@ export default class SidebarUIElement extends BaseUIElement {
 
         application.showLoader(true);
 
+        this._clearClientFilter();
         this._clearResults();
 
         requestManager.requestSearchContours(RESULT_MAX_COUNT_PLUS_ONE)
@@ -138,16 +140,13 @@ export default class SidebarUIElement extends BaseUIElement {
             const resultLength = values.length;
 
             if (resultLength === 0) {
-
                 const alertNothingMessage = Translations.getText('alerts.nothing');
                 application.showNotification(alertNothingMessage);
             }
             else if (0 < resultLength && resultLength < RESULT_MAX_COUNT_PLUS_ONE) {
-
                 ContourController.addContoursOnMapAndList(result);
             }
             else {
-
                 downloadDialogComponent.show();
             }
         }
@@ -178,6 +177,26 @@ export default class SidebarUIElement extends BaseUIElement {
             const currentTab = document.querySelector('[data-tab-id="' + current + '"]');
             currentTab.classList.add('active-sidebar-tab');
         }
+    }
+
+    _clearClientFilter() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const searchCriteria = store.getData('searchCriteria');
+        const {clouds, angle, date} = searchCriteria;
+
+        const dataToRewrite = {
+            isChanged: false,
+            filterData: {
+                unChecked: [],
+                clouds,
+                angle,
+                date
+            }
+        };
+
+        store.rewriteData('clientFilter', dataToRewrite, ['clientFilter:changeList','clientFilter:changeMap']);
     }
 
     _clearResults() {

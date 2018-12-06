@@ -211,7 +211,23 @@ class ResultList extends EventTarget {
         this._grid.addEventListener('row:mouseover', this._onRowMouseOver);
         this._grid.addEventListener('row:mouseout', this._onRowMouseOut);
         this._grid.addEventListener('sort', this._onSort);
+
+        this._grid._platformConstructor.addEventListener('changeClientFilter', (e) => this._onCLientFilterChange(e));
+        this._grid._cloudnessConstructor.addEventListener('changeClientFilter', (e) => this._onCLientFilterChange(e));
+        this._grid._angleConstructor.addEventListener('changeClientFilter', (e) => this._onCLientFilterChange(e));
+        this._grid._acqdateConstructor.addEventListener('changeClientFilter', (e) => this._onCLientFilterChange(e));
+
         this._stopPropagation = this._stopPropagation.bind(this);
+    }
+
+    _onCLientFilterChange(e) {
+
+        const {detail = {}} = e;
+
+        let event = document.createEvent('Event');
+        event.initEvent('changeClientFilter', false, false);
+        event.detail = detail;
+        this.dispatchEvent(event);
     }
 
     _stopPropagation (e) {

@@ -26,6 +26,7 @@ Translations.addText('rus', {
         angle: 'Угол',
         stereo: 'Стерео',
         clear: 'Очистить список',
+        clearFilter: 'Очистить фильтр',
         selected: 'Показывать выбранные / все',
         quicklooks: {
             select: 'Выбрать квиклуки',
@@ -121,6 +122,7 @@ Translations.addText('eng', {
             zoom: 'Zoom',
         },    
         clear: 'Clear results',
+        clearFilter: 'Clear filter',
         selected: 'Show selected / all',
         quicklooks: {
             select: 'Select quicklooks',

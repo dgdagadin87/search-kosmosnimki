@@ -77,6 +77,46 @@ export default class SearchDataStore extends BaseDataStore {
         return filteredData;
     }
 
+    getFilteredResults(forGrid = false) {
+
+        const contourItems = this.getSerializedData('contours');
+        const clientFilter = this.getData('clientFilter');
+        const {
+            filterData: {
+                clouds = [0, 100],
+                angle  = [0, 60],
+                date   = [0, 0]
+            },
+        } = clientFilter;
+        const resultIndex = getCorrectIndex('result');
+        const cloudnessIndex = getCorrectIndex('cloudness');
+        const angleIndex = getCorrectIndex('tilt');
+        const cartIndex = getCorrectIndex('cart');
+        const dateIndex = getCorrectIndex('acqdate');
+
+        const filteredData = contourItems.reduce((preparedData, item) => {
+
+            const {properties} = item;
+            const acqDate = new Date(properties[dateIndex] * 1000);
+            const cloudsCriteria = clouds[0] <= properties[cloudnessIndex] && properties[cloudnessIndex] <= clouds[1];
+            const angleCriteria = angle[0] <= properties[angleIndex] && properties[angleIndex] <= angle[1];
+            const dateCriteria = date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime();
+
+            if (properties[resultIndex] && (properties[cartIndex] || (cloudsCriteria && angleCriteria && dateCriteria)) ) {
+                if (forGrid) {
+                    preparedData.push(propertiesToItem(properties));
+                }
+                else {
+                    preparedData.push(item);
+                }
+            }
+            
+            return preparedData;
+        }, []);
+
+        return filteredData;
+    }
+
     getFavorites(forGrid = false) {
 
         const cartIndex = getCorrectIndex('cart');

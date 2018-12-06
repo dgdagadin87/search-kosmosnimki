@@ -73,3 +73,9 @@
     padding: 3px;
     border-radius: 3px;
 }
+
+.scanex-sidebar [data-pane-id=results] .results-clear-filter {
+    color: red;
+    font-size:13px;
+    cursor: pointer;
+}

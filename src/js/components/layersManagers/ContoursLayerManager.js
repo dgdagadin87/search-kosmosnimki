@@ -54,6 +54,8 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         store.on('contours:addVisibleToFavoritesMap', this._redrawContours.bind(this));
         store.on('contours:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
         store.on('contours:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
+        store.on('clientFilter:changeMap', this._redrawContours.bind(this));
+        store.on('clientFilter:changeMap', this._toggleQuicklooks.bind(this));
     }
 
     _addContoursOnMap() {
@@ -125,11 +127,18 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const contours = store.getSerializedData('contours');
         const currentTab = this._currentTab;
         const contourController = application.getBridgeController('contour');
+        const {
+            filterData: {clouds = [0, 100], angle = [0, 60], date = [0, 0]},
+            isChanged = false
+        } = store.getData('clientFilter');
 
         const resultIndex = getCorrectIndex('result');
         const cartIndex = getCorrectIndex('cart');
         const visibleIndex = getCorrectIndex('visible');
         const gmxIdIndex = getCorrectIndex('gmx_id');
+        const cloudnessIndex = getCorrectIndex('cloudness');
+        const angleIndex = getCorrectIndex('tilt');
+        const dateIndex = getCorrectIndex('acqdate');
 
         if (!currentTab) {
             return;
@@ -140,6 +149,11 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             const {properties = []} = item;
             const visibleValue = properties[visibleIndex];
             const indexValue = properties[gmxIdIndex];
+            const acqDate = new Date(properties[dateIndex] * 1000);
+
+            const cloudsCriteria = isChanged ? clouds[0] <= properties[cloudnessIndex] && properties[cloudnessIndex] <= clouds[1] : true;
+            const angleCriteria = isChanged ? angle[0] <= properties[angleIndex] && properties[angleIndex] <= angle[1] : true;
+            const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
 
             let isVisible;
 
@@ -148,7 +162,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             }
 
             if (currentTab === 'results') {
-                isVisible = properties[resultIndex] && visibleValue === 'visible';
+                isVisible = properties[resultIndex] && visibleValue === 'visible' && (properties[cartIndex] || (cloudsCriteria && angleCriteria && dateCriteria));
             }
 
             if (currentTab === 'favorites') {
@@ -164,16 +178,29 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const hoverIndex = getCorrectIndex('hover');
         const cartIndex = getCorrectIndex('cart');
         const resultIndex = getCorrectIndex('result');
+        const cloudnessIndex = getCorrectIndex('cloudness');
+        const angleIndex = getCorrectIndex('tilt');
+        const dateIndex = getCorrectIndex('acqdate');
 
         const tab_filter = ({properties}) => {
 
-            const filtered = true;
+            const application = this.getApplication();
+            const store = application.getStore();
+            const {
+                filterData: {clouds = [0, 100], angle = [0, 60], date = [0, 0]},
+                isChanged = false
+            } = store.getData('clientFilter');
+            const acqDate = new Date(properties[dateIndex] * 1000);
+
+            const cloudsCriteria = isChanged ? clouds[0] <= properties[cloudnessIndex] && properties[cloudnessIndex] <= clouds[1] : true;
+            const angleCriteria = isChanged ? angle[0] <= properties[angleIndex] && properties[angleIndex] <= angle[1] : true;
+            const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
         
             switch (this._currentTab) {
                 case 'results':
-                    return filtered && properties[resultIndex];
+                    return properties[resultIndex] && (properties[cartIndex] || (cloudsCriteria && angleCriteria && dateCriteria));
                 case 'favorites':                                     
-                    return filtered && properties[cartIndex];
+                    return properties[cartIndex];
                 case 'search':
                     return false;
                 default:

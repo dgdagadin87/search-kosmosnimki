@@ -18,6 +18,31 @@ export default class AngleFilter extends EventTarget {
 
         this._minMaxValues = [0, 0];
         this._values = false;
+
+        this._first = true;
+
+        this._bindEvents();
+    }
+
+    _bindEvents() {
+
+        const store = this._application.getStore();
+
+        store.on('contours:researchedList', () => {
+            this._first = true;
+        });
+        store.on('contours:startResearchedList', () => {
+            this._first = true;
+        });
+        store.on('contours:addAllToCartList', () => {
+            this._first = true;
+        });
+        store.on('contours:removeSelectedFavoritesList', () => {
+            this._first = true;
+        });
+        store.on('contours:addVisibleToFavoritesList', () => {
+            this._first = true;
+        });
     }
 
     _getSortBy() {
@@ -46,9 +71,10 @@ export default class AngleFilter extends EventTarget {
 
         const rangeWidth = this._angleSlider._bar.querySelector('.slider-widget-range').style.width;
 
-        this._angleSlider.values = this._values;
+        this._angleSlider.values = this._getValues();
 
-        if (rangeWidth === '0px' || !rangeWidth) {
+        if ((rangeWidth === '0px' || !rangeWidth) && this._first ) {
+            this._first = false;
             this._angleSlider._bar.querySelector('.slider-widget-range').style.width = '215px';
         }
     }
@@ -64,7 +90,7 @@ export default class AngleFilter extends EventTarget {
         this._prepareMinMaxValues();
 
         const [minLimit, maxLimit] = this._minMaxValues;
-        const [minValue, maxValue] = this._values;
+        const [minValue, maxValue] = this._getValues();
 
         const isChanged = minLimit !== minValue || maxLimit !== maxValue;
         const appliedDisplay = isChanged ? 'block' : 'none';
@@ -90,8 +116,8 @@ export default class AngleFilter extends EventTarget {
                         <input class="extended-slider-input max-input" type="text" value="${maxValue}" />
                     </div>
                     <div class="results-angle-slider-container"></div>
-                    <div class="min-value">${minValue}</div>
-                    <div class="max-value">${maxValue}</div>
+                    <div class="min-value">${minLimit}</div>
+                    <div class="max-value">${maxLimit}</div>
                     <div style="clear: both;"></div>
                     <div class="apply">Применить</div>
                 </div>
@@ -108,10 +134,6 @@ export default class AngleFilter extends EventTarget {
         applyButton.addEventListener('click', this._onApplyClick.bind(this));
         column.querySelector('.on-hover-div').addEventListener('mouseover', this._onSortMouseOver.bind(this));
         column.querySelector('.on-hover-div').addEventListener('mouseout', this._onSortMouseOut.bind(this));
-
-        /*this._angleSlider.addEventListener('stop', () => {
-            this._values = this._angleSlider.values;
-        });*/
     }
 
     _prepareMinMaxValues() {
@@ -188,7 +210,7 @@ export default class AngleFilter extends EventTarget {
             else {
                 target.classList.remove('active');
                 filterContainer.style.visibility = 'hidden';
-                this._angleSlider.setValues(this._values);
+                this._angleSlider.setValues(this._getValues());
             }
         }
     }
@@ -201,12 +223,12 @@ export default class AngleFilter extends EventTarget {
         const togglableContent = parent.querySelector('.togglable-content');
         const filterableApplied = parent.querySelector('.filterable-applied > div');
 
-        this._values = this._angleSlider.values;
+        const currentValues = this._angleSlider.values;
 
         filterableHeader.classList.remove('active');
 
         const [minLimit, maxLimit] = this._minMaxValues;
-        const [minValue, maxValue] = this._values;
+        const [minValue, maxValue] = currentValues;
 
         const isChanged = minLimit !== minValue || maxLimit !== maxValue;
 
@@ -223,10 +245,23 @@ export default class AngleFilter extends EventTarget {
 
         togglableContent.style.visibility = 'hidden';
 
-        this._setClientFilter(this._values);
+        this._setValues(currentValues);
+    }
+
+    _getValues() {
+
+        const store = this._application.getStore();
+        const clientFilter = store.getData('clientFilter');
+        const {filterData: {angle = [0, 60]}} = clientFilter;
+
+        return angle;
+    }
+
+    _setValues(values) {
 
         let event = document.createEvent('Event');
-        event.initEvent('clientFilter:apply', false, false);
+        event.initEvent('changeClientFilter', false, false);
+        event.detail = {name: 'angle', value: values};
         this.dispatchEvent(event);
     }
 

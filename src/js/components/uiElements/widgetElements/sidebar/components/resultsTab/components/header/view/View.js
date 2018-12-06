@@ -12,21 +12,35 @@ export default class View {
         this._main.innerHTML = 
         `<div class="results-header">
             <span class="results-title">${Translations.getText('results.title')}</span>
-            <span class="results-number">0</span>
+            <span class="results-number"><span class="filtered-results-number">0</span>/<span class="all-results-number">0</span></span>
+            <span class="results-clear-filter">${Translations.getText('results.clearFilter')}</span>
             <div class="results-buttons">                
                 <i title="${Translations.getText('results.quicklooks.cart')}" class="quicklooks-cart"></i>
                 <i title="${Translations.getText('results.clear')}" class="results-clear"></i>
-                <a id="qqqqq" href="#">qqqqq</a>
             </div>
         </div>
         <div class="results-pane"></div>`;
     }
 
-    getResultsNumSpan() {
+    getFilteredResultsNumSpan() {
 
-        const resultsNumSpan = this._main.querySelector('span.results-number');
+        const resultsNumSpan = this._main.querySelector('span.filtered-results-number');
 
         return resultsNumSpan;
+    }
+
+    getAllResultsNumSpan() {
+
+        const resultsNumSpan = this._main.querySelector('span.all-results-number');
+
+        return resultsNumSpan;
+    }
+
+    getClearFilterSpan() {
+
+        const clearFilterSpan = this._main.querySelector('span.results-clear-filter');
+
+        return clearFilterSpan;
     }
 
     getQuickLooksCartButton() {
@@ -43,9 +57,24 @@ export default class View {
         return clearResultsButton;
     }
 
-    updateResultsNumber(number) {
+    updateClearFilterSpan(state) {
 
-        const resultsNumSpan = this.getResultsNumSpan();
+        const clearFilter = this.getClearFilterSpan();
+        const display = state ? 'inline' : 'none';
+
+        clearFilter.style.display = display;
+    }
+
+    updateFilteredResultsNumber(number) {
+
+        const resultsNumSpan = this.getFilteredResultsNumSpan();
+
+        resultsNumSpan.innerText = number;
+    }
+
+    updateAllResultsNumber(number) {
+
+        const resultsNumSpan = this.getAllResultsNumSpan();
 
         resultsNumSpan.innerText = number;
     }

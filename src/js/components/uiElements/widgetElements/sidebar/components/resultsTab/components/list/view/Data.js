@@ -26,6 +26,31 @@ export default class DateFilter extends EventTarget {
 
         this._minMaxValues = [now, now];
         this._values = false;
+
+        this._first = true;
+
+        this._bindEvents();
+    }
+
+    _bindEvents() {
+
+        const store = this._application.getStore();
+
+        store.on('contours:researchedList', () => {
+            this._first = true;
+        });
+        store.on('contours:startResearchedList', () => {
+            this._first = true;
+        });
+        store.on('contours:addAllToCartList', () => {
+            this._first = true;
+        });
+        store.on('contours:removeSelectedFavoritesList', () => {
+            this._first = true;
+        });
+        store.on('contours:addVisibleToFavoritesList', () => {
+            this._first = true;
+        });
     }
 
     _getSortBy() {
@@ -49,7 +74,7 @@ export default class DateFilter extends EventTarget {
         this._prepareMinMaxValues();
 
         const [minDate, maxDate] = this._minMaxValues;
-        const [minValue, maxValue] = this._values;
+        const [minValue, maxValue] = this._getValues();
 
         const isChanged = minDate.getTime() !== minValue.getTime() || maxDate.getTime() !== maxValue.getTime();
         const appliedDisplay = isChanged ? 'block' : 'none';
@@ -104,12 +129,13 @@ export default class DateFilter extends EventTarget {
 
         const rangeWidth = this._dateSlider._bar.querySelector('.slider-widget-range').style.width;
 
-        const [minValue, maxValue] = this._values;
+        const [minValue, maxValue] = this._getValues();
         const intValues = [minValue.getTime(), maxValue.getTime()];
 
         this._dateSlider.values = intValues;
 
-        if (rangeWidth === '0px' || !rangeWidth) {
+        if ((rangeWidth === '0px' || !rangeWidth) && this._first) {
+            this._first = false;
             this._dateSlider._bar.querySelector('.slider-widget-range').style.width = '195px';
         }
     }
@@ -127,7 +153,7 @@ export default class DateFilter extends EventTarget {
 
     initDatePicker() {
     
-        const [minValue, maxValue] = this._values;
+        const [minValue, maxValue] = this._getValues();
         
         this._dateFormat = 'dd.mm.yy';
             let i18n = {
@@ -282,7 +308,7 @@ export default class DateFilter extends EventTarget {
             else {
                 target.classList.remove('active');
                 filterContainer.style.visibility = 'hidden';
-                const [minValue, maxValue] = this._values;
+                const [minValue, maxValue] = this._getValues();
                 this._startDate.setDate(minValue);
                 this._endDate.setDate(maxValue);
             }
@@ -302,7 +328,7 @@ export default class DateFilter extends EventTarget {
         const [minDate, maxDate] = this._minMaxValues;
         const minValue = this._startDate.getDate();
         const maxValue = this._endDate.getDate();
-        this._values = [minValue, maxValue];
+        //this._values = [minValue, maxValue];
 
         const isChanged = minDate.getTime() !== minValue.getTime() || maxDate.getTime() !== maxValue.getTime();
 
@@ -319,10 +345,29 @@ export default class DateFilter extends EventTarget {
 
         togglableContent.style.visibility = 'hidden';
 
-        this._setClientFilter([minValue, maxValue]);
+        this._setValues([minValue, maxValue]);
+
+        /*this._setClientFilter([minValue, maxValue]);
 
         let event = document.createEvent('Event');
         event.initEvent('clientFilter:apply', false, false);
+        this.dispatchEvent(event);*/
+    }
+
+    _getValues() {
+
+        const store = this._application.getStore();
+        const clientFilter = store.getData('clientFilter');
+        const {filterData: {date}} = clientFilter;
+
+        return date;
+    }
+
+    _setValues(values) {
+
+        let event = document.createEvent('Event');
+        event.initEvent('changeClientFilter', false, false);
+        event.detail = {name: 'date', value: values};
         this.dispatchEvent(event);
     }
 

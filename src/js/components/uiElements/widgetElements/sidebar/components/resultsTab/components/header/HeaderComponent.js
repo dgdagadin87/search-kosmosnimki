@@ -23,37 +23,21 @@ export default class HeaderComponent extends BaseComponent {
         const application = this.getApplication();
         const events = application.getServiceEvents();
         const store = application.getStore();
+        const clearFilterSpan = this._getClearFilterSpan();
         const clearButton = this._getClearResultsButton();
         const qlCartButton = this._getQuickLooksCartButton();
-        const qqq = this._view._main.querySelector('#qqqqq');
 
         store.on('contours:researchedList', this._onStoreResearchHandler.bind(this));
         store.on('contours:startResearchedList', this._onStoreResearchHandler.bind(this));
         store.on('contours:showQuicklookList', this._setQuickLooksCartState.bind(this));
+        store.on('clientFilter:changeList', this._updateClearFilterSpan.bind(this));
+        store.on('clientFilter:changeList', this._updateFilteredNumber.bind(this));
 
         events.on('contours:showQuicklookList', this._setQuickLooksCartState.bind(this));
 
+        clearFilterSpan.addEventListener('click', () => this.events.trigger('filter:clear'));
         clearButton.addEventListener('click', () => this.events.trigger('results:clear'));
         qlCartButton.addEventListener('click', () => this.events.trigger('results:setVisibleToFavorites'));
-        qqq.addEventListener('click', () => {
-            const app = this.getApplication();
-            const store = app.getStore();
-            const a = store.getResults();
-
-            const d = [];
-            for (var i = 0; i < 200; i++) {
-                if (i === 200 || i === a.length) break;
-                let f = a[i];
-                f['properties'][getCorrectIndex('cart')] = true;
-                let id = f['properties'][getCorrectIndex('gmx_id')]
-
-                d.push({
-                    id, content: f
-                });
-            }
-
-            store.updateData('contours', d, ['contours:addVisibleToFavoritesList']);
-        });
     }
 
     _onStoreResearchHandler() {
@@ -66,7 +50,8 @@ export default class HeaderComponent extends BaseComponent {
         const isVisibleResults = allResults.some(item => item['properties'][visibleIndex] === 'visible');
         const allLength = allResults.length;
 
-        this._updateResultsNumber(allLength);
+        this._updateFilteredResultsNumber(allLength);
+        this._updateAllResultsNumber(allLength);
         this._updateQuickLooksCartButton(isVisibleResults);
     }
 
@@ -82,11 +67,11 @@ export default class HeaderComponent extends BaseComponent {
         this._updateQuickLooksCartButton(isVisibleResults);
     }
 
-    _getResultsNumSpan() {
+    _getClearFilterSpan() {
 
         const view = this.getView();
 
-        return view.getResultsNumSpan();
+        return view.getClearFilterSpan();
     }
 
     _getQuickLooksCartButton() {
@@ -103,11 +88,38 @@ export default class HeaderComponent extends BaseComponent {
         return view.getClearResultsButton();
     }
 
-    _updateResultsNumber(number) {
+    _updateClearFilterSpan() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const {isChanged} = store.getData('clientFilter');
+        const view = this.getView();
+
+        view.updateClearFilterSpan(isChanged);
+    }
+
+    _updateFilteredNumber() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const {isChanged} = store.getData('clientFilter');
+        const filteredResults = store[isChanged ? 'getFilteredResults' : 'getResults']();
+
+        this._updateFilteredResultsNumber(filteredResults.length);
+    }
+
+    _updateFilteredResultsNumber(number) {
 
         const view = this.getView();
 
-        view.updateResultsNumber(number);
+        view.updateFilteredResultsNumber(number);
+    }
+
+    _updateAllResultsNumber(number) {
+
+        const view = this.getView();
+
+        view.updateAllResultsNumber(number);
     }
 
     _updateQuickLooksCartButton(hasVisible) {
