@@ -747,6 +747,43 @@ function getDifferenceBetweenDates(startDate, endDate) {
     return `${absDayDiff} дн`;
 }
 
+function compareDates(one, two) {
+
+    const oneDate = new Date(one);
+    const twoDate = new Date(two);
+
+    return oneDate.getDay() === twoDate.getDay() && oneDate.getMonth() === twoDate.getMonth() && oneDate.getYear() === twoDate.getYear();
+}
+
+function isClientFilterChanged(searchCriteria, clientFilter) {
+
+    const {unChecked = []} = clientFilter;
+    const {clouds: [criteriaMinCloud, criteriaMaxCloud]} = searchCriteria;
+    const {clouds: [filterMinCloud, filterMaxCloud]} = clientFilter;
+    const {angle: [criteriaMinAngle, criteriaMaxAngle]} = searchCriteria;
+    const {angle: [filterMinAngle, filterMaxAngle]} = clientFilter;
+    const {date: [criteriaMinDate, criteriaMaxDate]} = searchCriteria;
+    const {date: [filterMinDate, filterMaxDate]} = clientFilter;
+
+    if (unChecked.length > 0) {
+        return true;
+    }
+
+    if (filterMinCloud !== criteriaMinCloud || filterMaxCloud !== criteriaMaxCloud) {
+        return true;
+    }
+
+    if (filterMinAngle !== criteriaMinAngle || filterMaxAngle !== criteriaMaxAngle) {
+        return true;
+    }
+
+    if (filterMinDate.getTime() !== criteriaMinDate.getTime() || filterMaxDate.getTime() !== criteriaMaxDate.getTime()) {
+        return true;
+    }
+
+    return false;
+}
+
 export {
     isNumber,
     createContainer,
@@ -782,5 +819,7 @@ export {
     getCoordinatesCount,
     getBounds,
     getRootUrl,
-    getDifferenceBetweenDates
+    getDifferenceBetweenDates,
+    compareDates,
+    isClientFilterChanged
 };

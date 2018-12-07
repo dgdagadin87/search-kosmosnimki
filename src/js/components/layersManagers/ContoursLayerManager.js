@@ -128,7 +128,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const currentTab = this._currentTab;
         const contourController = application.getBridgeController('contour');
         const {
-            filterData: {clouds = [0, 100], angle = [0, 60], date = [0, 0]},
+            filterData: {unChecked = [], clouds = [0, 100], angle = [0, 60], date = [0, 0]},
             isChanged = false
         } = store.getData('clientFilter');
 
@@ -137,6 +137,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const visibleIndex = getCorrectIndex('visible');
         const gmxIdIndex = getCorrectIndex('gmx_id');
         const cloudnessIndex = getCorrectIndex('cloudness');
+        const platformIndex = getCorrectIndex('platform');
         const angleIndex = getCorrectIndex('tilt');
         const dateIndex = getCorrectIndex('acqdate');
 
@@ -149,8 +150,9 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             const {properties = []} = item;
             const visibleValue = properties[visibleIndex];
             const indexValue = properties[gmxIdIndex];
-            const acqDate = new Date(properties[dateIndex] * 1000);
+            const acqDate = typeof properties[dateIndex] === 'string' ? new Date(properties[dateIndex]) : new Date(properties[dateIndex] * 1000);
 
+            const platformsCriteria = unChecked.indexOf(properties[platformIndex]) === -1;
             const cloudsCriteria = isChanged ? clouds[0] <= properties[cloudnessIndex] && properties[cloudnessIndex] <= clouds[1] : true;
             const angleCriteria = isChanged ? angle[0] <= properties[angleIndex] && properties[angleIndex] <= angle[1] : true;
             const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
@@ -162,7 +164,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             }
 
             if (currentTab === 'results') {
-                isVisible = properties[resultIndex] && visibleValue === 'visible' && (properties[cartIndex] || (cloudsCriteria && angleCriteria && dateCriteria));
+                isVisible = properties[resultIndex] && visibleValue === 'visible' && (properties[cartIndex] || (platformsCriteria && cloudsCriteria && angleCriteria && dateCriteria));
             }
 
             if (currentTab === 'favorites') {
@@ -178,6 +180,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const hoverIndex = getCorrectIndex('hover');
         const cartIndex = getCorrectIndex('cart');
         const resultIndex = getCorrectIndex('result');
+        const platformIndex = getCorrectIndex('platform');
         const cloudnessIndex = getCorrectIndex('cloudness');
         const angleIndex = getCorrectIndex('tilt');
         const dateIndex = getCorrectIndex('acqdate');
@@ -187,18 +190,20 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             const application = this.getApplication();
             const store = application.getStore();
             const {
-                filterData: {clouds = [0, 100], angle = [0, 60], date = [0, 0]},
+                filterData: {unChecked = [], clouds = [0, 100], angle = [0, 60], date = [0, 0]},
                 isChanged = false
             } = store.getData('clientFilter');
-            const acqDate = new Date(properties[dateIndex] * 1000);
+            const acqDate = typeof properties[dateIndex] === 'string' ? new Date(properties[dateIndex]) : new Date(properties[dateIndex] * 1000);
+            const angleValue = Math.abs(properties[angleIndex]);
 
+            const platformsCriteria = unChecked.indexOf(properties[platformIndex]) === -1;
             const cloudsCriteria = isChanged ? clouds[0] <= properties[cloudnessIndex] && properties[cloudnessIndex] <= clouds[1] : true;
-            const angleCriteria = isChanged ? angle[0] <= properties[angleIndex] && properties[angleIndex] <= angle[1] : true;
+            const angleCriteria = isChanged ? angle[0] <= angleValue && angleValue <= angle[1] : true;
             const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
         
             switch (this._currentTab) {
                 case 'results':
-                    return properties[resultIndex] && (properties[cartIndex] || (cloudsCriteria && angleCriteria && dateCriteria));
+                    return properties[resultIndex] && (properties[cartIndex] || (platformsCriteria && cloudsCriteria && angleCriteria && dateCriteria));
                 case 'favorites':                                     
                     return properties[cartIndex];
                 case 'search':

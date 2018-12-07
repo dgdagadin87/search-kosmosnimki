@@ -6,7 +6,8 @@ import {
     makeCloseTo,
     splitComplexId,
     flatten,
-    normalizeGeometry
+    normalizeGeometry,
+    isClientFilterChanged
 } from 'js/utils/commonUtils';
 
 import {MAX_CART_SIZE, LAYER_ATTRIBUTES, QUICKLOOK} from 'js/config/constants/constants';
@@ -655,6 +656,49 @@ export default class ContourBridgeController extends BaseBridgeController {
         }
 
         store.rewriteData('contours', resultsForAdding, eventList);
+    }
+
+    clearClientFilter() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const searchCriteria = store.getData('searchCriteria');
+        const {clouds, angle, date} = searchCriteria;
+
+        const dataToRewrite = {
+            isChanged: false,
+            filterData: {
+                unChecked: [],
+                clouds,
+                angle,
+                date
+            }
+        };
+
+        store.rewriteData('clientFilter', dataToRewrite, ['clientFilter:changeList','clientFilter:changeMap']);
+    }
+
+    changeClientFilter(e) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const searchCriteria = store.getData('searchCriteria');
+        const clientFilter = store.getData('clientFilter');
+        const {filterData: clientFilterData} = clientFilter;
+        const {detail: {name, value}} = e;
+
+        const filterData = {
+            ...clientFilterData,
+            [name]: value
+        };
+        const isChanged = isClientFilterChanged(searchCriteria, filterData);
+
+        const dataToRewrite = {
+            isChanged: isChanged,
+            filterData
+        };
+
+        store.rewriteData('clientFilter', dataToRewrite, ['clientFilter:changeList','clientFilter:changeMap']);
     }
 
     getApplication() {

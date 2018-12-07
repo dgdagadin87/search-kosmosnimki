@@ -4,7 +4,7 @@ import BaseUIElement from 'js/base/BaseUIElement';
 
 import { RESULT_MAX_COUNT_PLUS_ONE } from 'js/config/constants/constants';
 
-import {getTotalHeight, createDefaultCriteria} from 'js/utils/commonUtils';
+import {getTotalHeight} from 'js/utils/commonUtils';
 
 import SearchTabComponent from './components/searchTab/SearchTabComponent';
 import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';
@@ -63,6 +63,7 @@ export default class SidebarUIElement extends BaseUIElement {
         const globalEvents = application.getAppEvents();
         const store = application.getStore();
         const {gmxDrawing} = application.getMap();
+        const contourController = application.getBridgeController('contour');
         const searchTabComponent = this.getChildComponent('searchTab');
         const resultsHeaderComponent = this.getChildComponent('resultsTab.header');
         const resutsListComponent = this.getChildComponent('resultsTab.list');
@@ -93,9 +94,10 @@ export default class SidebarUIElement extends BaseUIElement {
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
         resultsHeaderComponent.events.on('results:clear', () => this._clearResults());
-        resultsHeaderComponent.events.on('filter:clear', () => this._clearClientFilter());
+        resultsHeaderComponent.events.on('filter:clear', () => contourController.clearClientFilter());
         resultsHeaderComponent.events.on('results:setVisibleToFavorites', () => this._setVisibleToCart());
         resutsListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
+        resutsListComponent.events.on('filter:change', (e) => contourController.changeClientFilter(e));
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
         downloadDialogComponent.events.on('downloadApply:click', () => this._onDownloadApplyClick());
@@ -106,6 +108,7 @@ export default class SidebarUIElement extends BaseUIElement {
         const application = this.getApplication();
         const store = application.getStore();
         const requestManager = application.getRequestManager();
+        const contourController = application.getBridgeController('contour');
 
         const searchCriteria = store.getData('searchCriteria');
         const {satellites: {pc = [], ms = []}} = searchCriteria;
@@ -118,7 +121,8 @@ export default class SidebarUIElement extends BaseUIElement {
 
         application.showLoader(true);
 
-        this._clearClientFilter();
+        contourController.clearClientFilter();
+
         this._clearResults();
 
         requestManager.requestSearchContours(RESULT_MAX_COUNT_PLUS_ONE)
@@ -161,7 +165,7 @@ export default class SidebarUIElement extends BaseUIElement {
         const application = this.getApplication();
         const events = application.getServiceEvents();
         const height = getTotalHeight([ '#header', '.leaflet-gmx-copyright' ]);
-        const preparedHeight = `${document.body.getBoundingClientRect().height - height}px`
+        const preparedHeight = `${document.body.getBoundingClientRect().height - height}px`;
 
         document.body.querySelector('.scanex-sidebar').style.height = preparedHeight;
         events.trigger('sidebar:tab:resize');
@@ -177,26 +181,6 @@ export default class SidebarUIElement extends BaseUIElement {
             const currentTab = document.querySelector('[data-tab-id="' + current + '"]');
             currentTab.classList.add('active-sidebar-tab');
         }
-    }
-
-    _clearClientFilter() {
-
-        const application = this.getApplication();
-        const store = application.getStore();
-        const searchCriteria = store.getData('searchCriteria');
-        const {clouds, angle, date} = searchCriteria;
-
-        const dataToRewrite = {
-            isChanged: false,
-            filterData: {
-                unChecked: [],
-                clouds,
-                angle,
-                date
-            }
-        };
-
-        store.rewriteData('clientFilter', dataToRewrite, ['clientFilter:changeList','clientFilter:changeMap']);
     }
 
     _clearResults() {

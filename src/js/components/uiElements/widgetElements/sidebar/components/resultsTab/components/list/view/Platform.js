@@ -1,5 +1,5 @@
 import EventTarget from 'scanex-event-target';
-
+import {getCorrectIndex} from 'js/utils/commonUtils';
 
 
 export default class PlatformFilter extends EventTarget {
@@ -48,10 +48,12 @@ export default class PlatformFilter extends EventTarget {
         const appliedClass = unChecked.length > 0 ? ' applied' : '';
         const sortIconDisplay = sortBy['field'] === 'platform' ? ''  : ' style="visibility: hidden"';
 
-        let platformsCount = 0;
+        let checkedCount = 0;
         this._satellites.forEach(satellite => {
             const {platforms} = satellite;
-            platformsCount += platforms.length;
+            if (platforms.some(platform => unChecked.indexOf(platform) === -1)) {
+                checkedCount += 1;
+            }
         });
 
         return (
@@ -59,7 +61,7 @@ export default class PlatformFilter extends EventTarget {
                 <div class="on-hover-div">
                     <div class="filterable-applied">
                         <div style="display: ${appliedDisplay};">
-                            <span class="checked">${platformsCount - unChecked.length}</span>/<span class="all">${platformsCount}</span>
+                            <span class="checked">${checkedCount}</span>/<span class="all">${this._satellites.length}</span>
                         </div>
                     </div>
                     <span class="filterable-header-platform filterable-header${appliedClass}">${this._field['name']}</span>
@@ -99,11 +101,24 @@ export default class PlatformFilter extends EventTarget {
 
         const {satellites} = this._application.getStore().getData('searchCriteria');
 
+        const results = this._application.getStore().getResults();
+        const platformIndex = getCorrectIndex('platform');
+        let resultPlatforms = [];
+        results.forEach(item => {
+            const {properties} = item;
+            const platform = properties[platformIndex];
+            if (resultPlatforms.indexOf(platform === -1)) {
+                resultPlatforms.push(platform);
+            }
+        });
+
         satellites.ms.forEach(item => {
-            item.checked && this._satellites.push(item);
+            const hasInResults = item.platforms.some(item => resultPlatforms.indexOf(item) !== -1);
+            item.checked && hasInResults && this._satellites.push(item);
         });
         satellites.pc.forEach(item => {
-            item.checked && this._satellites.push(item);
+            const hasInResults = item.platforms.some(item => resultPlatforms.indexOf(item) !== -1);
+            item.checked && hasInResults && this._satellites.push(item);
         });
 
         if (forReturn) {
@@ -124,10 +139,9 @@ export default class PlatformFilter extends EventTarget {
             }
             return 0;
         });
-        console.log('--------------');
+
         const satellites = cache.map((x) => {
             const {id, name,platforms} = x;
-            console.log(name, platforms);
             const isInUnchecked = platforms.some(platform => unChecked.indexOf(platform) !== -1 );
             const checkedParam = !isInUnchecked ? 'checked="checked"' : '';
             return `<div class="satellite-col">
@@ -135,7 +149,7 @@ export default class PlatformFilter extends EventTarget {
                         <label for="sat_${id}">${name}</label>
                     </div>`;
         }).join('');
-        console.log(unChecked)
+
         return satellites;
     }
 
@@ -239,8 +253,6 @@ export default class PlatformFilter extends EventTarget {
                 this._tmpUnchecked.splice(this._tmpUnchecked.indexOf(platform), 1);
             }
         });
-
-        console.log(this._tmpUnchecked);
     }
 
     _onApplyClick(e) {
@@ -251,7 +263,6 @@ export default class PlatformFilter extends EventTarget {
         const togglableContent = parent.querySelector('.togglable-content');
         const filterableApplied = parent.querySelector('.filterable-applied > div');
 
-        //this._unChecked = [...this._tmpUnchecked];
         const unChecked = [...this._tmpUnchecked];
 
         filterableHeader.classList.remove('active');

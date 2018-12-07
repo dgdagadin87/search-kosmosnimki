@@ -4,7 +4,7 @@ import Pikaday from 'pikaday';
 
 import ExtendedSliderWidget from './ExtendedDateSliderWidget';
 
-import {getDifferenceBetweenDates} from 'js/utils/commonUtils';
+import {getDifferenceBetweenDates, compareDates} from 'js/utils/commonUtils';
 
 const T = Translations;
 
@@ -76,7 +76,7 @@ export default class DateFilter extends EventTarget {
         const [minDate, maxDate] = this._minMaxValues;
         const [minValue, maxValue] = this._getValues();
 
-        const isChanged = minDate.getTime() !== minValue.getTime() || maxDate.getTime() !== maxValue.getTime();
+        const isChanged = !compareDates(minDate, minValue) || !compareDates(maxDate, maxValue);
         const appliedDisplay = isChanged ? 'block' : 'none';
         const appliedClass = isChanged > 0 ? ' applied' : '';
 

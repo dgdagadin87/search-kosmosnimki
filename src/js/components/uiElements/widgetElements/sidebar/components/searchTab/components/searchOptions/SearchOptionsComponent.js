@@ -42,6 +42,7 @@ export default class SearchOptionsComponent extends BaseComponent {
         events.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
         store.on('searchCriteria:fullUpdate', () => this._onCriteriaUpdate());
         view.addEventListener('change', (e) => this._onViewChangeSearchCriteria(e));
+        view.addEventListener('changeDate', (e) => this._onViewChangeSearchDate(e));
     }
 
     _onCriteriaUpdate() {
@@ -82,6 +83,16 @@ export default class SearchOptionsComponent extends BaseComponent {
         const store = application.getStore();
 
         store.rewriteData('searchCriteria', changedSearchCriteria, ['searchCriteria:fullUpdate']);
+    }
+
+    _onViewChangeSearchDate(e) {
+
+        const {detail: changedSearchCriteria} = e;
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        store.rewriteData('searchCriteria', changedSearchCriteria);
     }
 
 }

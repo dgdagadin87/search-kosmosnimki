@@ -2,7 +2,7 @@ import BaseUIElement from 'js/base/BaseUIElement';
 
 import { createContainer } from 'js/utils/commonUtils';
 
-import ABoutDialogComponent from './components/aboutDialog/AboutDialogComponent';
+//import ABoutDialogComponent from './components/aboutDialog/AboutDialogComponent';
 
 
 export default class HelpButtonUIElement extends BaseUIElement {
@@ -15,12 +15,12 @@ export default class HelpButtonUIElement extends BaseUIElement {
         this._view.classList.add('help-button');
         this._container.appendChild(this._view);
 
-        this.initChildren([
+        /*this.initChildren([
             {
                 index: 'dialog',
                 constructor: ABoutDialogComponent
             }
-        ])
+        ])*/
 
         this._bindEvents();
     }

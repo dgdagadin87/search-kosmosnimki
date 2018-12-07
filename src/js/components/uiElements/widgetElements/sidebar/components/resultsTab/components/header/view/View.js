@@ -13,7 +13,7 @@ export default class View {
         `<div class="results-header">
             <span class="results-title">${Translations.getText('results.title')}</span>
             <span class="results-number"><span class="filtered-results-number">0</span>/<span class="all-results-number">0</span></span>
-            <span class="results-clear-filter">${Translations.getText('results.clearFilter')}</span>
+            <span class="results-clear-filter" style="display:none;">${Translations.getText('results.clearFilter')}</span>
             <div class="results-buttons">                
                 <i title="${Translations.getText('results.quicklooks.cart')}" class="quicklooks-cart"></i>
                 <i title="${Translations.getText('results.clear')}" class="results-clear"></i>

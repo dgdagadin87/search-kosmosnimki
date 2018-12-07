@@ -171,6 +171,21 @@ class SearchOptions extends EventTarget {
       blurFieldOnSelect: false,
     });  
 
+    this._container.querySelector('.search-options-period-from-value').addEventListener('change', e => { 
+
+      let event = document.createEvent('Event');
+      event.detail = this.criteria;
+      event.initEvent('changeDate', false, false);
+      this.dispatchEvent(event);
+    });
+
+    this._container.querySelector('.search-options-period-to-value').addEventListener('change', e => { 
+
+      let event = document.createEvent('Event');
+      event.detail = this.criteria;
+      event.initEvent('changeDate', false, false);
+      this.dispatchEvent(event);
+    });
   }
   _initArchive (restricted) {
     this._archive = this._container.querySelector('.search-options-satellites-archive select');

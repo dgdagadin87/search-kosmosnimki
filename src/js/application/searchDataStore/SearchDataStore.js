@@ -83,6 +83,7 @@ export default class SearchDataStore extends BaseDataStore {
         const clientFilter = this.getData('clientFilter');
         const {
             filterData: {
+                unChecked = [],
                 clouds = [0, 100],
                 angle  = [0, 60],
                 date   = [0, 0]
@@ -93,16 +94,20 @@ export default class SearchDataStore extends BaseDataStore {
         const angleIndex = getCorrectIndex('tilt');
         const cartIndex = getCorrectIndex('cart');
         const dateIndex = getCorrectIndex('acqdate');
+        const platformIndex = getCorrectIndex('platform');
 
         const filteredData = contourItems.reduce((preparedData, item) => {
 
             const {properties} = item;
-            const acqDate = new Date(properties[dateIndex] * 1000);
+            const acqDate = typeof properties[dateIndex] === 'string' ? new Date(properties[dateIndex]) : new Date(properties[dateIndex] * 1000);
+            const angleValue = Math.abs(properties[angleIndex]);
+
+            const platformsCriteria = unChecked.indexOf(properties[platformIndex]) === -1;
             const cloudsCriteria = clouds[0] <= properties[cloudnessIndex] && properties[cloudnessIndex] <= clouds[1];
-            const angleCriteria = angle[0] <= properties[angleIndex] && properties[angleIndex] <= angle[1];
+            const angleCriteria = angle[0] <= angleValue && angleValue <= angle[1];
             const dateCriteria = date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime();
 
-            if (properties[resultIndex] && (properties[cartIndex] || (cloudsCriteria && angleCriteria && dateCriteria)) ) {
+            if (properties[resultIndex] && (properties[cartIndex] || (cloudsCriteria && angleCriteria && dateCriteria && platformsCriteria)) ) {
                 if (forGrid) {
                     preparedData.push(propertiesToItem(properties));
                 }

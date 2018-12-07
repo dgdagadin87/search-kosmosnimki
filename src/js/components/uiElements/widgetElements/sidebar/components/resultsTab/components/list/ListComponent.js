@@ -39,6 +39,7 @@ export default class ResultListComponent extends BaseComponent {
         events.on('contours:scrollToRow', this._scrollToRow.bind(this));
 
         store.on('contours:researchedList', this._updateList.bind(this));
+        store.on('clientFilter:changeList', this._updateList.bind(this));
         store.on('contours:startResearchedList', this._updateList.bind(this));
         store.on('contours:addAllToCartList', this._updateList.bind(this));
         store.on('contours:removeSelectedFavoritesList', this._updateList.bind(this));
@@ -46,10 +47,9 @@ export default class ResultListComponent extends BaseComponent {
         store.on('contours:addToCartList', this._redrawItemOnList.bind(this));
         store.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
         store.on('contours:setHoveredList', this._highliteItemOnList.bind(this));
-        store.on('clientFilter:changeList', this._onClientFilterChange.bind(this));
 
         view.addEventListener('showInfo', this._onInfoHandler.bind(this));
-        view.addEventListener('changeClientFilter', this._onClientFilterChangeHandler.bind(this));
+        view.addEventListener('changeClientFilter', (e) => this.events.trigger('filter:change', e));
         view.addEventListener('click', (e) => ContourController.zoomToContourOnMap(e));
         view.addEventListener('setVisible', (e) => ContourController.showQuicklookOnListAndMap(e));
         view.addEventListener('mouseover', (e, state = true) => ContourController.hoverContour(e, state));
@@ -72,7 +72,7 @@ export default class ResultListComponent extends BaseComponent {
         }
     }
 
-    _onClientFilterChange() {
+    _updateList() {
 
         const application = this.getApplication();
         const store = application.getStore();
@@ -89,18 +89,6 @@ export default class ResultListComponent extends BaseComponent {
             view.items = resultsData;
         }
         
-        this._resizeList();
-    }
-
-    _updateList() {
-
-        const application = this.getApplication();
-        const store = application.getStore();
-        const resultsData = store.getResults(true);
-        const view = this.getView();
-
-        view.items = resultsData;
-
         this._resizeList();
     }
 
@@ -160,58 +148,6 @@ export default class ResultListComponent extends BaseComponent {
         const bBox = view.bbox;
 
         this.events.trigger('imageDetails:show', e, bBox);
-    }
-
-    _onClientFilterChangeHandler(e) {
-        
-        const application = this.getApplication();
-        const store = application.getStore();
-        const searchCriteria = store.getData('searchCriteria');
-        const clientFilter = store.getData('clientFilter');
-        const {filterData: clientFilterData} = clientFilter;
-        const {detail: {name, value}} = e;
-
-        const filterData = {
-            ...clientFilterData,
-            [name]: value
-        };
-        const isChanged = this._getIsChanged(searchCriteria, filterData);
-
-        const dataToRewrite = {
-            isChanged: isChanged,
-            filterData
-        };
-
-        store.rewriteData('clientFilter', dataToRewrite, ['clientFilter:changeList','clientFilter:changeMap']);
-    }
-
-    _getIsChanged(searchCriteria, clientFilter) {
-
-        const {unChecked = []} = clientFilter;
-        const {clouds: [criteriaMinCloud, criteriaMaxCloud]} = searchCriteria;
-        const {clouds: [filterMinCloud, filterMaxCloud]} = clientFilter;
-        const {angle: [criteriaMinAngle, criteriaMaxAngle]} = searchCriteria;
-        const {angle: [filterMinAngle, filterMaxAngle]} = clientFilter;
-        const {date: [criteriaMinDate, criteriaMaxDate]} = searchCriteria;
-        const {date: [filterMinDate, filterMaxDate]} = clientFilter;
-
-        if (unChecked.length > 0) {
-            return true;
-        }
-
-        if (filterMinCloud !== criteriaMinCloud || filterMaxCloud !== criteriaMaxCloud) {
-            return true;
-        }
-
-        if (filterMinAngle !== criteriaMinAngle || filterMaxAngle !== criteriaMaxAngle) {
-            return true;
-        }
-
-        if (filterMinDate.getTime() !== criteriaMinDate.getTime() || filterMaxDate.getTime() !== criteriaMaxDate.getTime()) {
-            return true;
-        }
-
-        return false;
     }
 
 }
