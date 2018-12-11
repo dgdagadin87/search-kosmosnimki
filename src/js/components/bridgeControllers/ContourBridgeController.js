@@ -67,10 +67,6 @@ export default class ContourBridgeController extends BaseBridgeController {
             const application = this.getApplication();
             const serviceEvents = application.getServiceEvents();
             const store = application.getStore();
-            const gmxIdIndex = getCorrectIndex('gmx_id');
-            const sceneIdIndex = getCorrectIndex('sceneid');
-            const platformIndex = getCorrectIndex('platform');
-            const clipCoordsIndex = getCorrectIndex('clip_coords');
             const visibleIndex = getCorrectIndex('visible');
             const x1Index = getCorrectIndex('x1');
             let currentContour = store.getData('contours', id);
@@ -79,13 +75,14 @@ export default class ContourBridgeController extends BaseBridgeController {
             if (isVisible) {
 
                 if (!quicklook) {
-                    
-                    const sceneid = splitComplexId(properties[sceneIdIndex]).id;
-                    const platform = properties[platformIndex];
+                    const sceneIdValue = store.getPropertyValue(currentContour, 'sceneid');
+                    const sceneid = splitComplexId(sceneIdValue).id;
+                    const platform = store.getPropertyValue(currentContour, 'platform');
                     const {url, width, height} = QUICKLOOK;
                     const imageUrl = `${url}?sceneid=${sceneid}&platform=${platform}&width=${width}&height=${height}`;
                     const {lng} = map.getCenter();
-                    const clipCoords = normalizeGeometry(properties[clipCoordsIndex], lng);
+                    const clipCoordsValue = store.getPropertyValue(currentContour, 'clip_coords');
+                    const clipCoords = normalizeGeometry(clipCoordsValue, lng);
                     const [ x1,y1, x2,y2, x3,y3, x4,y4 ] = properties.slice(x1Index, x1Index + 8);
                     const anchors = [
                         [makeCloseTo(lng, x1),y1],
@@ -100,14 +97,14 @@ export default class ContourBridgeController extends BaseBridgeController {
                         pane: 'tilePane'
                     });
                     quicklook.on('load', () => {
-                        const gmxId = properties[gmxIdIndex];
+                        const gmxId = store.getPropertyValue(currentContour, 'gmx_id');
                         properties[visibleIndex] = 'visible';
                         currentContour = { ...currentContour, properties };
                         store.updateData('contours', {id: gmxId, content: currentContour},['contours:bringToTop']);
                         redrawItemOnList();
                     });
                     quicklook.on('error', () => {
-                        const gmxId = properties[gmxIdIndex];
+                        const gmxId = store.getPropertyValue(currentContour, 'gmx_id');
                         properties[visibleIndex] = 'failed';
                         map.removeLayer(quicklook);
                         if (currentContour) {
@@ -222,10 +219,8 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const visibleIndex = getCorrectIndex('visible');
         const currentContour = store.getData('contours', gmxId);
-        const {properties = []} = currentContour;
-        const visible = properties[visibleIndex];
+        const visible = store.getPropertyValue(currentContour, 'visible');
 
         if (visible === 'loading') {
             return;
@@ -252,18 +247,15 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const events = application.getServiceEvents();
         const store = application.getStore();
-        const visibleIndex = getCorrectIndex('visible');
-        const gmxIdIndex = getCorrectIndex('gmx_id');
 
         const favoritesData = store.getFavorites();
-        const visibleState = favoritesData.some(item => item['properties'][visibleIndex] === 'hidden');
+        const visibleState = favoritesData.some(item => store.getPropertyValue(item, 'visible') === 'hidden');
 
         store.setMetaItem('updateResults', true);
 
         let gmxIdList = [];
         favoritesData.forEach(item => {
-            const {properties = []} = item;
-            const gmxId = properties[gmxIdIndex];
+            const gmxId = store.getPropertyValue(item, 'gmx_id');
             gmxIdList.push(gmxId);
         });
 
@@ -313,17 +305,15 @@ export default class ContourBridgeController extends BaseBridgeController {
         const store = application.getStore();
 
         const selectedIndex = getCorrectIndex('selected');
-        const cartIndex = getCorrectIndex('cart');
-        const gmxIdIndex = getCorrectIndex('gmx_id');
 
         const data = store.getSerializedData('contours');
-        const cartData = data.filter(item => item['properties'][cartIndex]);
+        const cartData = data.filter(item => store.getPropertyValue(item, 'cart'));
 
         const selectedState = !cartData.every(item => item['properties'][selectedIndex]);
 
         const dataToUpdate = cartData.map(item => {
             const {properties} = item;
-            const gmxId = properties[gmxIdIndex];
+            const gmxId = store.getPropertyValue(item, 'gmx_id');
             properties[selectedIndex] = selectedState;
             item['properties'] = properties;
             return {
@@ -351,16 +341,13 @@ export default class ContourBridgeController extends BaseBridgeController {
         const selectedIndex = getCorrectIndex('selected');
 
         const allData = store.getSerializedData('contours');
-        const filteredAllData = allData.filter(item => {
-            const {properties} = item;
-            return properties[cartIndex];
-        });
+        const filteredAllData = allData.filter(item => store.getPropertyValue(item, 'cart'));
 
         const { gmx_id: gmxId } = e.detail;
         let item = store.getData('contours', gmxId);
 
         let {properties} = item;
-        let isCart = properties[cartIndex];
+        let isCart = store.getPropertyValue(item, 'cart');
 
         if (filteredAllData.length + 1 > MAX_CART_SIZE && !isCart) {
             events.trigger('sidebar:cart:limit');
@@ -388,7 +375,6 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const events = application.getServiceEvents();
         const store = application.getStore();
-        const gmxIdIndex = getCorrectIndex('gmx_id');
         const cartIndex = getCorrectIndex('cart');
         const selectedIndex = getCorrectIndex('selected');
 
@@ -405,7 +391,7 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         const dataToRewrite = filteredResults.map(item => {
             let {properties} = item;
-            let gmxId = properties[gmxIdIndex];
+            let gmxId = store.getPropertyValue(item, 'gmx_id');
             properties[cartIndex] = areSomeNotInCart;
             properties[selectedIndex] = areSomeNotInCart;
             item['properties'] = properties;
@@ -428,10 +414,9 @@ export default class ContourBridgeController extends BaseBridgeController {
         const store = application.getStore();
         const selectedIndex = getCorrectIndex('selected');
         const cartIndex = getCorrectIndex('cart');
-        const gmxIdIndex = getCorrectIndex('gmx_id');
 
         const data = store.getSerializedData('contours');
-        const cartData = data.filter(item => item['properties'][cartIndex] && item['properties'][selectedIndex]);
+        const cartData = data.filter(item => store.getPropertyValue(item, 'cart') && store.getPropertyValue(item, 'selected'));
 
         if (cartData.length < 1) {
             return;
@@ -439,7 +424,7 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         const dataToUpdate = cartData.map(item => {
             const {properties} = item;
-            const gmxId = properties[gmxIdIndex];
+            const gmxId = store.getPropertyValue(item, 'gmx_id');
             properties[cartIndex] = false;
             properties[selectedIndex] = false;
             item['properties'] = properties;
@@ -464,15 +449,12 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const store = application.getStore();
         const cartIndex = getCorrectIndex('cart');
-        const visibleIndex = getCorrectIndex('visible');
         const selectedIndex = getCorrectIndex('selected');
-        const gmxIdIndex = getCorrectIndex('gmx_id');
 
         const allResults = store.getResults();
-        const cartResults = allResults.filter(item => item['properties'][cartIndex]);
+        const cartResults = allResults.filter(item => store.getPropertyValue(item, 'cart'));
         const visibleResults = allResults.filter(item => {
-            const {properties = []} = item;
-            return properties[visibleIndex] === 'visible' && !properties[cartIndex];
+            return store.getPropertyValue(item, 'visible') === 'visible' && !store.getPropertyValue(item, 'cart');
         });
 
         if (visibleResults.length < 1) {
@@ -486,7 +468,7 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         const dataToUpdate = visibleResults.map(item => {
             const {properties} = item;
-            const gmxId = properties[gmxIdIndex];
+            const gmxId = store.getPropertyValue(item, 'gmx_id');
             properties[cartIndex] = true;
             properties[selectedIndex] = true;
             item['properties'] = properties;
@@ -512,7 +494,6 @@ export default class ContourBridgeController extends BaseBridgeController {
         const store = application.getStore();
 
         const resultIndex = getCorrectIndex('result');
-        const cartIndex = getCorrectIndex('cart');
 
         const snapShotsData = store.getData('contours');
         const keysToRemove = Object.keys(snapShotsData);
@@ -524,8 +505,9 @@ export default class ContourBridgeController extends BaseBridgeController {
         // remove only results, not favourites
         const dataToRemove = keysToRemove.reduce(
             (data, gmxId) => {
-                const {properties} = snapShotsData[gmxId];
-                if (properties[cartIndex]) {
+                const item = snapShotsData[gmxId];
+                const {properties} = item;
+                if (store.getPropertyValue(item, 'cart')) {
                     properties[resultIndex] = false;
                 }
                 else {

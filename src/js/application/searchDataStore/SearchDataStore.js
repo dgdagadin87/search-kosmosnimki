@@ -52,7 +52,8 @@ export default class SearchDataStore extends BaseDataStore {
         }
         else {
             const fieldIndex = indexes.hasOwnProperty(fieldName) ? indexes[fieldName] : getCorrectIndex(fieldName);
-            return item['properties'][fieldIndex];
+            const fieldValue = item['properties'][fieldIndex];
+            return fieldName === 'gmx_id' ? parseInt(fieldValue) : fieldValue;
         }
     }
 
