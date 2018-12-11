@@ -5,7 +5,8 @@ import {
     LAYER_ATTR_TYPES,
     EAST_HEMISPHERE,
     WEST_HEMISPHERE,
-    WEST_HEMISPHERE2
+    WEST_HEMISPHERE2,
+    PANCHROME_IDS
 } from '../config/constants/constants';
 import { satellites } from '../config/satellites/satellites';
 
@@ -172,7 +173,9 @@ function createDefaultCriteria() {
     const setSatellitesChecked = (group, flag) => {
         for (let key in group) {      
             let s = group[key];
-            s.checked = flag;
+            if (s['resolution'] <= 0.5 && PANCHROME_IDS.indexOf(s['id']) === -1) {
+                s['checked'] = flag;
+            }
         }
     };
 

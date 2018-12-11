@@ -154,7 +154,9 @@ const QUICKLOOK = {
     url: '//search.kosmosnimki.ru/QuickLookImage.ashx',
     width: 600,
     height: 600
-}
+};
+
+const PANCHROME_IDS = ['WV01', 'RP_PC', 'SP5_5PC', 'EROSB', 'EROSA'];
 
 export {
     HOME_LINK,
@@ -185,5 +187,6 @@ export {
     EAST_HEMISPHERE,
     WEST_HEMISPHERE,
     WEST_HEMISPHERE2,
-    QUICKLOOK
+    QUICKLOOK,
+    PANCHROME_IDS
 };

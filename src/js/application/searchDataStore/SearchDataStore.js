@@ -1,9 +1,75 @@
 import BaseDataStore from 'js/base/BaseDataStore';
 
-import { getCorrectIndex, propertiesToItem, fromGmx } from 'js/utils/commonUtils';
+import {LAYER_ATTRIBUTES} from 'js/config/constants/Constants';
+import { propertiesToItem, fromGmx } from 'js/utils/commonUtils';
 
+
+const fieldsList = [
+    'x1',
+    'gmx_id',
+    'result',
+    'cart',
+    'visible',
+    'hover',
+    'selected',
+    'acqdate',
+    'tilt',
+    'cloudness',
+    'platform',
+    'sceneid',
+    'clip_coords'
+];
+
+export function getCorrectIndex(index) {
+
+    return LAYER_ATTRIBUTES.indexOf(index) + 1;
+}
 
 export default class SearchDataStore extends BaseDataStore {
+
+    constructor(...props) {
+
+        super(...props);
+
+        this._createIndexes();
+    }
+
+    _createIndexes() {
+
+        this._indexes = {};
+
+        fieldsList.forEach(field => {
+            this._indexes[field] = getCorrectIndex(field);
+        });
+    }
+
+    getPropertyValue(item, fieldName, isPrepared = false) {
+
+        const indexes = this._indexes;
+
+        if (isPrepared) {
+            return item[fieldName];
+        }
+        else {
+            const fieldIndex = indexes.hasOwnProperty(fieldName) ? indexes[fieldName] : getCorrectIndex(fieldName);
+            return item['properties'][fieldIndex];
+        }
+    }
+
+    setPropertyValue(item, fieldName, value, isPrepared = false) {
+
+        const indexes = this._indexes;
+
+        if (isPrepared) {
+            item[fieldName] = value;
+        }
+        else {
+            const fieldIndex = indexes.hasOwnProperty(fieldName) ? indexes[fieldName] : getCorrectIndex(fieldName);
+            item['properties'][fieldIndex] = value;
+        }
+
+        return {...item};
+    }
 
     hasResults() {
 

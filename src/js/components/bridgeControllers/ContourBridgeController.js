@@ -388,39 +388,31 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const events = application.getServiceEvents();
         const store = application.getStore();
+        const gmxIdIndex = getCorrectIndex('gmx_id');
         const cartIndex = getCorrectIndex('cart');
         const selectedIndex = getCorrectIndex('selected');
 
-        const rawData = store.getData('contours');
-        const dataArray = Object.keys(rawData).map(itemId => rawData[itemId]);
+        const {isChanged} = store.getData('clientFilter');
+        const filteredResults = store[(isChanged ? 'getFilteredResults' : 'getResults')]();
+        const notInCartResults = filteredResults.filter(item => !item['properties'][cartIndex]);
+        const areSomeNotInCart = notInCartResults.length > 0;
+        const favorites = store.getFavorites();
 
-        const areSomeNotInCart = dataArray.some(item => {
-            const {properties} = item;
-            return properties[cartIndex] === false;
-        });
-
-        if (areSomeNotInCart && dataArray.length > MAX_CART_SIZE) {
+        if (areSomeNotInCart && (notInCartResults.length + favorites.length) > MAX_CART_SIZE) {
             events.trigger('sidebar:cart:limit');
             return;
         }
 
-        const dataToRewrite = Object.keys(rawData).map(
-            (gmxId) => {
-                let item = rawData[gmxId];
-                let {properties} = item;
-                properties[cartIndex] = areSomeNotInCart;
-                properties[selectedIndex] = areSomeNotInCart;
+        const dataToRewrite = filteredResults.map(item => {
+            let {properties} = item;
+            let gmxId = properties[gmxIdIndex];
+            properties[cartIndex] = areSomeNotInCart;
+            properties[selectedIndex] = areSomeNotInCart;
+            item['properties'] = properties;
+            return { id: gmxId, content: item };
+        });
 
-                item['properties'] = properties;
-
-                return {
-                    id: gmxId,
-                    content: item
-                };
-            }
-        );
-
-        store.rewriteData(
+        store.updateData(
             'contours',
             dataToRewrite,
             [
