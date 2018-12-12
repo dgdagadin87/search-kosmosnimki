@@ -14,9 +14,9 @@
   "author": "dagadin@scanex.ru",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ScanEx/Edda/issues"
+    "url": "https://github.com/dgdagadin87/search-kosmosnimki/issues"
   },
-  "homepage": "https://github.com/ScanEx/Edda#readme",
+  "homepage": "https://github.com/dgdagadin87/search-kosmosnimki#readme",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-plugin-external-helpers": "^6.22.0",
