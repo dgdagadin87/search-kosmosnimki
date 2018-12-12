@@ -34,10 +34,10 @@ export default class ResultListComponent extends BaseComponent {
         const view = this.getView();
 
         events.on('sidebar:tab:resize', (e) => this._resizeList(e));
-        events.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
         events.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
         events.on('contours:scrollToRow', this._scrollToRow.bind(this));
 
+        store.on('currentTab:changeUI', (e) => this._onTabChangeHandler(e));
         store.on('contours:researchedList', this._updateList.bind(this));
         store.on('clientFilter:changeList', this._updateList.bind(this));
         store.on('contours:startResearchedList', this._updateList.bind(this));
@@ -58,11 +58,11 @@ export default class ResultListComponent extends BaseComponent {
         view.addEventListener('addAllToCart', (e) => ContourController.addAllToCartOnListAndMap(e));
     }
 
-    _onTabChangeHandler(e) {
+    _onTabChangeHandler() {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const {detail: {current: currentTab}} = e;
+        const currentTab = store.getMetaItem('currentTab');
 
         if (currentTab === TAB_RESULTS_NAME) {
             const willUpdateResults = store.getMetaItem('updateResults');

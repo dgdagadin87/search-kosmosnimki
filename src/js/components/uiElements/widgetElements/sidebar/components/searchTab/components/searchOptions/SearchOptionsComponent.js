@@ -39,7 +39,7 @@ export default class SearchOptionsComponent extends BaseComponent {
         const view = this.getView();
 
         events.on('sidebar:tab:resize', (e) => this._resizeSearchOptions(e));
-        events.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
+        store.on('currentTab:changeUI', (e) => this._onTabChangeHandler(e));
         store.on('searchCriteria:fullUpdate', () => this._onCriteriaUpdate());
         view.addEventListener('change', (e) => this._onViewChangeSearchCriteria(e));
         view.addEventListener('changeDate', (e) => this._onViewChangeSearchDate(e));
@@ -55,10 +55,12 @@ export default class SearchOptionsComponent extends BaseComponent {
         this._view.criteria = searchCriteria;
     }
 
-    _onTabChangeHandler(e) {
+    _onTabChangeHandler() {
 
-        const {detail: {current: currentTab}} = e;
+        const application = this.getApplication();
+        const store = application.getStore();
         const view = this.getView();
+        const currentTab = store.getMetaItem('currentTab');
 
         if (currentTab === TAB_SEARCH_NAME) {
 

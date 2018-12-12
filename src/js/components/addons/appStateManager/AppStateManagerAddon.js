@@ -313,10 +313,10 @@ class AppStateManager {
     _getCurrentTab() {
 
         const application = this.getApplication();
-        const sidebarUiElement = application.getUiElement('sidebar');
-        const sidebarView = sidebarUiElement.getView();
+        const store = application.getStore();
+        const currentTab = store.getMetaItem('currentTab');
 
-        return sidebarView.getCurrent();
+        return currentTab;
     }
 
     _errorHandler(e) {

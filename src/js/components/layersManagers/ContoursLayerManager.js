@@ -35,8 +35,6 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         const layer = this._vectorLayer;
         const ContoursController = application.getBridgeController('contour');
 
-        events.on('sidebar:tab:change:map', this._setCurrentTab.bind(this));
-        events.on('sidebar:tab:change:map', this._toggleQuicklooks.bind(this));
         events.on('contours:zoomMap', this._zoomToContourOnMap.bind(this));
         events.on('contours:bringToTop', (id) => this._vectorLayer.bringToTopItem(id));
         events.on('contours:bringToBottom', (id) => this._vectorLayer.bringToBottomItem(id));
@@ -45,6 +43,8 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         layer.on('mouseover', (e, state = true) => ContoursController.hoverContour(e, state));
         layer.on('mouseout', (e, state = false) => ContoursController.hoverContour(e, state));
 
+        store.on('currentTab:changeMap', this._redrawContours.bind(this));
+        store.on('currentTab:changeMap', this._toggleQuicklooks.bind(this));
         store.on('contours:researchedMap', this._addContoursOnMap.bind(this));
         store.on('contours:researchedMap', this._zoomToContoursOnMap.bind(this));
         store.on('contours:startResearchedMap', this._addContoursOnMap.bind(this));
@@ -90,8 +90,9 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
         const application = this.getApplication();
         const store = application.getStore();
+        const currentTab = store.getMetaItem('currentTab');
 
-        const contours = store[(this._currentTab === 'search' ? 'getResults' : 'getFavorites')]();
+        const contours = store[(currentTab === 'search' ? 'getResults' : 'getFavorites')]();
         const contoursProperties = contours.map(({properties}) => properties);
 
         if (contoursProperties.length < 1) {
@@ -114,20 +115,12 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         this._vectorLayer.repaint();
     }
 
-    _setCurrentTab(e) {
-
-        const {detail: {current}} = e;
-
-        this._currentTab = current;
-        this._redrawContours();
-    }
-
     _toggleQuicklooks() {
 
         const application = this.getApplication();
         const store = application.getStore();
         const contours = store.getSerializedData('contours');
-        const currentTab = this._currentTab;
+        const currentTab = store.getMetaItem('currentTab');
         const contourController = application.getBridgeController('contour');
         const {
             filterData: {unChecked = [], clouds = [0, 100], angle = [0, 60], date = [0, 0]},
@@ -176,30 +169,33 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
     _initVectorLayer() {
 
-        const tab_filter = (item) => {
+        const application = this.getApplication();
+        const store = application.getStore();
 
-            const application = this.getApplication();
-            const store = application.getStore();
+        const tab_filter = (item) => {
+            
             const {
                 filterData: {unChecked = [], clouds = [0, 100], angle = [0, 60], date = [0, 0]},
                 isChanged = false
             } = store.getData('clientFilter');
+            const currentTab = store.getMetaItem('currentTab');
             
             const resultValue = getProperty(item, 'result');
             const cartValue = getProperty(item, 'cart');
-            const dateValue = getProperty(item, 'acqdate');
-            const platformValue = getProperty(item, 'platform');
-            const cloudnessValue = getProperty(item, 'cloudness');
-            const angleValue = Math.abs(getProperty(item, 'tilt'));
-            const acqDate = typeof dateValue === 'string' ? new Date(dateValue) : new Date(dateValue * 1000);
 
-            const platformsCriteria = unChecked.indexOf(platformValue) === -1;
-            const cloudsCriteria = isChanged ? clouds[0] <= cloudnessValue && cloudnessValue <= clouds[1] : true;
-            const angleCriteria = isChanged ? angle[0] <= angleValue && angleValue <= angle[1] : true;
-            const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
-        
-            switch (this._currentTab) {
+            switch (currentTab) {
                 case 'results':
+                    const dateValue = getProperty(item, 'acqdate');
+                    const platformValue = getProperty(item, 'platform');
+                    const cloudnessValue = getProperty(item, 'cloudness');
+                    const angleValue = Math.abs(getProperty(item, 'tilt'));
+                    const acqDate = typeof dateValue === 'string' ? new Date(dateValue) : new Date(dateValue * 1000);
+        
+                    const platformsCriteria = unChecked.indexOf(platformValue) === -1;
+                    const cloudsCriteria = isChanged ? clouds[0] <= cloudnessValue && cloudnessValue <= clouds[1] : true;
+                    const angleCriteria = isChanged ? angle[0] <= angleValue && angleValue <= angle[1] : true;
+                    const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
+
                     return resultValue && (cartValue || (platformsCriteria && cloudsCriteria && angleCriteria && dateCriteria));
                 case 'favorites':                                     
                     return cartValue;
@@ -241,7 +237,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         this._vectorLayer.disableFlip();
         this._vectorLayer.setFilter (tab_filter);
         this._vectorLayer.setStyleHook (item => {
-            const currentTab = this._currentTab;
+            const currentTab = store.getMetaItem('currentTab');
             const hoverValue = getProperty(item, 'hover');
             const cartValue = getProperty(item, 'cart');
             let lineWidth = 1;

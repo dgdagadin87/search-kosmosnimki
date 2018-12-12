@@ -70,14 +70,9 @@ export default class SidebarUIElement extends BaseUIElement {
         const favoritesTabComponent = this.getChildComponent('favoritesTab');
         const favoritesListComponent = this.getChildComponent('favoritesTab.list');
         const downloadDialogComponent = this.getChildComponent('downloadDialog');
-        const view = this.getView();
+        const sidebarView = this.getView();
 
-        view.on('change', (e) => {
-            serviceEvents.trigger('sidebar:tab:change', e);
-            serviceEvents.trigger('sidebar:tab:change:map', e);
-            serviceEvents.trigger('sidebar:tab:change:meta', e);
-            this._changeTabBorder(e);
-        });
+        sidebarView.on('change', (e) => this._onTabChangeHandler(e));
 
         gmxDrawing.on('drawstop', () => this._manageTabState('stopDrawing'));
 
@@ -101,6 +96,21 @@ export default class SidebarUIElement extends BaseUIElement {
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
         downloadDialogComponent.events.on('downloadApply:click', () => this._onDownloadApplyClick());
+    }
+
+    _onTabChangeHandler(e) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const {detail: {current: currentTab}} = e;
+
+        store.setMetaItem('currentTab', currentTab, [
+            'currentTab:changeUI',
+            'currentTab:changeMap',
+            'currentTab:changeMeta'
+        ]);
+
+        this._changeTabBorder(e);
     }
 
     _searchResults() {

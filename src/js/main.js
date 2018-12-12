@@ -81,6 +81,7 @@ const application = new Application({
                 'key': 'meta',
                 'isTable': false,
                 'defaultValue': {
+                    currentTab: null,
                     about: '',
                     cancelLoading: false,
                     updateResults: false,

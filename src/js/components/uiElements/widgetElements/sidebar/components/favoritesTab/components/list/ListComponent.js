@@ -36,11 +36,11 @@ export default class FavoritesListComponent extends BaseComponent {
         const ContourController = application.getBridgeController('contour');
 
         events.on('sidebar:tab:resize', (e) => this._resizeFavoritesList(e));
-        events.on('sidebar:tab:change', (e) => this._onTabChangeHandler(e));
         events.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
         events.on('contours:allQuicklooksList', this._redrawItemOnList.bind(this));
         events.on('contours:scrollToRow', this._scrollToRow.bind(this));
 
+        store.on('currentTab:changeUI', (e) => this._onTabChangeHandler(e));
         store.on('contours:addAllToCartList', this._updateList.bind(this));
         store.on('contours:setSelected', this._redrawItemOnList.bind(this));
         store.on('contours:showQuicklookList', this._redrawItemOnList.bind(this));
@@ -62,9 +62,11 @@ export default class FavoritesListComponent extends BaseComponent {
         view.addEventListener('mouseout', (e, state = false) => ContourController.hoverContour(e, state));
     }
 
-    _onTabChangeHandler(e) {
+    _onTabChangeHandler() {
 
-        const {detail: {current: currentTab}} = e;
+        const application = this.getApplication();
+        const store = application.getStore();
+        const currentTab = store.getMetaItem('currentTab');
 
         currentTab === TAB_FAVORITES_NAME && this._resizeFavoritesList();
     }
