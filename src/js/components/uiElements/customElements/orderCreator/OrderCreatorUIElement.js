@@ -5,7 +5,7 @@ import OrderDialogComponent from './components/orderDialog/OrderDialogComponent'
 import SuccessDialogComponent from './components/successDialog/SuccessDialogComponent';
 
 import { HOME_LINK } from 'js/config/constants/constants';
-import { propertiesToItem } from 'js/utils/commonUtils';
+import { propertiesToItem } from 'js/application/searchDataStore/SearchDataStore';
 
 
 export default class OderCreatorUIElement extends BaseUIElement {

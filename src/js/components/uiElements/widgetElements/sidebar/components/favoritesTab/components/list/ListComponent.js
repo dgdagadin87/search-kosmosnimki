@@ -2,7 +2,8 @@ import BaseComponent from 'js/base/BaseComponent';
 
 import { ACCESS_USER_ROLE, TAB_FAVORITES_NAME } from 'js/config/constants/constants';
 
-import { getPanelHeight, propertiesToItem, getCorrectIndex } from 'js/utils/commonUtils';
+import { getPanelHeight } from 'js/utils/commonUtils';
+import { getProperty, propertiesToItem } from 'js/application/searchDataStore/SearchDataStore';
 
 import View from './view/View';
 
@@ -97,12 +98,8 @@ export default class FavoritesListComponent extends BaseComponent {
         const store = application.getStore();
         const view = this.getView();
 
-        const hoverIndex = getCorrectIndex('hover');
-
         const item = store.getData('contours', itemId);
-        
-        const {properties = []} = item;
-        const isHovered = properties[hoverIndex];
+        const isHovered = getProperty(item, 'hover');
 
         if (isHovered) {
             view.hilite(itemId);

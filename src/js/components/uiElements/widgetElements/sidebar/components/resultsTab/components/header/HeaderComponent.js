@@ -1,8 +1,8 @@
 import BaseComponent from 'js/base/BaseComponent';
 
-import { getCorrectIndex } from 'js/utils/commonUtils';
-
 import View from './view/View';
+
+import { getProperty } from 'js/application/searchDataStore/SearchDataStore';
 
 
 export default class HeaderComponent extends BaseComponent {
@@ -44,10 +44,9 @@ export default class HeaderComponent extends BaseComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const visibleIndex = getCorrectIndex('visible');
 
         const allResults = store.getResults();
-        const isVisibleResults = allResults.some(item => item['properties'][visibleIndex] === 'visible');
+        const isVisibleResults = allResults.some(item => getProperty(item, 'visible') === 'visible');
         const allLength = allResults.length;
 
         this._updateFilteredResultsNumber(allLength);
@@ -59,10 +58,9 @@ export default class HeaderComponent extends BaseComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const visibleIndex = getCorrectIndex('visible');
 
         const allResults = store.getResults();
-        const isVisibleResults = allResults.some(item => item['properties'][visibleIndex] === 'visible');
+        const isVisibleResults = allResults.some(item => getProperty(item, 'visible') === 'visible');
 
         this._updateQuickLooksCartButton(isVisibleResults);
     }

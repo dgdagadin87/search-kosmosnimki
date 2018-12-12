@@ -1,8 +1,6 @@
 import Translations from 'scanex-translations';
 
 import {
-    LAYER_ATTRIBUTES,
-    LAYER_ATTR_TYPES,
     EAST_HEMISPHERE,
     WEST_HEMISPHERE,
     WEST_HEMISPHERE2,
@@ -119,40 +117,6 @@ function getQuarters (date) {
     return (date.getFullYear() - 1970) * 4 + Math.ceil ((date.getMonth() + 1) / 3);
 }
 
-function getCorrectIndex(index) {
-
-    return LAYER_ATTRIBUTES.indexOf(index) + 1;
-}
-
-function propertiesToItem(properties) {
-
-    if (!properties) {
-        return null;
-    }
-
-    const lastPropertyIndex = properties ? properties.length - 1 : 0;
-
-    return properties.slice(1, lastPropertyIndex).reduce((propertyObject, value, index) => {
-        
-        let attrKey = LAYER_ATTRIBUTES[index];
-        
-        switch (LAYER_ATTR_TYPES[index]){
-            case 'date':
-                if (typeof value === 'string') {
-                    propertyObject[attrKey] = new Date(value);
-                }
-                else if (typeof value === 'number') {
-                    propertyObject[attrKey] = new Date(value * 1000);
-                }
-                break;                
-            default:
-                propertyObject[attrKey] = value;
-                break;
-        }           
-        return propertyObject;
-    },{});
-}
-
 function getSatelliteName (platform) {
 
     const getName = (a, x) => {    
@@ -219,46 +183,6 @@ function getPanelHeight (container, parts) {
     return parts.reduce((a,x) => {
         return a - container.querySelector(x).getBoundingClientRect().height;
     }, container.getBoundingClientRect().height);
-}
-
-function getVisibleChangedState(show, properties) {
-
-    const visibleIndex = getCorrectIndex('visible');
-    const visibleValue = properties[visibleIndex];
-
-    let changed = false;
-
-    if (show) {
-        switch(visibleValue) {
-            case 'hidden':
-            case 'failed':
-                properties[visibleIndex] = 'loading';
-                changed = true;
-                break;
-            case 'loading':
-                properties[visibleIndex] = 'visible';
-                changed = true;
-                break;
-            case 'visible':
-            default:
-                break;
-        }
-    }
-    else {
-        switch(properties[visibleIndex]) {
-            case 'failed':
-            case 'loading':
-            case 'visible':
-                properties[visibleIndex] = 'hidden';
-                changed = true;
-                break;
-            case 'hidden':
-            default:
-                break;
-        }
-    }
-
-    return changed;
 }
 
 function splitComplexId (complexId) {
@@ -800,13 +724,10 @@ export {
     stRange,
     toQuery,
     getQuarters,
-    getCorrectIndex,
-    propertiesToItem,
     getSatelliteName,
     createDefaultCriteria,
     createDefaultFilter,
     getPanelHeight,
-    getVisibleChangedState,
     splitComplexId,
     fromGmx,
     getDrawingObject,

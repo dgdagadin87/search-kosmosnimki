@@ -1,5 +1,6 @@
 import EventTarget from 'scanex-event-target';
-import {getCorrectIndex} from 'js/utils/commonUtils';
+
+import { getProperty } from 'js/application/searchDataStore/SearchDataStore';
 
 
 export default class PlatformFilter extends EventTarget {
@@ -105,22 +106,23 @@ export default class PlatformFilter extends EventTarget {
 
         const {satellites} = this._application.getStore().getData('searchCriteria');
 
-        const results = this._application.getStore().getResults();
-        const platformIndex = getCorrectIndex('platform');
+        const store = this._application.getStore();
+        const results = store.getResults();
         let resultPlatforms = [];
         results.forEach(item => {
-            const {properties} = item;
-            const platform = properties[platformIndex];
+            const platform = getProperty(item, 'platform');
             if (resultPlatforms.indexOf(platform) === -1) {
                 resultPlatforms.push(platform);
             }
         });
 
         satellites.ms.forEach(item => {
+            //console.log(item.name, item.platforms)
             const hasInResults = item.platforms.some(item => resultPlatforms.indexOf(item) !== -1);
             item.checked && hasInResults && this._satellites.push(item);
         });
         satellites.pc.forEach(item => {
+            //console.log(item.name, item.platforms)
             const hasInResults = item.platforms.some(item => resultPlatforms.indexOf(item) !== -1);
             item.checked && hasInResults && this._satellites.push(item);
         });

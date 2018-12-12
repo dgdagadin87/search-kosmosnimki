@@ -4,7 +4,7 @@ import BaseCompositedComponent from 'js/base/BaseCompositedComponent';
 
 import ListComponent from './components/list/ListComponent';
 
-import { getCorrectIndex } from 'js/utils/commonUtils';
+import { getProperty } from 'js/application/searchDataStore/SearchDataStore';
 
 
 export default class FavouritesTabComponent extends BaseCompositedComponent {
@@ -74,13 +74,9 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const selectedIndex = getCorrectIndex('selected');
 
         const contours = store.getSerializedData('contours');
-        const isSomeSelected = contours.some(item => {
-            const {properties} = item;
-            return properties[selectedIndex];
-        });
+        const isSomeSelected = contours.some(item => getProperty(item, 'selected'));
 
         this._updateOrderAndRemoveButtons(isSomeSelected);
     }

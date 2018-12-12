@@ -1,7 +1,7 @@
 import BaseDataStore from 'js/base/BaseDataStore';
 
-import {LAYER_ATTRIBUTES} from 'js/config/constants/Constants';
-import { propertiesToItem, fromGmx } from 'js/utils/commonUtils';
+import { LAYER_ATTRIBUTES, LAYER_ATTR_TYPES } from './Attributes';
+import { fromGmx } from 'js/utils/commonUtils';
 
 
 const fieldsList = [
@@ -19,58 +19,142 @@ const fieldsList = [
     'sceneid',
     'clip_coords'
 ];
+let preparedIndexes = [];
+
+fieldsList.forEach(field => {
+    preparedIndexes[field] = getCorrectIndex(field);
+});
 
 export function getCorrectIndex(index) {
 
     return LAYER_ATTRIBUTES.indexOf(index) + 1;
+};
+
+export function propertiesX1Slice(item) {
+
+    const x1Index = getCorrectIndex('x1');
+    const {properties = []} = item;
+
+    return properties.slice(x1Index, x1Index + 8);
 }
 
+export function getProperty(item, fieldName) {
+
+    const fieldIndex = preparedIndexes[fieldName];
+    const {properties = []} = item;
+
+    return properties[fieldIndex];
+}
+
+export function setProperty(item, data = {}) {
+
+    const indexes = preparedIndexes;
+    const {properties = []} = item;
+
+    for (let key in data) {
+        const currentValue = data[key];
+        const fieldIndex = indexes[key];
+        properties[fieldIndex] = currentValue;
+    }
+
+    item['properties'] = properties;
+
+    return item;
+}
+
+export function propertiesToItem(properties) {
+
+    if (!properties) {
+        return null;
+    }
+
+    const lastPropertyIndex = properties ? properties.length - 1 : 0;
+
+    return properties.slice(1, lastPropertyIndex).reduce((propertyObject, value, index) => {
+        
+        let attrKey = LAYER_ATTRIBUTES[index];
+        
+        switch (LAYER_ATTR_TYPES[index]){
+            case 'date':
+                if (typeof value === 'string') {
+                    propertyObject[attrKey] = new Date(value);
+                }
+                else if (typeof value === 'number') {
+                    propertyObject[attrKey] = new Date(value * 1000);
+                }
+                break;                
+            default:
+                propertyObject[attrKey] = value;
+                break;
+        }           
+        return propertyObject;
+    },{});
+};
+
+export function getVisibleChangedState(show, properties) {
+
+    const visibleIndex = getCorrectIndex('visible');
+    const visibleValue = properties[visibleIndex];
+
+    let changed = false;
+
+    if (show) {
+        switch(visibleValue) {
+            case 'hidden':
+            case 'failed':
+                properties[visibleIndex] = 'loading';
+                changed = true;
+                break;
+            case 'loading':
+                properties[visibleIndex] = 'visible';
+                changed = true;
+                break;
+            case 'visible':
+            default:
+                break;
+        }
+    }
+    else {
+        switch(properties[visibleIndex]) {
+            case 'failed':
+            case 'loading':
+            case 'visible':
+                properties[visibleIndex] = 'hidden';
+                changed = true;
+                break;
+            case 'hidden':
+            default:
+                break;
+        }
+    }
+
+    return changed;
+};
+
+export function mergeResults (old, data) {
+
+    const resultIndex = getCorrectIndex('result');
+
+    const cache = Object.keys(old).reduce((a,id) => {
+        a[id] = a[id] || {properties: [], quicklook: null};
+        a[id].properties = old[id].properties;
+        return a;
+    }, {});
+
+    return data.reduce((a,value) => {
+        const id = value[0];
+        if (cache[id]){
+            cache[id].properties[resultIndex] = true;
+        }
+        else {
+            a[id] = a[id] || {properties: [], quicklook: null};
+            a[id].properties = value;
+        }
+        return a;
+    }, cache);
+};
+
 export default class SearchDataStore extends BaseDataStore {
-
-    constructor(...props) {
-
-        super(...props);
-
-        this._createIndexes();
-    }
-
-    _createIndexes() {
-
-        this._indexes = {};
-
-        fieldsList.forEach(field => {
-            this._indexes[field] = getCorrectIndex(field);
-        });
-    }
-
-    getPropertyValue(item, fieldName, isPrepared = false) {
-
-        const indexes = this._indexes;
-
-        if (isPrepared) {
-            return item[fieldName];
-        }
-        else {
-            const fieldIndex = indexes.hasOwnProperty(fieldName) ? indexes[fieldName] : getCorrectIndex(fieldName);
-            const fieldValue = item['properties'][fieldIndex];
-            return fieldName === 'gmx_id' ? parseInt(fieldValue) : fieldValue;
-        }
-    }
-
-    setPropertyValue(item, fieldName, value, isPrepared = false) {
-
-        const indexes = this._indexes;
-
-        if (isPrepared) {
-            item[fieldName] = value;
-        }
-        else {
-            const fieldIndex = indexes.hasOwnProperty(fieldName) ? indexes[fieldName] : getCorrectIndex(fieldName);
-            item['properties'][fieldIndex] = value;
-        }
-
-        return {...item};
-    }
 
     hasResults() {
 

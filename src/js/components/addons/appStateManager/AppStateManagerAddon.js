@@ -1,11 +1,7 @@
 import Translations from 'scanex-translations';
 
-import {
-    LOCAL_STORAGE_KEY,
-    DEFAULT_LANGUAGE,
-    LAYER_ATTRIBUTES,
-    LAYER_ATTR_TYPES
-} from 'js/config/constants/constants';
+import { LOCAL_STORAGE_KEY, DEFAULT_LANGUAGE } from 'js/config/constants/constants';
+import { LAYER_ATTRIBUTES, LAYER_ATTR_TYPES } from 'js/application/searchDataStore/Attributes';
 
 import { normalizeGeometryType } from 'js/utils/commonUtils';
 
@@ -301,9 +297,8 @@ class AppStateManager {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const suffix = dataKey === 'results' ? 'Results' : 'Favorites';
 
-        const rawData = store['get'+suffix](dataKey, true);
+        const rawData = store[(dataKey === 'results' ? 'getResults' : 'getFavorites')](dataKey, true);
         return rawData.map(item => {
             const {gmx_id: gmxId} = item;
             const unPreparedItem = store.getData('contours', gmxId);

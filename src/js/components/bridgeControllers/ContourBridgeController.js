@@ -1,16 +1,22 @@
 import BaseBridgeController from 'js/base/BaseBridgeController';
 
 import {
-    getCorrectIndex,
-    getVisibleChangedState,
     makeCloseTo,
     splitComplexId,
     flatten,
     normalizeGeometry,
     isClientFilterChanged
 } from 'js/utils/commonUtils';
+import {
+    getProperty,
+    setProperty,
+    mergeResults,
+    propertiesX1Slice,
+    getVisibleChangedState,
+} from 'js/application/searchDataStore/SearchDataStore';
 
-import {MAX_CART_SIZE, LAYER_ATTRIBUTES, QUICKLOOK} from 'js/config/constants/constants';
+import {MAX_CART_SIZE, QUICKLOOK} from 'js/config/constants/constants';
+import { LAYER_ATTRIBUTES } from 'js/application/searchDataStore/Attributes';
 
 
 export default class ContourBridgeController extends BaseBridgeController {
@@ -67,23 +73,21 @@ export default class ContourBridgeController extends BaseBridgeController {
             const application = this.getApplication();
             const serviceEvents = application.getServiceEvents();
             const store = application.getStore();
-            const visibleIndex = getCorrectIndex('visible');
-            const x1Index = getCorrectIndex('x1');
             let currentContour = store.getData('contours', id);
-            let {quicklook, properties = []} = currentContour;
+            let {quicklook} = currentContour;
 
             if (isVisible) {
 
                 if (!quicklook) {
-                    const sceneIdValue = store.getPropertyValue(currentContour, 'sceneid');
+                    const sceneIdValue = getProperty(currentContour, 'sceneid');
                     const sceneid = splitComplexId(sceneIdValue).id;
-                    const platform = store.getPropertyValue(currentContour, 'platform');
+                    const platform = getProperty(currentContour, 'platform');
                     const {url, width, height} = QUICKLOOK;
                     const imageUrl = `${url}?sceneid=${sceneid}&platform=${platform}&width=${width}&height=${height}`;
                     const {lng} = map.getCenter();
-                    const clipCoordsValue = store.getPropertyValue(currentContour, 'clip_coords');
+                    const clipCoordsValue = getProperty(currentContour, 'clip_coords');
                     const clipCoords = normalizeGeometry(clipCoordsValue, lng);
-                    const [ x1,y1, x2,y2, x3,y3, x4,y4 ] = properties.slice(x1Index, x1Index + 8);
+                    const [ x1,y1, x2,y2, x3,y3, x4,y4 ] = propertiesX1Slice(currentContour);
                     const anchors = [
                         [makeCloseTo(lng, x1),y1],
                         [makeCloseTo(lng, x2),y2],
@@ -97,18 +101,18 @@ export default class ContourBridgeController extends BaseBridgeController {
                         pane: 'tilePane'
                     });
                     quicklook.on('load', () => {
-                        const gmxId = store.getPropertyValue(currentContour, 'gmx_id');
-                        properties[visibleIndex] = 'visible';
-                        currentContour = { ...currentContour, properties };
+                        const gmxId = getProperty(currentContour, 'gmx_id');
+                        const changedContour = setProperty(currentContour, {visible: 'visible'});
+                        currentContour = { ...changedContour };
                         store.updateData('contours', {id: gmxId, content: currentContour},['contours:bringToTop']);
                         redrawItemOnList();
                     });
                     quicklook.on('error', () => {
-                        const gmxId = store.getPropertyValue(currentContour, 'gmx_id');
-                        properties[visibleIndex] = 'failed';
+                        const gmxId = getProperty(currentContour, 'gmx_id');
+                        const changedContour = setProperty(currentContour, {visible: 'failed'});
                         map.removeLayer(quicklook);
                         if (currentContour) {
-                            currentContour = { ...currentContour, properties, quicklook: null };
+                            currentContour = { ...changedContour, quicklook: null };
                             let events = ['contours:bringToTop'];
                             if (!single) {
                                 events.push('contours:showQuicklookList');
@@ -119,14 +123,14 @@ export default class ContourBridgeController extends BaseBridgeController {
                     });
 
                     quicklook.addTo(map);
-                    currentContour = { ...currentContour, properties, quicklook };
+                    currentContour = { ...currentContour, quicklook };
                     store.updateData('contours', {id , content: currentContour});
                 }
                 else {
-                    properties[visibleIndex] = 'visible';
+                    const changedContour = setProperty(currentContour, {'visible': 'visible'});
                     quicklook.addTo(map);
 
-                    currentContour = { ...currentContour, properties, quicklook };
+                    currentContour = { ...changedContour, quicklook };
                     store.updateData('contours', {id, content: currentContour}, ['contours:bringToTop']);
                     redrawItemOnList();
                 }
@@ -150,7 +154,6 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const hoverIndex = getCorrectIndex('hover');
 
         const {detail} = e;
 
@@ -168,15 +171,10 @@ export default class ContourBridgeController extends BaseBridgeController {
             mode = 'fromList';
         }
 
-        const contour = store.getData('contours', gmxId);
+        let contour = store.getData('contours', gmxId);
 
         if (contour) {
-
-            const {properties} = contour;
-        
-            properties[hoverIndex] = state;
-
-            contour['properties'] = properties;
+            const changedContour = setProperty(contour, {'hover': state});
 
             let events = [];
 
@@ -185,7 +183,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             }
             events.push('contours:setHoveredMap');
 
-            store.updateData('contours', {id: gmxId, content: contour}, events);
+            store.updateData('contours', {id: gmxId, content: changedContour}, events);
         }
         else {
             window.console.warn(`${gmxId} - undefined`);
@@ -220,7 +218,7 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const store = application.getStore();
         const currentContour = store.getData('contours', gmxId);
-        const visible = store.getPropertyValue(currentContour, 'visible');
+        const visible = getProperty(currentContour, 'visible');
 
         if (visible === 'loading') {
             return;
@@ -249,13 +247,13 @@ export default class ContourBridgeController extends BaseBridgeController {
         const store = application.getStore();
 
         const favoritesData = store.getFavorites();
-        const visibleState = favoritesData.some(item => store.getPropertyValue(item, 'visible') === 'hidden');
+        const visibleState = favoritesData.some(item => getProperty(item, 'visible') === 'hidden');
 
         store.setMetaItem('updateResults', true);
 
         let gmxIdList = [];
         favoritesData.forEach(item => {
-            const gmxId = store.getPropertyValue(item, 'gmx_id');
+            const gmxId = getProperty(item, 'gmx_id');
             gmxIdList.push(gmxId);
         });
 
@@ -277,21 +275,14 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const selectedIndex = getCorrectIndex('selected');
 
         const {detail: {gmx_id: gmxId}} = e;
         let item = store.getData('contours', gmxId);
-
-        let {properties} = item;
-
-        if (properties) {
-            properties[selectedIndex] = !properties[selectedIndex];
-        }
-        item['properties'] = properties;
+        const changedItem = setProperty(item, {'selected': !getProperty(item, 'selected')});
 
         store.updateData(
             'contours',
-            {id: gmxId, content: item},
+            {id: gmxId, content: changedItem},
             [
                 'contours:setSelected',
                 'contours:setSelectedMap'
@@ -304,22 +295,16 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const store = application.getStore();
 
-        const selectedIndex = getCorrectIndex('selected');
-
         const data = store.getSerializedData('contours');
-        const cartData = data.filter(item => store.getPropertyValue(item, 'cart'));
+        const cartData = data.filter(item => getProperty(item, 'cart'));
 
-        const selectedState = !cartData.every(item => item['properties'][selectedIndex]);
+        const selectedState = !cartData.every(item => getProperty(item, 'selected'));
 
         const dataToUpdate = cartData.map(item => {
-            const {properties} = item;
-            const gmxId = store.getPropertyValue(item, 'gmx_id');
-            properties[selectedIndex] = selectedState;
-            item['properties'] = properties;
             return {
-                id: gmxId,
-                content: item
-            }
+                id: getProperty(item, 'gmx_id'),
+                content: setProperty(item, {'selected': selectedState})
+            };
         });
 
         store.updateData(
@@ -337,32 +322,25 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const events = application.getServiceEvents();
         const store = application.getStore();
-        const cartIndex = getCorrectIndex('cart');
-        const selectedIndex = getCorrectIndex('selected');
 
         const allData = store.getSerializedData('contours');
-        const filteredAllData = allData.filter(item => store.getPropertyValue(item, 'cart'));
+        const filteredAllData = allData.filter(item => getProperty(item, 'cart'));
 
         const { gmx_id: gmxId } = e.detail;
         let item = store.getData('contours', gmxId);
 
-        let {properties} = item;
-        let isCart = store.getPropertyValue(item, 'cart');
+        let isCart = getProperty(item, 'cart');
 
         if (filteredAllData.length + 1 > MAX_CART_SIZE && !isCart) {
             events.trigger('sidebar:cart:limit');
             return;
         }
 
-        if (properties) {
-            properties[cartIndex] = !isCart;
-            properties[selectedIndex] = true;
-        }
-        item['properties'] = properties;
+        const changedItem = setProperty(item, {'cart': !isCart, 'selected': true});
 
         store.updateData(
             'contours',
-            {id: gmxId, content: item},
+            {id: gmxId, content: changedItem},
             [
                 'contours:addToCartList',
                 'contours:addToCartMap'
@@ -375,12 +353,10 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const events = application.getServiceEvents();
         const store = application.getStore();
-        const cartIndex = getCorrectIndex('cart');
-        const selectedIndex = getCorrectIndex('selected');
 
         const {isChanged} = store.getData('clientFilter');
         const filteredResults = store[(isChanged ? 'getFilteredResults' : 'getResults')]();
-        const notInCartResults = filteredResults.filter(item => !item['properties'][cartIndex]);
+        const notInCartResults = filteredResults.filter(item => !getProperty(item, 'cart'));
         const areSomeNotInCart = notInCartResults.length > 0;
         const favorites = store.getFavorites();
 
@@ -390,12 +366,12 @@ export default class ContourBridgeController extends BaseBridgeController {
         }
 
         const dataToRewrite = filteredResults.map(item => {
-            let {properties} = item;
-            let gmxId = store.getPropertyValue(item, 'gmx_id');
-            properties[cartIndex] = areSomeNotInCart;
-            properties[selectedIndex] = areSomeNotInCart;
-            item['properties'] = properties;
-            return { id: gmxId, content: item };
+            const gmxId = getProperty(item, 'gmx_id');
+            const changedItem = setProperty(item, {
+                'cart': areSomeNotInCart,
+                'selected': areSomeNotInCart
+            });
+           return { id: gmxId, content: changedItem };
         });
 
         store.updateData(
@@ -412,26 +388,21 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const selectedIndex = getCorrectIndex('selected');
-        const cartIndex = getCorrectIndex('cart');
 
         const data = store.getSerializedData('contours');
-        const cartData = data.filter(item => store.getPropertyValue(item, 'cart') && store.getPropertyValue(item, 'selected'));
+        const cartData = data.filter(item => getProperty(item, 'cart') && getProperty(item, 'selected'));
 
         if (cartData.length < 1) {
             return;
         }
 
         const dataToUpdate = cartData.map(item => {
-            const {properties} = item;
-            const gmxId = store.getPropertyValue(item, 'gmx_id');
-            properties[cartIndex] = false;
-            properties[selectedIndex] = false;
-            item['properties'] = properties;
-            return {
-                id: gmxId,
-                content: item
-            }
+            const gmxId = getProperty(item, 'gmx_id');
+            const changedItem = setProperty(item, {
+                'cart': false,
+                'selected': false
+            });
+            return { id: gmxId, content: changedItem };
         });
 
         store.updateData(
@@ -448,14 +419,10 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const cartIndex = getCorrectIndex('cart');
-        const selectedIndex = getCorrectIndex('selected');
 
         const allResults = store.getResults();
-        const cartResults = allResults.filter(item => store.getPropertyValue(item, 'cart'));
-        const visibleResults = allResults.filter(item => {
-            return store.getPropertyValue(item, 'visible') === 'visible' && !store.getPropertyValue(item, 'cart');
-        });
+        const cartResults = allResults.filter(item => getProperty(item, 'cart'));
+        const visibleResults = allResults.filter(item => getProperty(item, 'visible') === 'visible' && !getProperty(item, 'cart'));
 
         if (visibleResults.length < 1) {
             return;
@@ -467,15 +434,12 @@ export default class ContourBridgeController extends BaseBridgeController {
         }
 
         const dataToUpdate = visibleResults.map(item => {
-            const {properties} = item;
-            const gmxId = store.getPropertyValue(item, 'gmx_id');
-            properties[cartIndex] = true;
-            properties[selectedIndex] = true;
-            item['properties'] = properties;
-            return {
-                id: gmxId,
-                content: item
-            }
+            const gmxId = getProperty(item, 'gmx_id');
+            const changedItem = setProperty(item, {
+                'cart': true,
+                'selected': true
+            });
+            return { id: gmxId, content: changedItem };
         });
 
         store.updateData(
@@ -493,8 +457,6 @@ export default class ContourBridgeController extends BaseBridgeController {
         const application = this.getApplication();
         const store = application.getStore();
 
-        const resultIndex = getCorrectIndex('result');
-
         const snapShotsData = store.getData('contours');
         const keysToRemove = Object.keys(snapShotsData);
 
@@ -506,9 +468,9 @@ export default class ContourBridgeController extends BaseBridgeController {
         const dataToRemove = keysToRemove.reduce(
             (data, gmxId) => {
                 const item = snapShotsData[gmxId];
-                const {properties} = item;
-                if (store.getPropertyValue(item, 'cart')) {
-                    properties[resultIndex] = false;
+                if (getProperty(item, 'cart')) {
+                    const changedItem = setProperty(item, {'result': false});
+                    store.updateData('contours', {id: gmxId, content:changedItem});
                 }
                 else {
                     data.push([gmxId]);
@@ -519,7 +481,8 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         let idsToRemove = [];
         dataToRemove.forEach(([id]) => {
-            this.showQuicklookOnMap(id, false, false, true);
+            const numberId = parseInt(id);
+            this.showQuicklookOnMap(numberId, false, false, true);
             idsToRemove.push(id);
         });
 
@@ -607,7 +570,7 @@ export default class ContourBridgeController extends BaseBridgeController {
         },[]);
 
         const oldData = store.getData('contours');
-        const mergedData = this._mergeResults(oldData, contours);
+        const mergedData = mergeResults(oldData, contours);
 
         const resultsForAdding = Object.keys(mergedData).map(gmxId => {
 
@@ -683,29 +646,6 @@ export default class ContourBridgeController extends BaseBridgeController {
     getMap() {
 
         return this._map;
-    }
-
-    _mergeResults (old, data) {
-
-        const resultIndex = getCorrectIndex('result');
-
-        const cache = Object.keys(old).reduce((a,id) => {
-            a[id] = a[id] || {properties: [], quicklook: null};
-            a[id].properties = old[id].properties;
-            return a;
-        }, {});
-
-        return data.reduce((a,value) => {
-            const id = value[0];
-            if (cache[id]){
-                cache[id].properties[resultIndex] = true;
-            }
-            else {
-                a[id] = a[id] || {properties: [], quicklook: null};
-                a[id].properties = value;
-            }
-            return a;
-        }, cache);
     }
 
 }

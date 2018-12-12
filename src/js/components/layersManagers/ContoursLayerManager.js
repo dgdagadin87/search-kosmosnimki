@@ -1,8 +1,12 @@
 import BaseLayerManager from 'js/base/BaseLayerManager';
 
-import {LAYER_ATTRIBUTES, LAYER_ATTR_TYPES} from 'js/config/constants/constants';
+import { getProperty } from 'js/application/searchDataStore/SearchDataStore';
+import {
+    LAYER_ATTRIBUTES,
+    LAYER_ATTR_TYPES
+} from 'js/application/searchDataStore/Attributes';
 
-import {getCorrectIndex, getBounds} from 'js/utils/commonUtils';
+import {getBounds} from 'js/utils/commonUtils';
 
 
 const Colors = {
@@ -86,17 +90,15 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
         const application = this.getApplication();
         const store = application.getStore();
-        const propertyIndex = getCorrectIndex((this._currentTab === 'result' ? 'result' : 'favorites'));
 
-        const contours = store.getSerializedData('contours');
-        const seriaLizedSnapShots = contours.map(({properties}) => properties);
-        const resultItems = seriaLizedSnapShots.filter(properties => properties[propertyIndex]);
+        const contours = store[(this._currentTab === 'search' ? 'getResults' : 'getFavorites')]();
+        const contoursProperties = contours.map(({properties}) => properties);
 
-        if (resultItems.length < 1) {
+        if (contoursProperties.length < 1) {
             return;
         }
 
-        let bounds = getBounds(resultItems);      
+        let bounds = getBounds(contoursProperties);      
         if (bounds) {                        
             this._map.fitBounds(bounds, { animate: false });
         }
@@ -132,30 +134,16 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             isChanged = false
         } = store.getData('clientFilter');
 
-        const resultIndex = getCorrectIndex('result');
-        const cartIndex = getCorrectIndex('cart');
-        const visibleIndex = getCorrectIndex('visible');
-        const gmxIdIndex = getCorrectIndex('gmx_id');
-        const cloudnessIndex = getCorrectIndex('cloudness');
-        const platformIndex = getCorrectIndex('platform');
-        const angleIndex = getCorrectIndex('tilt');
-        const dateIndex = getCorrectIndex('acqdate');
-
         if (!currentTab) {
             return;
         }
 
         contours.forEach(item => {
 
-            const {properties = []} = item;
-            const visibleValue = properties[visibleIndex];
-            const indexValue = properties[gmxIdIndex];
-            const acqDate = typeof properties[dateIndex] === 'string' ? new Date(properties[dateIndex]) : new Date(properties[dateIndex] * 1000);
-
-            const platformsCriteria = unChecked.indexOf(properties[platformIndex]) === -1;
-            const cloudsCriteria = isChanged ? clouds[0] <= properties[cloudnessIndex] && properties[cloudnessIndex] <= clouds[1] : true;
-            const angleCriteria = isChanged ? angle[0] <= properties[angleIndex] && properties[angleIndex] <= angle[1] : true;
-            const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
+            const resultValue = getProperty(item, 'result');
+            const cartValue = getProperty(item, 'cart');
+            const visibleValue = getProperty(item, 'visible');
+            const indexValue = getProperty(item, 'gmx_id');
 
             let isVisible;
 
@@ -164,11 +152,22 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             }
 
             if (currentTab === 'results') {
-                isVisible = properties[resultIndex] && visibleValue === 'visible' && (properties[cartIndex] || (platformsCriteria && cloudsCriteria && angleCriteria && dateCriteria));
+                const dateValue = getProperty(item, 'acqdate');
+                const platformValue = getProperty(item, 'platform');
+                const cloudnessValue = getProperty(item, 'cloudness');
+                const angleValue = Math.abs(getProperty(item, 'tilt'));
+                const acqDate = typeof dateValue === 'string' ? new Date(dateValue) : new Date(dateValue * 1000);
+
+                const platformsCriteria = unChecked.indexOf(platformValue) === -1;
+                const cloudsCriteria = isChanged ? clouds[0] <= cloudnessValue && cloudnessValue <= clouds[1] : true;
+                const angleCriteria = isChanged ? angle[0] <= angleValue && angleValue <= angle[1] : true;
+                const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
+
+                isVisible = resultValue && visibleValue === 'visible' && (cartValue || (platformsCriteria && cloudsCriteria && angleCriteria && dateCriteria));
             }
 
             if (currentTab === 'favorites') {
-                isVisible = properties[cartIndex] && visibleValue === 'visible';
+                isVisible = cartValue && visibleValue === 'visible';
             }
 
             contourController.showQuicklookOnMap(indexValue, isVisible);
@@ -177,15 +176,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
     _initVectorLayer() {
 
-        const hoverIndex = getCorrectIndex('hover');
-        const cartIndex = getCorrectIndex('cart');
-        const resultIndex = getCorrectIndex('result');
-        const platformIndex = getCorrectIndex('platform');
-        const cloudnessIndex = getCorrectIndex('cloudness');
-        const angleIndex = getCorrectIndex('tilt');
-        const dateIndex = getCorrectIndex('acqdate');
-
-        const tab_filter = ({properties}) => {
+        const tab_filter = (item) => {
 
             const application = this.getApplication();
             const store = application.getStore();
@@ -193,19 +184,25 @@ export default class DrawingsLayerManager extends BaseLayerManager {
                 filterData: {unChecked = [], clouds = [0, 100], angle = [0, 60], date = [0, 0]},
                 isChanged = false
             } = store.getData('clientFilter');
-            const acqDate = typeof properties[dateIndex] === 'string' ? new Date(properties[dateIndex]) : new Date(properties[dateIndex] * 1000);
-            const angleValue = Math.abs(properties[angleIndex]);
+            
+            const resultValue = getProperty(item, 'result');
+            const cartValue = getProperty(item, 'cart');
+            const dateValue = getProperty(item, 'acqdate');
+            const platformValue = getProperty(item, 'platform');
+            const cloudnessValue = getProperty(item, 'cloudness');
+            const angleValue = Math.abs(getProperty(item, 'tilt'));
+            const acqDate = typeof dateValue === 'string' ? new Date(dateValue) : new Date(dateValue * 1000);
 
-            const platformsCriteria = unChecked.indexOf(properties[platformIndex]) === -1;
-            const cloudsCriteria = isChanged ? clouds[0] <= properties[cloudnessIndex] && properties[cloudnessIndex] <= clouds[1] : true;
+            const platformsCriteria = unChecked.indexOf(platformValue) === -1;
+            const cloudsCriteria = isChanged ? clouds[0] <= cloudnessValue && cloudnessValue <= clouds[1] : true;
             const angleCriteria = isChanged ? angle[0] <= angleValue && angleValue <= angle[1] : true;
             const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
         
             switch (this._currentTab) {
                 case 'results':
-                    return properties[resultIndex] && (properties[cartIndex] || (platformsCriteria && cloudsCriteria && angleCriteria && dateCriteria));
+                    return resultValue && (cartValue || (platformsCriteria && cloudsCriteria && angleCriteria && dateCriteria));
                 case 'favorites':                                     
-                    return properties[cartIndex];
+                    return cartValue;
                 case 'search':
                     return false;
                 default:
@@ -244,20 +241,21 @@ export default class DrawingsLayerManager extends BaseLayerManager {
         this._vectorLayer.disableFlip();
         this._vectorLayer.setFilter (tab_filter);
         this._vectorLayer.setStyleHook (item => {
-            let currentTab = this._currentTab;
-            let {properties} = item;
-            let color = Colors.Default;
+            const currentTab = this._currentTab;
+            const hoverValue = getProperty(item, 'hover');
+            const cartValue = getProperty(item, 'cart');
             let lineWidth = 1;
+            let color = Colors.Default;
 
-            if (currentTab === 'results' && properties[cartIndex]) {
+            if (currentTab === 'results' && cartValue) {
                 lineWidth = 3;
             }
-            if (properties[hoverIndex]) {
-                color = properties[cartIndex] ? Colors.CartHilite : Colors.Hilite;
+            if (hoverValue) {
+                color = cartValue ? Colors.CartHilite : Colors.Hilite;
                 lineWidth = 5;
             }
             else {
-                color = properties[cartIndex] ? Colors.Cart : Colors.Default;
+                color = cartValue ? Colors.Cart : Colors.Default;
             }
             return { skipRasters: true, strokeStyle: color, lineWidth };
 
