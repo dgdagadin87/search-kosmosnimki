@@ -55,5 +55,21 @@ export default [
             }),
             livereload()
         ]
+    },
+    {
+        input: 'src/js/permalink.js',
+        output: {
+            file: 'dist/permalink.min.js',
+            format: 'iife',
+            sourcemap: true,
+        },
+        external: ['leaflet', 'leaflet-geomixer', 'moment'],
+        plugins: [
+            resolve({jsnext: true, main: true, module: false, browser: false}),
+            commonjs(),  
+            css({dest: 'dist/permalink.css', minified: true}), 
+            babel()
+            //uglify(),
+        ],
     }
 ]; 

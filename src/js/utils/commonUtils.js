@@ -9,6 +9,18 @@ import {
 import { satellites } from '../config/satellites/satellites';
 
 
+function hex (number, width = 6) {
+    let h = number.toString(16);
+    while (h.length < width) {
+        h = '0' + h;
+    }
+    return h.toUpperCase();
+}
+
+function unHex (str) {
+    return parseInt(str.substr(1), 16);
+}
+
 function isNumber(n) {
 
     return !isNaN (new Number(n));
@@ -712,6 +724,8 @@ function isClientFilterChanged(searchCriteria, clientFilter) {
 }
 
 export {
+    hex,
+    unHex,
     isNumber,
     createContainer,
     getWindowCenter,
