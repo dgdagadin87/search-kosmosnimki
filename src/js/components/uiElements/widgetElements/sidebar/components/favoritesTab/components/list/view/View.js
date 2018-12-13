@@ -1,6 +1,7 @@
 import EventTarget from 'scanex-event-target';
-import { DataGrid } from 'scanex-datagrid';
 import Translations from 'scanex-translations';
+
+import OverriddenDataGrid from 'js/overriden/OverriddenDataGrid.js';
 
 import { getSatelliteName } from 'js/utils/commonUtils';
 
@@ -179,7 +180,7 @@ class FavoritesList extends EventTarget {
             
         };
 
-        this._grid = new DataGrid(            
+        this._grid = new OverriddenDataGrid(            
             this._container,
             {
                 fields: this.fields,
