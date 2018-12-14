@@ -4,14 +4,14 @@ import {
     makeCloseTo,
     splitComplexId,
     flatten,
-    normalizeGeometry,
-    isClientFilterChanged
+    normalizeGeometry
 } from 'js/utils/commonUtils';
 import {
     getProperty,
     setProperty,
     mergeResults,
     propertiesX1Slice,
+    isClientFilterChanged,
     getVisibleChangedState,
 } from 'js/application/searchDataStore/SearchDataStore';
 

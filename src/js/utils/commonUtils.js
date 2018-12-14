@@ -694,33 +694,15 @@ function compareDates(one, two) {
     return oneDate.getDay() === twoDate.getDay() && oneDate.getMonth() === twoDate.getMonth() && oneDate.getYear() === twoDate.getYear();
 }
 
-function isClientFilterChanged(searchCriteria, clientFilter) {
+function prepareDate(date) {
 
-    const {unChecked = []} = clientFilter;
-    const {clouds: [criteriaMinCloud, criteriaMaxCloud]} = searchCriteria;
-    const {clouds: [filterMinCloud, filterMaxCloud]} = clientFilter;
-    const {angle: [criteriaMinAngle, criteriaMaxAngle]} = searchCriteria;
-    const {angle: [filterMinAngle, filterMaxAngle]} = clientFilter;
-    const {date: [criteriaMinDate, criteriaMaxDate]} = searchCriteria;
-    const {date: [filterMinDate, filterMaxDate]} = clientFilter;
+    let preparedDate = date;
 
-    if (unChecked.length > 0) {
-        return true;
-    }
+    preparedDate.setHours(0);
+    preparedDate.setMinutes(0);
+    preparedDate.setSeconds(0);
 
-    if (filterMinCloud !== criteriaMinCloud || filterMaxCloud !== criteriaMaxCloud) {
-        return true;
-    }
-
-    if (filterMinAngle !== criteriaMinAngle || filterMaxAngle !== criteriaMaxAngle) {
-        return true;
-    }
-
-    if (filterMinDate.getTime() !== criteriaMinDate.getTime() || filterMaxDate.getTime() !== criteriaMaxDate.getTime()) {
-        return true;
-    }
-
-    return false;
+    return preparedDate;
 }
 
 export {
@@ -759,5 +741,5 @@ export {
     getRootUrl,
     getDifferenceBetweenDates,
     compareDates,
-    isClientFilterChanged
+    prepareDate
 };

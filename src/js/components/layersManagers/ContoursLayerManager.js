@@ -1,6 +1,6 @@
 import BaseLayerManager from 'js/base/BaseLayerManager';
 
-import { getProperty } from 'js/application/searchDataStore/SearchDataStore';
+import { getProperty, createFilterConditions } from 'js/application/searchDataStore/SearchDataStore';
 import {
     LAYER_ATTRIBUTES,
     LAYER_ATTR_TYPES
@@ -145,18 +145,9 @@ export default class DrawingsLayerManager extends BaseLayerManager {
             }
 
             if (currentTab === 'results') {
-                const dateValue = getProperty(item, 'acqdate');
-                const platformValue = getProperty(item, 'platform');
-                const cloudnessValue = getProperty(item, 'cloudness');
-                const angleValue = Math.abs(getProperty(item, 'tilt'));
-                const acqDate = typeof dateValue === 'string' ? new Date(dateValue) : new Date(dateValue * 1000);
+                const isInFilterCriteria = createFilterConditions(item, isChanged, unChecked, clouds, angle, date);
 
-                const platformsCriteria = unChecked.indexOf(platformValue) === -1;
-                const cloudsCriteria = isChanged ? clouds[0] <= cloudnessValue && cloudnessValue <= clouds[1] : true;
-                const angleCriteria = isChanged ? angle[0] <= angleValue && angleValue <= angle[1] : true;
-                const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
-
-                isVisible = resultValue && visibleValue === 'visible' && (cartValue || (platformsCriteria && cloudsCriteria && angleCriteria && dateCriteria));
+                isVisible = resultValue && visibleValue === 'visible' && (cartValue || isInFilterCriteria);
             }
 
             if (currentTab === 'favorites') {
@@ -185,18 +176,8 @@ export default class DrawingsLayerManager extends BaseLayerManager {
 
             switch (currentTab) {
                 case 'results':
-                    const dateValue = getProperty(item, 'acqdate');
-                    const platformValue = getProperty(item, 'platform');
-                    const cloudnessValue = getProperty(item, 'cloudness');
-                    const angleValue = Math.abs(getProperty(item, 'tilt'));
-                    const acqDate = typeof dateValue === 'string' ? new Date(dateValue) : new Date(dateValue * 1000);
-        
-                    const platformsCriteria = unChecked.indexOf(platformValue) === -1;
-                    const cloudsCriteria = isChanged ? clouds[0] <= cloudnessValue && cloudnessValue <= clouds[1] : true;
-                    const angleCriteria = isChanged ? angle[0] <= angleValue && angleValue <= angle[1] : true;
-                    const dateCriteria = isChanged ? date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime() : true;
-
-                    return resultValue && (cartValue || (platformsCriteria && cloudsCriteria && angleCriteria && dateCriteria));
+                    const isInFilterCriteria = createFilterConditions(item, isChanged, unChecked, clouds, angle, date);
+                    return resultValue && (cartValue || isInFilterCriteria);
                 case 'favorites':                                     
                     return cartValue;
                 case 'search':

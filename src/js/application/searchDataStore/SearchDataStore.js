@@ -1,7 +1,7 @@
 import BaseDataStore from 'js/base/BaseDataStore';
 
 import { LAYER_ATTRIBUTES, LAYER_ATTR_TYPES } from './Attributes';
-import { fromGmx } from 'js/utils/commonUtils';
+import { fromGmx, prepareDate } from 'js/utils/commonUtils';
 
 
 const fieldsList = [
@@ -154,6 +154,54 @@ export function mergeResults (old, data) {
     }, cache);
 };
 
+export function isClientFilterChanged(searchCriteria, clientFilter) {
+
+    const {unChecked = []} = clientFilter;
+    const {clouds: [criteriaMinCloud, criteriaMaxCloud]} = searchCriteria;
+    const {clouds: [filterMinCloud, filterMaxCloud]} = clientFilter;
+    const {angle: [criteriaMinAngle, criteriaMaxAngle]} = searchCriteria;
+    const {angle: [filterMinAngle, filterMaxAngle]} = clientFilter;
+    const {date: [criteriaMinDate, criteriaMaxDate]} = searchCriteria;
+    const {date: [filterMinDate, filterMaxDate]} = clientFilter;
+
+    if (unChecked.length > 0) {
+        return true;
+    }
+
+    if (filterMinCloud !== criteriaMinCloud || filterMaxCloud !== criteriaMaxCloud) {
+        return true;
+    }
+
+    if (filterMinAngle !== criteriaMinAngle || filterMaxAngle !== criteriaMaxAngle) {
+        return true;
+    }
+
+    if (filterMinDate.getTime() !== criteriaMinDate.getTime() || filterMaxDate.getTime() !== criteriaMaxDate.getTime()) {
+        return true;
+    }
+
+    return false;
+}
+
+export function createFilterConditions(item, isChanged, unChecked, clouds, angle, date) {
+
+    const platformValue = getProperty(item, 'platform');
+    const cloudValue = getProperty(item, 'cloudness');
+    const tiltValue = getProperty(item, 'tilt');
+    const dateValue = getProperty(item, 'acqdate');
+
+    const acqDate = typeof dateValue === 'string' ? new Date(dateValue) : new Date(dateValue * 1000);
+    const preparedDate = prepareDate(acqDate);
+    const angleValue = Math.abs(tiltValue);
+
+    const platformsCondition = unChecked.indexOf(platformValue) === -1;
+    const cloudsCondition = isChanged ? (cloudValue > 0 ? clouds[0] <= cloudValue && cloudValue <= clouds[1] : true) : true;
+    const angleCondition = isChanged ? (angle[0] <= angleValue && angleValue <= angle[1]) : true;
+    const dateCondition = isChanged ? (date[0].getTime() <= preparedDate.getTime() && preparedDate.getTime() <= date[1].getTime()) : true;
+
+    return platformsCondition && cloudsCondition && angleCondition && dateCondition;
+}
+
 export default class SearchDataStore extends BaseDataStore {
 
     hasResults() {
@@ -233,6 +281,7 @@ export default class SearchDataStore extends BaseDataStore {
         const contourItems = this.getSerializedData('contours');
         const clientFilter = this.getData('clientFilter');
         const {
+            isChanged = false,
             filterData: {
                 unChecked = [],
                 clouds = [0, 100],
@@ -241,24 +290,14 @@ export default class SearchDataStore extends BaseDataStore {
             },
         } = clientFilter;
         const resultIndex = getCorrectIndex('result');
-        const cloudnessIndex = getCorrectIndex('cloudness');
-        const angleIndex = getCorrectIndex('tilt');
         const cartIndex = getCorrectIndex('cart');
-        const dateIndex = getCorrectIndex('acqdate');
-        const platformIndex = getCorrectIndex('platform');
 
         const filteredData = contourItems.reduce((preparedData, item) => {
 
             const {properties} = item;
-            const acqDate = typeof properties[dateIndex] === 'string' ? new Date(properties[dateIndex]) : new Date(properties[dateIndex] * 1000);
-            const angleValue = Math.abs(properties[angleIndex]);
+            const isInFilterCriteria = createFilterConditions(item, isChanged, unChecked, clouds, angle, date);
 
-            const platformsCriteria = unChecked.indexOf(properties[platformIndex]) === -1;
-            const cloudsCriteria = clouds[0] <= properties[cloudnessIndex] && properties[cloudnessIndex] <= clouds[1];
-            const angleCriteria = angle[0] <= angleValue && angleValue <= angle[1];
-            const dateCriteria = date[0].getTime() <= acqDate.getTime() && acqDate.getTime() <= date[1].getTime();
-
-            if (properties[resultIndex] && (properties[cartIndex] || (cloudsCriteria && angleCriteria && dateCriteria && platformsCriteria)) ) {
+            if (properties[resultIndex] && (properties[cartIndex] || isInFilterCriteria) ) {
                 if (forGrid) {
                     preparedData.push(propertiesToItem(properties));
                 }
