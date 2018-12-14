@@ -88,9 +88,9 @@ export default class SidebarUIElement extends BaseUIElement {
         serviceEvents.on('sidebar:setCurrentTab', (tab) => this._manageTabState('applyAppState', tab));
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());
-        resultsHeaderComponent.events.on('results:clear', () => this._clearResults());
+        resultsHeaderComponent.events.on('results:clear', () => contourController.clearContoursOnResults());
         resultsHeaderComponent.events.on('filter:clear', () => contourController.clearClientFilter());
-        resultsHeaderComponent.events.on('results:setVisibleToFavorites', () => this._setVisibleToCart());
+        resultsHeaderComponent.events.on('results:setVisibleToCart', () => contourController.setVisibleToCart());
         resutsListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         resutsListComponent.events.on('filter:change', (e) => contourController.changeClientFilter(e));
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
@@ -134,7 +134,7 @@ export default class SidebarUIElement extends BaseUIElement {
 
         contourController.clearClientFilter();
 
-        this._clearResults();
+        contourController.clearContoursOnResults();
 
         requestManager.requestSearchContours(RESULT_MAX_COUNT_PLUS_ONE)
         .then(this._setContoursData.bind(this))
@@ -192,22 +192,6 @@ export default class SidebarUIElement extends BaseUIElement {
             const currentTab = document.querySelector('[data-tab-id="' + current + '"]');
             currentTab.classList.add('active-sidebar-tab');
         }
-    }
-
-    _clearResults() {
-
-        const application = this.getApplication();
-        const ContourController = application.getBridgeController('contour');
-
-        ContourController.clearContoursOnResults();
-    }
-
-    _setVisibleToCart() {
-
-        const application = this.getApplication();
-        const ContourController = application.getBridgeController('contour');
-
-        ContourController.setVisibleToCart();
     }
 
     _showImageDetails(e, bBox) {

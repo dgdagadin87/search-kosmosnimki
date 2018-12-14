@@ -39,7 +39,7 @@ export default class HeaderComponent extends BaseComponent {
 
         clearFilterSpan.addEventListener('click', () => this.events.trigger('filter:clear'));
         clearButton.addEventListener('click', () => this.events.trigger('results:clear'));
-        qlCartButton.addEventListener('click', () => this.events.trigger('results:setVisibleToFavorites'));
+        qlCartButton.addEventListener('click', () => this.events.trigger('results:setVisibleToCart'));
     }
 
     _onTabChangeHandler() {
