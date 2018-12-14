@@ -105,6 +105,7 @@ export default class ContourBridgeController extends BaseBridgeController {
                         const changedContour = setProperty(currentContour, {visible: 'visible'});
                         currentContour = { ...changedContour };
                         store.updateData('contours', {id: gmxId, content: currentContour},['contours:bringToTop']);
+                        console.log('loaded')
                         redrawItemOnList();
                     });
                     quicklook.on('error', () => {
@@ -115,6 +116,7 @@ export default class ContourBridgeController extends BaseBridgeController {
                             currentContour = { ...changedContour, quicklook: null };
                             let events = ['contours:bringToTop'];
                             if (!single) {
+                                console.log('errr');
                                 events.push('contours:showQuicklookList');
                             }
                             store.updateData('contours', {id: gmxId, content: currentContour}, events);

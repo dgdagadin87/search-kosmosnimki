@@ -270,7 +270,7 @@ class AppStateManager {
                     else {
                         return item[k];
                     }
-                } 
+                }
                 else {
                     return false;
                 }
@@ -281,6 +281,8 @@ class AppStateManager {
 
             return result;
         }, {fields: [], values: [], types: []});
+
+        contourController.clearClientFilter();
 
         contourController.clearContoursOnResults();
         contourController.addContoursOnMapAndList({fields, values, types}, true);

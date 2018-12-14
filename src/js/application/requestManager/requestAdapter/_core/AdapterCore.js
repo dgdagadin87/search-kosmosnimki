@@ -150,7 +150,7 @@ export default class AdapterCore {
             geometry: true,
             page: 0,
             pagesize: 0,
-            count: false,
+            count: 1000,
             out_cs: 'EPSG:3857',
             query: this.query,
         };
