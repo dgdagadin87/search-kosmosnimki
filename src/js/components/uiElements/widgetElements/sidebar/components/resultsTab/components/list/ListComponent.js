@@ -68,7 +68,6 @@ export default class ResultListComponent extends BaseComponent {
             const willUpdateResults = store.getMetaItem('updateResults');
             const methodName = '_' + (willUpdateResults ? 'update' : 'resize') + 'List';
             this[methodName]();
-            store.setMetaItem('updateResults', false);
         }
     }
 

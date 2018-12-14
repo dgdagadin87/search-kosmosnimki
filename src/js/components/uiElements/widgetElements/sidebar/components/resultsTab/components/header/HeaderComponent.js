@@ -2,6 +2,7 @@ import BaseComponent from 'js/base/BaseComponent';
 
 import View from './view/View';
 
+import { TAB_RESULTS_NAME } from 'js/config/constants/constants';
 import { getProperty } from 'js/application/searchDataStore/SearchDataStore';
 
 
@@ -27,6 +28,7 @@ export default class HeaderComponent extends BaseComponent {
         const clearButton = this._getClearResultsButton();
         const qlCartButton = this._getQuickLooksCartButton();
 
+        store.on('currentTab:changeUI', (e) => this._onTabChangeHandler(e));
         store.on('contours:researchedList', this._onStoreResearchHandler.bind(this));
         store.on('contours:startResearchedList', this._onStoreResearchHandler.bind(this));
         store.on('contours:showQuicklookList', this._setQuickLooksCartState.bind(this));
@@ -38,6 +40,22 @@ export default class HeaderComponent extends BaseComponent {
         clearFilterSpan.addEventListener('click', () => this.events.trigger('filter:clear'));
         clearButton.addEventListener('click', () => this.events.trigger('results:clear'));
         qlCartButton.addEventListener('click', () => this.events.trigger('results:setVisibleToFavorites'));
+    }
+
+    _onTabChangeHandler() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const currentTab = store.getMetaItem('currentTab');
+        const willUpdateResults = store.getMetaItem('updateResults');
+
+        if (currentTab === TAB_RESULTS_NAME && willUpdateResults) {
+
+            const allResults = store.getResults();
+            const isVisibleResults = allResults.some(item => getProperty(item, 'visible') === 'visible');
+
+            this._updateQuickLooksCartButton(isVisibleResults);
+        }
     }
 
     _onStoreResearchHandler() {

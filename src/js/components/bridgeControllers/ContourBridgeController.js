@@ -51,7 +51,7 @@ export default class ContourBridgeController extends BaseBridgeController {
                         events.trigger('contours:scrollToRow', gmxId, currentTab);
                     }
 
-                    this.showQuicklookOnMap(gmxId, show, true)
+                    this.showQuicklookOnMap(gmxId, show)
                     .then(() => {
                         events.trigger('contours:showQuicklookList', gmxId);
                         resolve();
@@ -65,7 +65,7 @@ export default class ContourBridgeController extends BaseBridgeController {
         });
     }
 
-    showQuicklookOnMap(id, isVisible, single = false, removeQuicklook = false) {
+    showQuicklookOnMap(id, isVisible, removeQuicklook = false) {
 
         return new Promise(redrawItemOnList => {
 
@@ -104,9 +104,12 @@ export default class ContourBridgeController extends BaseBridgeController {
                         const gmxId = getProperty(currentContour, 'gmx_id');
                         const changedContour = setProperty(currentContour, {visible: 'visible'});
                         currentContour = { ...changedContour };
-                        store.updateData('contours', {id: gmxId, content: currentContour},['contours:bringToTop']);
-                        console.log('loaded')
-                        redrawItemOnList();
+                        store.updateData(
+                            'contours', {
+                                id: gmxId,
+                                content: currentContour
+                            },['contours:bringToTop','contours:showQuicklookList']
+                        );
                     });
                     quicklook.on('error', () => {
                         const gmxId = getProperty(currentContour, 'gmx_id');
@@ -114,14 +117,11 @@ export default class ContourBridgeController extends BaseBridgeController {
                         map.removeLayer(quicklook);
                         if (currentContour) {
                             currentContour = { ...changedContour, quicklook: null };
-                            let events = ['contours:bringToTop'];
-                            if (!single) {
-                                console.log('errr');
-                                events.push('contours:showQuicklookList');
-                            }
+                            let events = [];
+                            events.push('contours:bringToTop');
+                            events.push('contours:showQuicklookList');
                             store.updateData('contours', {id: gmxId, content: currentContour}, events);
                         }
-                        redrawItemOnList();
                     });
 
                     quicklook.addTo(map);
@@ -266,7 +266,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             if (visibleChangedState) {
                 contour['properties'] = properties;
                 store.updateData('contours', {id, content: contour}, ['contours:allQuicklooksList']);
-                this.showQuicklookOnMap(id, visibleState, true)
+                this.showQuicklookOnMap(id, visibleState)
                 .then(() => events.trigger('contours:allQuicklooksList', id))
                 .catch(e => console.log(e));
             }

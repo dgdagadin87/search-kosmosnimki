@@ -107,7 +107,8 @@ export default class SidebarUIElement extends BaseUIElement {
         store.setMetaItem('currentTab', currentTab, [
             'currentTab:changeUI',
             'currentTab:changeMap',
-            'currentTab:changeMeta'
+            'currentTab:changeMeta',
+            'currentTab:changeAfter'
         ]);
 
         this._changeTabBorder(e);
