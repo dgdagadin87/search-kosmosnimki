@@ -30,128 +30,6 @@ export default class ContourBridgeController extends BaseBridgeController {
         return currentTab;
     }
 
-    _showQuicklook (gmxId, show, fromMap = false) {
-        return new Promise(resolve => {
-            const application = this.getApplication();
-            const events = application.getServiceEvents();
-            const store = application.getStore();
-            const contour = store.getData('contours', gmxId);
-
-            if (contour) {
-
-                const {properties = []} = contour;
-                const visibleChangedState = getVisibleChangedState(show, properties); // TODO
-
-                if (visibleChangedState) {
-                    contour['properties'] = properties;
-                    store.updateData('contours', {id: gmxId, content: contour}, ['contours:showQuicklookList']);
-
-                    if (fromMap) {
-                        const currentTab = this._getCurrentTab();
-                        events.trigger('contours:scrollToRow', gmxId, currentTab);
-                    }
-
-                    this.showQuicklookOnMap(gmxId, show)
-                    .then(() => {
-                        events.trigger('contours:showQuicklookList', gmxId);
-                        resolve();
-                    })
-                    .catch(e => console.log(e));
-                }
-            }
-            else {
-                console.warn('contour with id =', id, ' not found.');
-            }
-        });
-    }
-
-    showQuicklookOnMap(id, isVisible, removeQuicklook = false) {
-
-        return new Promise(redrawItemOnList => {
-
-            const map = this.getMap();
-            const application = this.getApplication();
-            const serviceEvents = application.getServiceEvents();
-            const store = application.getStore();
-            let currentContour = store.getData('contours', id);
-            let {quicklook} = currentContour;
-
-            if (isVisible) {
-
-                if (!quicklook) {
-                    const sceneIdValue = getProperty(currentContour, 'sceneid');
-                    const sceneid = splitComplexId(sceneIdValue).id;
-                    const platform = getProperty(currentContour, 'platform');
-                    const {url, width, height} = QUICKLOOK;
-                    const imageUrl = `${url}?sceneid=${sceneid}&platform=${platform}&width=${width}&height=${height}`;
-                    const {lng} = map.getCenter();
-                    const clipCoordsValue = getProperty(currentContour, 'clip_coords');
-                    const clipCoords = normalizeGeometry(clipCoordsValue, lng);
-                    const [ x1,y1, x2,y2, x3,y3, x4,y4 ] = propertiesX1Slice(currentContour);
-                    const anchors = [
-                        [makeCloseTo(lng, x1),y1],
-                        [makeCloseTo(lng, x2),y2],
-                        [makeCloseTo(lng, x3),y3],
-                        [makeCloseTo(lng, x4),y4]
-                    ];
-
-                    quicklook = L.imageTransform(imageUrl, flatten(anchors, true), { 
-                        clip: clipCoords,
-                        disableSetClip: true,
-                        pane: 'tilePane'
-                    });
-                    quicklook.on('load', () => {
-                        const gmxId = getProperty(currentContour, 'gmx_id');
-                        const changedContour = setProperty(currentContour, {visible: 'visible'});
-                        currentContour = { ...changedContour };
-                        store.updateData(
-                            'contours', {
-                                id: gmxId,
-                                content: currentContour
-                            },['contours:bringToTop','contours:showQuicklookList']
-                        );
-                    });
-                    quicklook.on('error', () => {
-                        const gmxId = getProperty(currentContour, 'gmx_id');
-                        const changedContour = setProperty(currentContour, {visible: 'failed'});
-                        map.removeLayer(quicklook);
-                        if (currentContour) {
-                            currentContour = { ...changedContour, quicklook: null };
-                            let events = [];
-                            events.push('contours:bringToTop');
-                            events.push('contours:showQuicklookList');
-                            store.updateData('contours', {id: gmxId, content: currentContour}, events);
-                        }
-                    });
-
-                    quicklook.addTo(map);
-                    currentContour = { ...currentContour, quicklook };
-                    store.updateData('contours', {id , content: currentContour});
-                }
-                else {
-                    const changedContour = setProperty(currentContour, {'visible': 'visible'});
-                    quicklook.addTo(map);
-
-                    currentContour = { ...changedContour, quicklook };
-                    store.updateData('contours', {id, content: currentContour}, ['contours:bringToTop']);
-                    redrawItemOnList();
-                }
-            }
-            else {
-                if (quicklook) {
-                    map.removeLayer(quicklook);
-                    if (removeQuicklook) {
-                        currentContour.quicklook = null;
-                    }
-                    store.updateData('contours', {id, content: currentContour});
-                }
-
-                serviceEvents.trigger('contours:bringToBottom', id);
-                redrawItemOnList();
-            }
-        });
-    }
-
     hoverContour(e, state) {
 
         const application = this.getApplication();
@@ -203,74 +81,6 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         const event = {detail: {gmx_id: gmxId}};
         this.showQuicklookOnListAndMap(event);
-    }
-
-    showQuicklookOnListAndMap(e, fromMap = false) {
-
-        let gmxId;
-        if (!fromMap) {
-            const {gmx_id} = e.detail;
-            gmxId = gmx_id;
-        }
-        else {
-            let { gmx: {id}} = e;
-            gmxId = id;
-        }
-
-        const application = this.getApplication();
-        const store = application.getStore();
-        const currentContour = store.getData('contours', gmxId);
-        const visible = getProperty(currentContour, 'visible');
-
-        if (visible === 'loading') {
-            return;
-        }
-
-        let showState = false;
-
-        switch (visible) {
-            case 'visible':
-            case 'loading':
-                showState = false;
-                break;                
-            case 'hidden':
-            default:
-                showState = true;
-                break;
-        }
-
-        this._showQuicklook(gmxId, showState, fromMap);
-    }
-
-    showAllQuicklooksOnListAndMap() {
-
-        const application = this.getApplication();
-        const events = application.getServiceEvents();
-        const store = application.getStore();
-
-        const favoritesData = store.getFavorites();
-        const visibleState = favoritesData.some(item => getProperty(item, 'visible') === 'hidden');
-
-        store.setMetaItem('updateResults', true);
-
-        let gmxIdList = [];
-        favoritesData.forEach(item => {
-            const gmxId = getProperty(item, 'gmx_id');
-            gmxIdList.push(gmxId);
-        });
-
-        gmxIdList.forEach(id => {
-            const contour = store.getData('contours', id);
-            const {properties = []} = contour;
-            const visibleChangedState = getVisibleChangedState(visibleState, properties);
-            if (visibleChangedState) {
-                contour['properties'] = properties;
-                store.updateData('contours', {id, content: contour}, ['contours:allQuicklooksList']);
-                this.showQuicklookOnMap(id, visibleState)
-                .then(() => events.trigger('contours:allQuicklooksList', id))
-                .catch(e => console.log(e));
-            }
-        })
     }
 
     setSelectedOnListAndMap(e) {
@@ -484,7 +294,7 @@ export default class ContourBridgeController extends BaseBridgeController {
         let idsToRemove = [];
         dataToRemove.forEach(([id]) => {
             const numberId = parseInt(id);
-            this.showQuicklookOnMap(numberId, false, false, true);
+            this.showQuicklookOnMap(numberId, false, true);
             idsToRemove.push(id);
         });
 
@@ -640,14 +450,189 @@ export default class ContourBridgeController extends BaseBridgeController {
         store.rewriteData('clientFilter', dataToRewrite, ['clientFilter:changeList','clientFilter:changeMap']);
     }
 
-    getApplication() {
+    showQuicklookOnMap(id, isVisible, removeQuicklook = false) {
 
-        return this._application;
+        return new Promise(redrawItemOnList => {
+
+            const map = this.getMap();
+            const application = this.getApplication();
+            const serviceEvents = application.getServiceEvents();
+            const store = application.getStore();
+            let currentContour = store.getData('contours', id);
+            let {quicklook} = currentContour;
+
+            if (isVisible) {
+
+                if (!quicklook) {
+                    const sceneIdValue = getProperty(currentContour, 'sceneid');
+                    const sceneid = splitComplexId(sceneIdValue).id;
+                    const platform = getProperty(currentContour, 'platform');
+                    const {url, width, height} = QUICKLOOK;
+                    const imageUrl = `${url}?sceneid=${sceneid}&platform=${platform}&width=${width}&height=${height}`;
+                    const {lng} = map.getCenter();
+                    const clipCoordsValue = getProperty(currentContour, 'clip_coords');
+                    const clipCoords = normalizeGeometry(clipCoordsValue, lng);
+                    const [ x1,y1, x2,y2, x3,y3, x4,y4 ] = propertiesX1Slice(currentContour);
+                    const anchors = [
+                        [makeCloseTo(lng, x1),y1],
+                        [makeCloseTo(lng, x2),y2],
+                        [makeCloseTo(lng, x3),y3],
+                        [makeCloseTo(lng, x4),y4]
+                    ];
+
+                    quicklook = L.imageTransform(imageUrl, flatten(anchors, true), { 
+                        clip: clipCoords,
+                        disableSetClip: true,
+                        pane: 'tilePane'
+                    });
+                    quicklook.on('load', () => {
+                        const gmxId = getProperty(currentContour, 'gmx_id');
+                        const changedContour = setProperty(currentContour, {visible: 'visible'});
+                        currentContour = { ...changedContour };
+                        store.updateData(
+                            'contours', {
+                                id: gmxId,
+                                content: currentContour
+                            },['contours:bringToTop','contours:showQuicklookList']
+                        );
+                    });
+                    quicklook.on('error', () => {
+                        const gmxId = getProperty(currentContour, 'gmx_id');
+                        const changedContour = setProperty(currentContour, {visible: 'failed'});
+                        map.removeLayer(quicklook);
+                        if (currentContour) {
+                            currentContour = { ...changedContour, quicklook: null };
+                            let events = [];
+                            events.push('contours:bringToTop');
+                            events.push('contours:showQuicklookList');
+                            store.updateData('contours', {id: gmxId, content: currentContour}, events);
+                        }
+                    });
+
+                    quicklook.addTo(map);
+                    currentContour = { ...currentContour, quicklook };
+                    store.updateData('contours', {id , content: currentContour});
+                }
+                else {
+                    const changedContour = setProperty(currentContour, {'visible': 'visible'});
+                    quicklook.addTo(map);
+
+                    currentContour = { ...changedContour, quicklook };
+                    store.updateData('contours', {id, content: currentContour}, ['contours:bringToTop']);
+                    redrawItemOnList();
+                }
+            }
+            else {
+                if (quicklook) {
+                    map.removeLayer(quicklook);
+                    if (removeQuicklook) {
+                        currentContour.quicklook = null;
+                    }
+                    store.updateData('contours', {id, content: currentContour});
+                }
+
+                serviceEvents.trigger('contours:bringToBottom', id);
+                redrawItemOnList();
+            }
+        });
     }
 
-    getMap() {
+    showQuicklookOnListAndMap(e, fromMap = false) {
 
-        return this._map;
+        let gmxId;
+        if (!fromMap) {
+            const {gmx_id} = e.detail;
+            gmxId = gmx_id;
+        }
+        else {
+            let { gmx: {id}} = e;
+            gmxId = id;
+        }
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const currentContour = store.getData('contours', gmxId);
+        const visible = getProperty(currentContour, 'visible');
+
+        if (visible === 'loading') {
+            return;
+        }
+
+        let showState = false;
+
+        switch (visible) {
+            case 'visible':
+            case 'loading':
+                showState = false;
+                break;                
+            case 'hidden':
+            default:
+                showState = true;
+                break;
+        }
+
+        this._showQuicklook(gmxId, showState, fromMap);
+    }
+
+    showAllQuicklooksOnListAndMap() {
+
+        const application = this.getApplication();
+        const events = application.getServiceEvents();
+        const store = application.getStore();
+
+        const favoritesData = store.getFavorites();
+        const visibleState = favoritesData.some(item => getProperty(item, 'visible') === 'hidden');
+
+        store.setMetaItem('updateResults', true);
+
+        let gmxIdList = [];
+        favoritesData.forEach(item => {
+            const gmxId = getProperty(item, 'gmx_id');
+            gmxIdList.push(gmxId);
+        });
+
+        gmxIdList.forEach(id => {
+            const contour = store.getData('contours', id);
+            const {properties = []} = contour;
+            const visibleChangedState = getVisibleChangedState(visibleState, properties);
+            if (visibleChangedState) {
+                contour['properties'] = properties;
+                store.updateData('contours', {id, content: contour}, ['contours:allQuicklooksList']);
+                this.showQuicklookOnMap(id, visibleState)
+                .then(() => events.trigger('contours:allQuicklooksList', id))
+                .catch(e => console.log(e));
+            }
+        })
+    }
+
+    _showQuicklook (gmxId, show, fromMap = false) {
+        return new Promise(() => {
+            const application = this.getApplication();
+            const events = application.getServiceEvents();
+            const store = application.getStore();
+            const contour = store.getData('contours', gmxId);
+            const currentTab = store.getMetaItem('currentTab');
+
+            if (contour) {
+
+                const {properties = []} = contour;
+                const visibleChangedState = getVisibleChangedState(show, properties); // TODO
+
+                if (visibleChangedState) {
+                    contour['properties'] = properties;
+                    store.updateData('contours', {id: gmxId, content: contour}, ['contours:showQuicklookList']);
+
+                    fromMap && events.trigger('contours:scrollToRow', gmxId, currentTab);
+
+                    this.showQuicklookOnMap(gmxId, show)
+                    .then(() => events.trigger('contours:showQuicklookList', gmxId))
+                    .catch(e => window.console.error(e));
+                }
+            }
+            else {
+                console.warn('contour with id =', id, ' not found.');
+            }
+        });
     }
 
 }
