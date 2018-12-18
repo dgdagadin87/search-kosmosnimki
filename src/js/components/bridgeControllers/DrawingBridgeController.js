@@ -370,7 +370,7 @@ export default class DrawingBridgeController extends BaseBridgeController {
                 if (drawing) {
                     drawing.remove();
                 } 
-            }
+            };
             const application = this.getApplication();
             const store = application.getStore();
     
@@ -414,16 +414,6 @@ export default class DrawingBridgeController extends BaseBridgeController {
         }
     }
     /* Zoom to drawing end */
-
-    getApplication() {
-
-        return this._application;
-    }
-
-    getMap() {
-
-        return this._map;
-    }
 
     _getDrawingObjects(store, mode, e = {}) {
 

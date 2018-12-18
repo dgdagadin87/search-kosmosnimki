@@ -91,23 +91,20 @@ export function propertiesToItem(properties) {
     },{});
 };
 
-export function getVisibleChangedState(show, properties) {
+export function isVisibleChanged(item, show) {
 
-    const visibleIndex = getCorrectIndex('visible');
-    const visibleValue = properties[visibleIndex];
+    const visibleValue = getProperty(item, 'visible');
 
-    let changed = false;
+    let isChanged = false;
 
     if (show) {
         switch(visibleValue) {
             case 'hidden':
             case 'failed':
-                properties[visibleIndex] = 'loading';
-                changed = true;
+                isChanged = true;
                 break;
             case 'loading':
-                properties[visibleIndex] = 'visible';
-                changed = true;
+                isChanged = true;
                 break;
             case 'visible':
             default:
@@ -115,12 +112,11 @@ export function getVisibleChangedState(show, properties) {
         }
     }
     else {
-        switch(properties[visibleIndex]) {
+        switch(visibleValue) {
             case 'failed':
             case 'loading':
             case 'visible':
-                properties[visibleIndex] = 'hidden';
-                changed = true;
+                isChanged = true;
                 break;
             case 'hidden':
             default:
@@ -128,7 +124,41 @@ export function getVisibleChangedState(show, properties) {
         }
     }
 
-    return changed;
+    return isChanged;
+}
+
+export function getChangedVisibleState(item, show) {
+
+    let visibleValue = getProperty(item, 'visible');
+
+    if (show) {
+        switch(visibleValue) {
+            case 'hidden':
+            case 'failed':
+                visibleValue = 'loading';
+                break;
+            case 'loading':
+                visibleValue = 'visible';
+                break;
+            case 'visible':
+            default:
+                break;
+        }
+    }
+    else {
+        switch(visibleValue) {
+            case 'failed':
+            case 'loading':
+            case 'visible':
+                visibleValue = 'hidden';
+                break;
+            case 'hidden':
+            default:
+                break;
+        }
+    }
+
+    return visibleValue;
 };
 
 export function mergeResults (old, data) {

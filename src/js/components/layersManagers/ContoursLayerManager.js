@@ -154,7 +154,7 @@ export default class DrawingsLayerManager extends BaseLayerManager {
                 isVisible = cartValue && visibleValue === 'visible';
             }
 
-            contourController.showQuicklookOnMap(indexValue, isVisible);
+            contourController.toggleQuicklook(indexValue, isVisible);
         });
     }
 
