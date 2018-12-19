@@ -1,7 +1,7 @@
 import Translations from 'scanex-translations';
 
 import { LOCAL_STORAGE_KEY, DEFAULT_LANGUAGE } from 'js/config/constants/constants';
-import { LAYER_ATTRIBUTES, LAYER_ATTR_TYPES } from 'js/application/searchDataStore/Attributes';
+import { CONTOUR_ITEM_ATTRIBUTES, CONTOUR_ITEM_ATTR_TYPES } from 'js/application/searchDataStore/Attributes';
 
 import { normalizeGeometryType } from 'js/utils/commonUtils';
 
@@ -254,10 +254,10 @@ class AppStateManager {
             let item = items[gmxId];
 
             if (result.fields.length === 0) {
-                LAYER_ATTRIBUTES.forEach((k,i) => {
+                CONTOUR_ITEM_ATTRIBUTES.forEach((k,i) => {
                     if (['selected', 'visible', 'result', 'cart'].indexOf(k) !== -1 || item.hasOwnProperty(k)) {
                         result.fields.push(k);
-                        result.types.push(LAYER_ATTR_TYPES[i]);
+                        result.types.push(CONTOUR_ITEM_ATTR_TYPES[i]);
                     }
                 });
             }

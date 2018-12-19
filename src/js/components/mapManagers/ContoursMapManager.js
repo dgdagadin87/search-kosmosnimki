@@ -1,9 +1,9 @@
-import BaseLayerManager from 'js/base/BaseLayerManager';
+import BaseMapManager from 'js/base/BaseMapManager';
 
 import { getProperty, createFilterConditions } from 'js/application/searchDataStore/SearchDataStore';
 import {
-    LAYER_ATTRIBUTES,
-    LAYER_ATTR_TYPES
+    CONTOUR_ITEM_ATTRIBUTES,
+    CONTOUR_ITEM_ATTR_TYPES
 } from 'js/application/searchDataStore/Attributes';
 
 import {getBounds} from 'js/utils/commonUtils';
@@ -16,7 +16,7 @@ const Colors = {
     CartHilite: 0xef4e70,
 };
 
-export default class DrawingsLayerManager extends BaseLayerManager {
+export default class DrawingsMapManager extends BaseMapManager {
 
     constructor(props) {
 
@@ -195,8 +195,8 @@ export default class DrawingsLayerManager extends BaseLayerManager {
                 identityField: 'gmx_id',
                 GeometryType: 'polygon',                
                 srs: 3857,
-                attributes: LAYER_ATTRIBUTES,
-                attrTypes: LAYER_ATTR_TYPES,
+                attributes: CONTOUR_ITEM_ATTRIBUTES,
+                attrTypes: CONTOUR_ITEM_ATTR_TYPES,
                 styles: [
                     {
                         MinZoom: 3,

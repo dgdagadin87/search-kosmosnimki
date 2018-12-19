@@ -17,7 +17,7 @@ import {
 } from 'js/application/searchDataStore/SearchDataStore';
 
 import {MAX_CART_SIZE, QUICKLOOK} from 'js/config/constants/constants';
-import { LAYER_ATTRIBUTES } from 'js/application/searchDataStore/Attributes';
+import { CONTOUR_ITEM_ATTRIBUTES } from 'js/application/searchDataStore/Attributes';
 
 
 export default class ContourBridgeController extends BaseBridgeController {
@@ -317,7 +317,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             const geometryToGeoJson = L.gmxUtil.geometryToGeoJSON(properties[propertiesLastIndex], true, true);
             const clipCoords = normalizeGeometry(geometryToGeoJson);
 
-            let value = LAYER_ATTRIBUTES.reduce((contourData, attrKey) => {
+            let value = CONTOUR_ITEM_ATTRIBUTES.reduce((contourData, attrKey) => {
 
                 const index = fields.indexOf(attrKey);
 

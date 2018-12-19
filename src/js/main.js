@@ -11,8 +11,8 @@ import Application from './application/Application';
 import DrawingBridgeController from './components/bridgeControllers/DrawingBridgeController';
 import ContourBridgeController from './components/bridgeControllers/ContourBridgeController';
 
-import DrawingLayerManager from './components/layersManagers/DrawingsLayerManager';
-import ContourLayerManager from './components/layersManagers/ContoursLayerManager';
+import DrawingMapManager from './components/mapManagers/DrawingsMapManager';
+import ContourMapManager from './components/mapManagers/ContoursMapManager';
 
 import ShapeLoaderAddon from './components/addons/shapeLoader/ShapeLoaderAddon';
 import AppStateManagerAddon from './components/addons/appStateManager/AppStateManagerAddon';
@@ -103,15 +103,15 @@ const application = new Application({
         }
     ],
 
-    // layers managers
-    layersManagers: [
+    // map managers
+    mapManagers: [
         {
             'index': 'drawing',
-            constructor: DrawingLayerManager
+            constructor: DrawingMapManager
         },
         {
             'index': 'contour',
-            constructor: ContourLayerManager
+            constructor: ContourMapManager
         }
     ],
 

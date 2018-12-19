@@ -44,7 +44,7 @@ class Application {
 
         this._initBridgeControllers();
 
-        this._initLayersManagers();
+        this._initMapManagers();
 
         this._initAddons();
 
@@ -188,18 +188,18 @@ class Application {
         }
     }
 
-    _initLayersManagers() {
+    _initMapManagers() {
 
-        const {layersManagers = []} = this._config;
+        const {mapManagers = []} = this._config;
 
-        this._layersManagers = {};
+        this._mapManagers = {};
 
-        for (let i = 0; i < layersManagers.length; i++ ) {
+        for (let i = 0; i < mapManagers.length; i++ ) {
 
-            const currentManager = layersManagers[i];
+            const currentManager = mapManagers[i];
             const {index, constructor} = currentManager;
 
-            this._layersManagers[index] = new constructor({
+            this._mapManagers[index] = new constructor({
                 map: this.getMap(),
                 application: this,
                 store: this._dataStore
@@ -304,9 +304,9 @@ class Application {
         return this._bridgeControllers[name];
     }
 
-    getLayersManager(name) {
+    getMapManager(name) {
 
-        return this._layersManagers[name];
+        return this._mapManagers[name];
     }
 
     getAddon(index) {

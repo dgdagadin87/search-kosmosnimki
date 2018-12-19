@@ -1,4 +1,4 @@
-export default class BaseLayerManager {
+export default class BaseBridgeController {
 
     constructor(config) {
 

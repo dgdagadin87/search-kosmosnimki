@@ -1,7 +1,7 @@
-import BaseLayerManager from '../../base/BaseLayerManager';
+import BaseMapManager from '../../base/BaseMapManager';
 
 
-export default class DrawingsLayerManager extends BaseLayerManager {
+export default class DrawingsMapManager extends BaseMapManager {
 
     constructor(props) {
 

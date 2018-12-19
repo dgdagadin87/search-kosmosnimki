@@ -1,4 +1,4 @@
-export const LAYER_ATTRIBUTES = [
+export const CONTOUR_ITEM_ATTRIBUTES = [
     "hover",
     "selected",
     "visible",
@@ -34,7 +34,7 @@ export const LAYER_ATTRIBUTES = [
     "stidx"
 ];
 
-export const LAYER_ATTR_TYPES = [
+export const CONTOUR_ITEM_ATTR_TYPES = [
     "boolean",
     "boolean",
     "string",

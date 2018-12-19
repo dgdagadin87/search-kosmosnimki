@@ -1,6 +1,6 @@
 import BaseDataStore from 'js/base/BaseDataStore';
 
-import { LAYER_ATTRIBUTES, LAYER_ATTR_TYPES } from './Attributes';
+import { CONTOUR_ITEM_ATTRIBUTES, CONTOUR_ITEM_ATTR_TYPES } from './Attributes';
 import { fromGmx, prepareDate } from 'js/utils/commonUtils';
 
 
@@ -27,7 +27,7 @@ fieldsList.forEach(field => {
 
 export function getCorrectIndex(index) {
 
-    return LAYER_ATTRIBUTES.indexOf(index) + 1;
+    return CONTOUR_ITEM_ATTRIBUTES.indexOf(index) + 1;
 };
 
 export function propertiesX1Slice(item) {
@@ -72,9 +72,9 @@ export function propertiesToItem(properties) {
 
     return properties.slice(1, lastPropertyIndex).reduce((propertyObject, value, index) => {
         
-        let attrKey = LAYER_ATTRIBUTES[index];
+        let attrKey = CONTOUR_ITEM_ATTRIBUTES[index];
         
-        switch (LAYER_ATTR_TYPES[index]){
+        switch (CONTOUR_ITEM_ATTR_TYPES[index]){
             case 'date':
                 if (typeof value === 'string') {
                     propertyObject[attrKey] = new Date(value);
