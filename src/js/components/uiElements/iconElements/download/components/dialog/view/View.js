@@ -1,6 +1,6 @@
 import Translations from 'scanex-translations';
 
-import { createContainer } from 'js/utils/commonUtils';
+import { createContainer } from 'js/utils/CommonUtils';
 
 
 export default class DialogView {

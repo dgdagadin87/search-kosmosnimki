@@ -1,10 +1,10 @@
 import "@babel/polyfill";
 import 'nodelist-foreach-polyfill';
 
-import './services/css/css';
-import './services/translations/translations';
+import './services/css/Css';
+import './services/translations/Translations';
 
-import { createDefaultCriteria, createDefaultFilter } from './utils/commonUtils';
+import { createDefaultCriteria, createDefaultFilter } from './utils/CommonUtils';
 
 import Application from './application/Application';
 

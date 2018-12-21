@@ -5,9 +5,9 @@ import {
     getDrawingObject,
     normalizeGeometry,
     getDrawingObjectArea
-} from 'js/utils/commonUtils';
+} from 'js/utils/CommonUtils';
 
-import {NON_EDIT_LINE_STYLE} from 'js/config/constants/constants';
+import {NON_EDIT_LINE_STYLE} from 'js/config/constants/Constants';
 
 
 export default class DrawingBridgeController extends BaseBridgeController {

@@ -1,6 +1,6 @@
 import BaseUIElement from 'js/base/BaseUIElement';
 
-import { createContainer } from 'js/utils/commonUtils';
+import { createContainer } from 'js/utils/CommonUtils';
 
 //import ABoutDialogComponent from './components/aboutDialog/AboutDialogComponent';
 

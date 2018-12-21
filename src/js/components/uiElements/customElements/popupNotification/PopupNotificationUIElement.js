@@ -1,6 +1,6 @@
 import NotificationWidget from 'scanex-notify-widget';
 
-import { NOTIFICATION_HIDE_TIMEOUT } from 'js/config/constants/constants';
+import { NOTIFICATION_HIDE_TIMEOUT } from 'js/config/constants/Constants';
 
 import BaseUIElement from 'js/base/BaseUIElement';
 

@@ -1,6 +1,6 @@
 import EventTarget from 'scanex-event-target';
 
-import {LAYER_ID} from 'js/config/constants/constants';
+import {LAYER_ID} from 'js/config/constants/Constants';
 
 
 class GmxLayerDataProvider extends EventTarget {

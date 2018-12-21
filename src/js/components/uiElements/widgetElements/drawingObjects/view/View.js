@@ -3,7 +3,7 @@ import EventTarget from 'scanex-event-target';
 import Translations from 'scanex-translations';
 import ColorPicker from 'scanex-color-picker';
 
-import { createContainer } from 'js/utils/commonUtils';
+import { createContainer } from 'js/utils/CommonUtils';
 
 
 function get_area_text(area){

@@ -6,7 +6,7 @@ import {
     CONTOUR_ITEM_ATTR_TYPES
 } from 'js/application/searchDataStore/Attributes';
 
-import {getBounds} from 'js/utils/commonUtils';
+import {getBounds} from 'js/utils/CommonUtils';
 
 
 const Colors = {

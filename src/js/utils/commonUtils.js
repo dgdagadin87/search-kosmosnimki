@@ -5,8 +5,8 @@ import {
     WEST_HEMISPHERE,
     WEST_HEMISPHERE2,
     PANCHROME_IDS
-} from '../config/constants/constants';
-import { satellites } from '../config/satellites/satellites';
+} from '../config/constants/Constants';
+import { satellites } from '../config/satellites/Satellites';
 
 
 function hex (number, width = 6) {

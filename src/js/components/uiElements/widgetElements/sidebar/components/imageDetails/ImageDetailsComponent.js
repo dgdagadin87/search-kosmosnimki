@@ -2,7 +2,7 @@ import BaseComponent from 'js/base/BaseComponent';
 
 import ImageDetails from './view/ImageDetails';
 
-import { createContainer } from 'js/utils/commonUtils';
+import { createContainer } from 'js/utils/CommonUtils';
 
 
 export default class ImageDetailsComponent extends BaseComponent {

@@ -2,7 +2,7 @@ import BaseComponent from 'js/base/BaseComponent';
 
 import View from './view/View';
 
-import { TAB_RESULTS_NAME } from 'js/config/constants/constants';
+import { TAB_RESULTS_NAME } from 'js/config/constants/Constants';
 import { getProperty } from 'js/application/searchDataStore/SearchDataStore';
 
 

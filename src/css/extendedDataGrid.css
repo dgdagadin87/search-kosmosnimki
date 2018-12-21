@@ -65,6 +65,7 @@
 }
 
 .filterable-satellites-container {
+    width: 145px;
     position: absolute;
     top: 55px;
     left: 1px;

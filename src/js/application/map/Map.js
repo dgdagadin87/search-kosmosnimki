@@ -4,7 +4,7 @@ import  {
     MAP_SVG_SPRITE,
     LOAD_MAP_ID,
     LOAD_MAP_PARAMS
-} from '../../config/constants/constants';
+} from '../../config/constants/Constants';
 
 
 export default class Map {

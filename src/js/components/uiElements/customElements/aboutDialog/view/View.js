@@ -2,8 +2,8 @@ import FloatingPanel from 'scanex-float-panel';
 
 import Translations from 'scanex-translations';
 
-import { getWindowCenter } from 'js/utils/commonUtils';
-import { VERSION, VERSION_DATE } from 'js/config/constants/constants';
+import { getWindowCenter } from 'js/utils/CommonUtils';
+import { VERSION, VERSION_DATE } from 'js/config/constants/Constants';
 
 
 class View extends FloatingPanel {

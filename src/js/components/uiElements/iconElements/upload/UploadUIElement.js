@@ -4,9 +4,9 @@ import BaseUIElement from 'js/base/BaseUIElement';
 
 import DialogComponent from './components/dialog/DialogComponent';
 
-import {MAX_UPLOAD_OBJECTS, MAX_UPLOAD_POINTS} from 'js/config/constants/constants';
+import {MAX_UPLOAD_OBJECTS, MAX_UPLOAD_POINTS} from 'js/config/constants/Constants';
 
-import {getShapefileObject, getCoordinatesCount} from 'js/utils/commonUtils';
+import {getShapefileObject, getCoordinatesCount} from 'js/utils/CommonUtils';
 
 
 export default class UploadUIElement extends BaseUIElement {

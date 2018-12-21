@@ -3,7 +3,7 @@ import Translations from 'scanex-translations';
 
 import OverriddenDataGrid from 'js/overriden/OverriddenDataGrid.js';
 
-import { getSatelliteName } from 'js/utils/commonUtils';
+import { getSatelliteName } from 'js/utils/CommonUtils';
 
 
 class FavoritesList extends EventTarget {

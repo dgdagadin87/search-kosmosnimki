@@ -2,9 +2,9 @@ import Translations from 'scanex-translations';
 
 import BaseUIElement from 'js/base/BaseUIElement';
 
-import { RESULT_MAX_COUNT_PLUS_ONE } from 'js/config/constants/constants';
+import { RESULT_MAX_COUNT_PLUS_ONE } from 'js/config/constants/Constants';
 
-import {getTotalHeight} from 'js/utils/commonUtils';
+import {getTotalHeight} from 'js/utils/CommonUtils';
 
 import SearchTabComponent from './components/searchTab/SearchTabComponent';
 import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';

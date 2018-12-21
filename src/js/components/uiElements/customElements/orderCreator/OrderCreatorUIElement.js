@@ -4,7 +4,7 @@ import LoginDialogComponent from './components/loginDialog/LoginDialogComponent'
 import OrderDialogComponent from './components/orderDialog/OrderDialogComponent';
 import SuccessDialogComponent from './components/successDialog/SuccessDialogComponent';
 
-import { HOME_LINK } from 'js/config/constants/constants';
+import { HOME_LINK } from 'js/config/constants/Constants';
 import { propertiesToItem } from 'js/application/searchDataStore/SearchDataStore';
 
 

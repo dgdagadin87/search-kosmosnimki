@@ -3,7 +3,7 @@ import BaseCompositedComponent from 'js/base/BaseCompositedComponent';
 import HeaderComponent from './components/header/HeaderComponent';
 import ListComponent from './components/list/ListComponent';
 
-import { TAB_RESULTS_NAME } from 'js/config/constants/constants';
+import { TAB_RESULTS_NAME } from 'js/config/constants/Constants';
 
 import View from './view/View';
 

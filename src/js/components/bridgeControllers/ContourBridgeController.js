@@ -5,7 +5,7 @@ import {
     splitComplexId,
     flatten,
     normalizeGeometry
-} from 'js/utils/commonUtils';
+} from 'js/utils/CommonUtils';
 import {
     getProperty,
     setProperty,
@@ -16,7 +16,7 @@ import {
     getChangedVisibleState
 } from 'js/application/searchDataStore/SearchDataStore';
 
-import {MAX_CART_SIZE, QUICKLOOK} from 'js/config/constants/constants';
+import {MAX_CART_SIZE, QUICKLOOK} from 'js/config/constants/Constants';
 import { CONTOUR_ITEM_ATTRIBUTES } from 'js/application/searchDataStore/Attributes';
 
 

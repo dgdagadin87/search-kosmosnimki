@@ -2,9 +2,9 @@ import BaseComponent from 'js/base/BaseComponent';
 
 import View from './view/View';
 
-import { getMapCenter, createContainer, getRootUrl } from 'js/utils/commonUtils';
+import { getMapCenter, createContainer, getRootUrl } from 'js/utils/CommonUtils';
 
-import { ACCESS_USER_ROLE } from 'js/config/constants/constants';
+import { ACCESS_USER_ROLE } from 'js/config/constants/Constants';
 
 
 export default class OrderDialogComponent extends BaseComponent {

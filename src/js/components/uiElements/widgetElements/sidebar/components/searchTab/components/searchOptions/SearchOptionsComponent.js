@@ -1,8 +1,8 @@
 import BaseComponent from 'js/base/BaseComponent';
 
-import { ACCESS_USER_ROLE, TAB_SEARCH_NAME } from 'js/config/constants/constants';
+import { ACCESS_USER_ROLE, TAB_SEARCH_NAME } from 'js/config/constants/Constants';
 
-import {getTotalHeight} from 'js/utils/commonUtils';
+import {getTotalHeight} from 'js/utils/CommonUtils';
 
 import View from './view/SearchOptions';
 

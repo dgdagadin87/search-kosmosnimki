@@ -1,9 +1,9 @@
 import Translations from 'scanex-translations';
 import FloatingPanel from 'scanex-float-panel';
 
-import { ACCESS_USER_ROLE } from 'js/config/constants/constants';
+import { ACCESS_USER_ROLE } from 'js/config/constants/Constants';
 
-import { createContainer, getMapCenter } from 'js/utils/commonUtils';
+import { createContainer, getMapCenter } from 'js/utils/CommonUtils';
 
 
 export default class DownloadDialogView {

@@ -1,9 +1,9 @@
 import Translations from 'scanex-translations';
 
-import { LOCAL_STORAGE_KEY, DEFAULT_LANGUAGE } from 'js/config/constants/constants';
+import { LOCAL_STORAGE_KEY, DEFAULT_LANGUAGE } from 'js/config/constants/Constants';
 import { CONTOUR_ITEM_ATTRIBUTES, CONTOUR_ITEM_ATTR_TYPES } from 'js/application/searchDataStore/Attributes';
 
-import { normalizeGeometryType } from 'js/utils/commonUtils';
+import { normalizeGeometryType } from 'js/utils/CommonUtils';
 
 
 class AppStateManager {

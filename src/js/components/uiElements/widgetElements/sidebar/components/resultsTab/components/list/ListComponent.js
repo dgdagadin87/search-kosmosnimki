@@ -1,6 +1,6 @@
 import BaseComponent from 'js/base/BaseComponent';
 
-import { ACCESS_USER_ROLE, TAB_RESULTS_NAME} from 'js/config/constants/constants';
+import { ACCESS_USER_ROLE, TAB_RESULTS_NAME} from 'js/config/constants/Constants';
 
 import { getProperty, propertiesToItem } from 'js/application/searchDataStore/SearchDataStore';
 

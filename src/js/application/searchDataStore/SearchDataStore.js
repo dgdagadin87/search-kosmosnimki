@@ -1,7 +1,7 @@
 import BaseDataStore from 'js/base/BaseDataStore';
 
 import { CONTOUR_ITEM_ATTRIBUTES, CONTOUR_ITEM_ATTR_TYPES } from './Attributes';
-import { fromGmx, prepareDate } from 'js/utils/commonUtils';
+import { fromGmx, prepareDate } from 'js/utils/CommonUtils';
 
 
 const fieldsList = [

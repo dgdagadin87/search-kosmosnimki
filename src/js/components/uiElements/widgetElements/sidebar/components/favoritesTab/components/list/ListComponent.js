@@ -1,8 +1,8 @@
 import BaseComponent from 'js/base/BaseComponent';
 
-import { ACCESS_USER_ROLE, TAB_FAVORITES_NAME } from 'js/config/constants/constants';
+import { ACCESS_USER_ROLE, TAB_FAVORITES_NAME } from 'js/config/constants/Constants';
 
-import { getPanelHeight } from 'js/utils/commonUtils';
+import { getPanelHeight } from 'js/utils/CommonUtils';
 import { getProperty, propertiesToItem } from 'js/application/searchDataStore/SearchDataStore';
 
 import View from './view/View';

@@ -4,7 +4,7 @@ import Pikaday from 'pikaday';
 
 import ExtendedSliderWidget from './ExtendedDateSliderWidget';
 
-import {getDifferenceBetweenDates, compareDates} from 'js/utils/commonUtils';
+import {getDifferenceBetweenDates, compareDates} from 'js/utils/CommonUtils';
 
 const T = Translations;
 

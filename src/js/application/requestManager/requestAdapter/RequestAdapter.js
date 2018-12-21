@@ -1,5 +1,5 @@
-import {LAYER_ID} from 'js/config/constants/constants';
-import {splitOn180} from 'js/utils/commonUtils';
+import {LAYER_ID} from 'js/config/constants/Constants';
+import {splitOn180} from 'js/utils/CommonUtils';
 
 import AdapterCore from './_core/AdapterCore';
 

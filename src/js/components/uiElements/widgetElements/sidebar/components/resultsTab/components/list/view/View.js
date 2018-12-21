@@ -1,7 +1,7 @@
 import Translations from 'scanex-translations';
 import ExtendedDataGrid from './ExtendedDataGrid';
 
-import { getSatelliteName, getPanelHeight } from 'js/utils/commonUtils';
+import { getSatelliteName, getPanelHeight } from 'js/utils/CommonUtils';
 import EventTarget from 'scanex-event-target';
 
 

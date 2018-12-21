@@ -2,7 +2,7 @@ import BaseUIElement from 'js/base/BaseUIElement';
 
 import About from './view/View';
 
-import { createContainer } from 'js/utils/commonUtils';
+import { createContainer } from 'js/utils/CommonUtils';
 
 
 export default class AboutDialogUIElement extends BaseUIElement {

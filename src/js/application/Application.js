@@ -6,9 +6,9 @@ import {
     ACCESS_LAYER_ID,
     ACCESS_USER_ROLE,
     VERSION_PATH
-} from '../config/constants/constants';
+} from '../config/constants/Constants';
 
-import { isMobile } from 'js/utils/commonUtils';
+import { isMobile } from 'js/utils/CommonUtils';
 
 import RequestManager from './requestManager/RequestManager';
 

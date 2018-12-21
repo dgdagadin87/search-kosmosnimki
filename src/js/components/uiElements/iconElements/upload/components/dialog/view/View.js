@@ -1,7 +1,7 @@
 import Translations from 'scanex-translations';
 import FloatingPanel from 'scanex-float-panel';
 
-import { createContainer, getMapCenter } from 'js/utils/commonUtils';
+import { createContainer, getMapCenter } from 'js/utils/CommonUtils';
 
 const T = Translations;
 

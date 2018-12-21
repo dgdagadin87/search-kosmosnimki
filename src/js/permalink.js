@@ -1,6 +1,6 @@
 import { getResourceServer } from 'scanex-auth';
 import { chain } from 'scanex-async';
-import { hex, fromGmx } from './utils/commonUtils';
+import { hex, fromGmx } from './utils/CommonUtils';
 
 window.LAYER_ID = '9B4733A8CBE942CE9F5E70DCAA6C1FBE'; // 'AFB4D363768E4C5FAC71C9B0C6F7B2F4'
 

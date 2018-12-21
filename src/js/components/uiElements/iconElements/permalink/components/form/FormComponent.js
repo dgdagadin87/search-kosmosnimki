@@ -1,6 +1,6 @@
 import BaseComponent from 'js/base/BaseComponent';
 
-import { createContainer, getRootUrl } from 'js/utils/commonUtils';
+import { createContainer, getRootUrl } from 'js/utils/CommonUtils';
 
 import View from './view/View.html';
 

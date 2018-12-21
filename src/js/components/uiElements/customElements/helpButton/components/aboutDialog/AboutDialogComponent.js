@@ -2,7 +2,7 @@ import BaseComponent from 'js/base/BaseComponent';
 
 import View from './view/View';
 
-import { createContainer } from 'js/utils/commonUtils';
+import { createContainer } from 'js/utils/CommonUtils';
 
 
 export default class AboutDialogComponent extends BaseComponent {
