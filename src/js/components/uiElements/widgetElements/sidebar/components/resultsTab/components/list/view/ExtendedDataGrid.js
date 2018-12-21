@@ -232,8 +232,15 @@ export default class ExtendedDataGrid extends DataGrid {
     _renderCell (item, col) {
         const field = this._fields[col];
         const width = field.width;
-        const padding = col === 'platform' ? 'padding-right:0;' : '';
-        const align = this._align ? ` style="text-align: ${field.align || this._getCellAlign(field.type)};${padding}"` : '';  
+        let padding = '';
+        if (col === 'platform') {
+            padding = 'padding-right:0;'
+        }
+        else if (col === 'stereo') {
+            padding = 'padding-right:0;padding-left:0;';
+        }
+        const fldWidth = col === 'stereo' ? 'width:10px;' : '';
+        const align = this._align ? ` style="text-align: ${field.align || this._getCellAlign(field.type)};${padding}${fldWidth}"` : '';  
         switch(field.type) {
             case 'selector':
                 return Boolean(item[col]) ? `<td${align}><input type="checkbox" checked value="${col}" /></td>` : `<td${align}><input type="checkbox" value="${col}" /></td>`;
@@ -380,7 +387,8 @@ export default class ExtendedDataGrid extends DataGrid {
                 }
                 break;
         }
-        return `<td${field.tooltip ? ` title="${field.tooltip}"` : ''} class="table-list-col" data-field="${col}" style="padding-top:20px;">
+        const fldWidth = col === 'stereo' ? 'padding-left:0px;' : '';
+        return `<td${field.tooltip ? ` title="${field.tooltip}"` : ''} class="table-list-col" data-field="${col}" style="padding-top:20px;${fldWidth}">
             ${el}
             <i class="table-list-sort"${field.sortable ? '' : ' style="display: none"'}></i>
         </td>`;
