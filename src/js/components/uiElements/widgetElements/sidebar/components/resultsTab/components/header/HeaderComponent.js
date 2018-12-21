@@ -34,6 +34,8 @@ export default class HeaderComponent extends BaseComponent {
         store.on('contours:showQuicklookList', this._setQuickLooksCartState.bind(this));
         store.on('clientFilter:changeList', this._updateClearFilterSpan.bind(this));
         store.on('clientFilter:changeList', this._updateFilteredNumber.bind(this));
+        store.on('contours:addToCartHeader', this._updateFilteredNumber.bind(this));
+        store.on('contours:addAllToCartHeader', this._updateFilteredNumber.bind(this));
 
         events.on('contours:showQuicklookList', this._setQuickLooksCartState.bind(this));
 

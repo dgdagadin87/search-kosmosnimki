@@ -147,7 +147,8 @@ export default class ContourBridgeController extends BaseBridgeController {
             {id: gmxId, content: changedItem},
             [
                 'contours:addToCartList',
-                'contours:addToCartMap'
+                'contours:addToCartMap',
+                'contours:addToCartHeader'
             ]
         );
     }
@@ -184,6 +185,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             [
                 'contours:addAllToCartList',
                 'contours:addAllToCartMap',
+                'contours:addAllToCartHeader'
             ]
         );
     }
