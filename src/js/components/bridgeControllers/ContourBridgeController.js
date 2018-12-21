@@ -480,7 +480,7 @@ export default class ContourBridgeController extends BaseBridgeController {
         fromMap && events.trigger('contours:scrollToRow', gmxId, currentTab);
 
         this.toggleQuicklook(gmxId, showState)
-        .then(() => events.trigger('contours:allQuicklooksList', gmxId))
+        .then(() => events.trigger('contours:showQuicklookList', gmxId))
         .catch((e) => this._errorHandler(e));
     }
 
