@@ -75,8 +75,7 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const store = application.getStore();
 
-        const contours = store.getSerializedData('contours');
-        const isSomeSelected = contours.some(item => getProperty(item, 'selected'));
+        const isSomeSelected = store.hasSelectedFavorites();
 
         this._updateOrderAndRemoveButtons(isSomeSelected);
     }
@@ -86,10 +85,12 @@ export default class FavouritesTabComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const store = application.getStore();
         const commonData = store.getFavorites();
+        const selectedData = store.getSelectedFavorites();
         const dataLength = commonData.length;
+        const selectedLength = selectedData.length;
 
         this._updateCartNumber(dataLength);
-        this._updateOrderAndRemoveButtons(dataLength > 0);
+        this._updateOrderAndRemoveButtons(selectedLength > 0);
     }
 
     _updateCartNumber(number) {

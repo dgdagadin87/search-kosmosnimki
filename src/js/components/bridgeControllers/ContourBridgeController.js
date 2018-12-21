@@ -508,7 +508,7 @@ export default class ContourBridgeController extends BaseBridgeController {
             this.toggleQuicklook(gmxId, visibleState)
             .then(() => events.trigger('contours:allQuicklooksList', gmxId))
             .catch((e) => this._errorHandler(e));
-        })
+        });
     }
 
     toggleQuicklook(id, isVisible, removeQuicklook = false) {
