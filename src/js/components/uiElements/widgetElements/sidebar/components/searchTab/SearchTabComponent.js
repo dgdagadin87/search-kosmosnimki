@@ -3,7 +3,10 @@ import Translations from 'scanex-translations';
 import BaseCompositedComponent from 'js/base/BaseCompositedComponent';
 
 import SearchWidgetComponent from './components/searchWidget/SearchWidgetComponent';
-import SearchOptionsComponent from './components/searchOptions/SearchOptionsComponent';
+
+import { ACCESS_USER_ROLE, TAB_SEARCH_NAME } from 'js/config/constants/Constants';
+
+import View from './view/View.html';
 
 
 export default class SearchTabComponent extends BaseCompositedComponent {
@@ -12,16 +15,18 @@ export default class SearchTabComponent extends BaseCompositedComponent {
 
         this._addTabToSidebar();
 
+        this._view = new View({
+            target: document.querySelector('[data-pane-id="search"]')
+        });
+
         this.initChildren([
             {
                 index: 'searchWidget',
                 constructor: SearchWidgetComponent
-            },
-            {
-                index: 'searchOptions',
-                constructor: SearchOptionsComponent
             }
         ]);
+
+        this._setViewData();
 
         this._bindEvents();
     }
@@ -31,12 +36,53 @@ export default class SearchTabComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const events = application.getServiceEvents();
         const store = application.getStore();
-        const searchButton = this._getSearchButton();
+        const view = this.getView();
 
-        events.on('system:uiElements:created', this._enableSearchButton.bind(this));
-        store.on('searchCriteria:fullUpdate', this._enableSearchButton.bind(this));
+        events.on('sidebar:tab:resize', this._resizeSearchOptions.bind(this));
+        store.on('currentTab:changeUI', this._onTabChangeHandler.bind(this));
+        store.on('searchCriteria:update', this._setViewData.bind(this));
+        view.on('change', this.onCriteriaDataChange.bind(this));
+        view.on('search', this._onSearchButtonClick.bind(this));
+    }
 
-        searchButton.addEventListener('click', this._onSearchButtonClick.bind(this));
+    _setViewData() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const view = this.getView();
+
+        const defaultCriteria = store.getData('searchCriteria');
+        const userInfo = store.getData('userInfo');
+        const restricted = userInfo['IsAuthenticated'] && userInfo['Role'] === ACCESS_USER_ROLE;
+
+        view.set({ ...defaultCriteria, restricted });
+    }
+
+    onCriteriaDataChange(criteriaData) {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        store.rewriteData('searchCriteria', criteriaData);
+    }
+
+    _onTabChangeHandler() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const currentTab = store.getMetaItem('currentTab');
+
+        if (currentTab === TAB_SEARCH_NAME) {
+            this._setViewData();
+            this._resizeSearchOptions();
+        }
+    }
+
+    _resizeSearchOptions() {
+
+        const view = this.getView();
+
+        view.resize();
     }
 
     _onSearchButtonClick() {
@@ -52,43 +98,7 @@ export default class SearchTabComponent extends BaseCompositedComponent {
             opened: 'sidebar-search-opened',
             closed: 'sidebar-search-closed',
             tooltip: Translations.getText('search.title'), 
-        })
-
-        this.getView().innerHTML = 
-        `<div class="search-pane"></div>
-        <div class="no-select search-options-pane"></div>
-        <div class="search-options-footer">
-            <button class="search-options-search-button" type="button">
-                <span>${Translations.getText('search.action')}</span>
-            </button>
-        </div>`;
-    }
-
-    _getSearchButton() {
-
-        const sidebarComponent = this.getParentComponent();
-        const sidebarView = sidebarComponent.getView();
-        const sidebarContainer = sidebarView.getContainer();
-
-        const searchButton = sidebarContainer.querySelector('.search-options-search-button');
-
-        return searchButton;
-    }
-
-    _enableSearchButton() {
-
-        const searchButton = this._getSearchButton();
-        
-        const isSomeSatellitesChecked = this._isSomeSatellitesChecked();
-
-        if (isSomeSatellitesChecked) {
-            searchButton.classList.remove('search-options-search-button-passive');        
-            searchButton.classList.add('search-options-search-button-active');
-        }
-        else {
-            searchButton.classList.remove('search-options-search-button-active');        
-            searchButton.classList.add('search-options-search-button-passive');
-        }
+        });
     }
 
     _isSomeSatellitesChecked() {

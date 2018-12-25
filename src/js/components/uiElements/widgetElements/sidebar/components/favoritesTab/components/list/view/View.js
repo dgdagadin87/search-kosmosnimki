@@ -161,7 +161,7 @@ class FavoritesList extends EventTarget {
                 type: 'float',
                 name: Translations.getText('results.angle'),
                 sortable: true,
-                formatter: item => Math.round (item.tilt),
+                formatter: item => typeof item.tilt === 'number' ? Math.round (item.tilt) : '',
                 default: 0,
                 align: 'center',
             },

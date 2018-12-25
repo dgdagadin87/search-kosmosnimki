@@ -15,7 +15,7 @@ export default class OrderDialogComponent extends BaseComponent {
         const store = application.getStore();
         const userInfo = store.getData('userInfo');
         const {left, top} = getMapCenter();
-        const internal = userInfo['Role'] === ACCESS_USER_ROLE;
+        const internal = userInfo['IsAuthenticated'] && userInfo['Role'] === ACCESS_USER_ROLE;
 
         const container = createContainer();
 

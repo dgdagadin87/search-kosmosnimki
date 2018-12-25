@@ -1,0 +1,53 @@
+<div
+    class="satellite-info"
+    style="display:{hidden?'none':'block'}; left:{correctLeft}px; top:{correctTop}px"
+>
+    <table cellspacing="0" cellpadding="0">
+        <tbody>
+            <tr>
+                <td>{translate('satellite.resolution')}:</td><td>{resolution}</td><td>{translate('resolution.unit')}</td>
+            </tr>
+            <tr>
+                <td>{translate('satellite.swath')}:</td><td>{swath}</td><td>{translate('units.km')}</td>
+            </tr>                
+        </tbody>
+    </table>
+    <div>{operator}</div>
+    <div>{translate('satellite.since')} {since}</div>
+</div>
+
+<script>
+
+    import { RangeWidget } from 'scanex-slider-widget';
+    import Translations from 'scanex-translations';
+
+    export default {
+
+        data () {
+            return {
+                hidden: true,
+                left: 0,
+                top: 0,
+                width: 0,
+                resolution: 0,
+                swath: 0,
+                since: 0,
+                operator: ''
+            };
+        },
+
+        computed: {
+            correctLeft: ({left, width}) => left + width + 30,
+            correctTop:  ({top}) => top - 100
+        },
+
+        helpers: {
+            translate(text) {
+
+                return Translations.getText(text);
+            }
+        }
+
+    }
+
+</script>

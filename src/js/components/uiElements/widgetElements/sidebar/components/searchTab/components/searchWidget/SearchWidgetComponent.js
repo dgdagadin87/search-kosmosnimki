@@ -13,10 +13,10 @@ export default class SearchWidgetComponent extends BaseComponent {
 
         this._initSearchProviders();
 
-        this._searchContainer = this.getParentComponent().getView();
+        const parentView = this.getParentComponent().getView();
 
         this._view = new SearchWidget(
-            this._searchContainer.querySelector('.search-pane'),
+            parentView.getSearchPaneRef(),
             {
                 placeHolder: Translations.getText('controls.search'),
                 suggestionLimit: 10,

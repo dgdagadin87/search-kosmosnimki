@@ -1,0 +1,38 @@
+<div class="search-options-annually-container" style="position: absolute; top:23px; right:30px;">
+    <div
+        title='Режим "Ежегодно" {annually ? "включен" : "выключен"}'
+        on:click="onClickHandler()"
+        class="search-options-annually-control {annually ? 'annually-checked' : 'annually-unchecked'}"
+    />
+</div>
+
+<script>
+
+    import Translations from 'scanex-translations';
+
+    export default {
+
+        data () {
+            return {
+                annually: false
+            };
+        },
+
+        methods: {
+            onClickHandler() {
+
+                const {annually} = this.get();
+                
+                this.fire('setAnnually', {annually: !annually})
+            }
+        },
+
+        helpers: {
+            translate(text) {
+
+                return Translations.getText(text);
+            }
+        }
+    }
+
+</script>

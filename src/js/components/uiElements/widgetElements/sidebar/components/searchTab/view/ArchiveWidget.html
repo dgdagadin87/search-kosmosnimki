@@ -1,0 +1,56 @@
+<div class="search-options-satellites-number-section" style="margin-bottom: 0; padding-bottom: 15px;">
+    <div class="search-options-satellites-title">Спутники</div>
+    <div class="search-options-satellites-number"></div>
+    {#if restricted}
+        <div class="search-options-satellites-archive">
+            <select
+                value={archive}
+                on:change="onArchiveChangeHandler(event)"
+                style="width:115px;"
+            >
+                <option value="global">{translate('archive.global')}</option>
+                <option value="local">{translate('archive.local')}</option>
+                <option value="all">{translate('archive.all')}</option>
+            </select>
+        </div>
+    {/if}
+</div>
+
+<script>
+
+    import Translations from 'scanex-translations';
+
+    const archiveValues = ['global', 'local', 'all'];
+
+    export default {
+
+        data: () => {
+            return {
+                restricted: false,
+                archive: 'global'
+            };
+        },
+
+        methods: {
+            onArchiveChangeHandler(e) {
+
+                let {target: {value = 'global'}} = e;
+
+                if (archiveValues.indexOf(value) === -1) {
+                    value = 'global';
+                }
+
+                this.fire('setArchive', {archive: value});
+            }
+        },
+
+        helpers: {
+            translate(text) {
+
+                return Translations.getText(text);
+            }
+        }
+
+    }
+
+</script>

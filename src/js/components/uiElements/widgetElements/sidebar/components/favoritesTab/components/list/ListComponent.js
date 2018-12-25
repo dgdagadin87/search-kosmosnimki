@@ -16,7 +16,7 @@ export default class FavoritesListComponent extends BaseComponent {
         const store = application.getStore();
 
         const userInfo = store.getData('userInfo');
-        const restricted = userInfo['Role'] === ACCESS_USER_ROLE;
+        const restricted = userInfo['IsAuthenticated'] && userInfo['Role'] === ACCESS_USER_ROLE;
 
         this._searchContainer = this.getParentComponent().getView();
 

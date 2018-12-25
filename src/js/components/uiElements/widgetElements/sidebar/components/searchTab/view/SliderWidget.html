@@ -1,0 +1,61 @@
+<div class="{containerClass}">
+    <div class="{labelClass}">{labelValue}</div>
+    <div ref:sliderContainer class="{inputClass}" />
+</div>
+
+<script>
+
+    import Translations from 'scanex-translations';
+    import { RangeWidget } from 'scanex-slider-widget';
+
+    export default {
+
+        data () {
+            return {
+                mode: 'clouds',
+                value: [0, 100],
+                limits: {min: 0, max: 100}
+            };
+        },
+
+        computed: {
+            containerClass: ({mode}) => `search-options-${mode}`,
+            labelClass: ({mode}) => `search-options-${mode}-title`,
+            inputClass: ({mode}) => `search-options-${mode}-value`,
+            labelValue: ({mode}) => Translations.getText((mode === 'clouds' ? 'clouds' : 'angle'))
+        },
+
+        onstate(params) {
+
+            const {changed = {}, current: {value: currentValue}} = params;
+
+            if (changed['value']) {
+                if (this._slider) {
+                    this._slider.values = currentValue;
+                }
+                this.fire('changeValues', {value: currentValue});
+            }
+        },
+
+        oncreate() {
+            
+            const {limits, value} = this.get();
+
+            this._slider = new RangeWidget(this.refs.sliderContainer, limits);
+            this._slider.values = value;
+
+            this._slider.addEventListener('stop', this.onSliderStopHandler.bind(this));
+        },
+
+        methods: {
+            onSliderStopHandler(e) {
+
+                const {detail} = e;
+
+                this.set({value: detail});
+            }
+        }
+
+    }
+
+</script>

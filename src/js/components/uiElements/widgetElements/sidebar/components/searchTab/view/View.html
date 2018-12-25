@@ -1,0 +1,167 @@
+<div ref:searchPane class="search-pane" />
+        
+<div class="no-select search-options-pane search-options search-options-content">
+    <div class="no-select search-options-fixed-section">
+
+        <div class="search-options-period-section" style="margin-top:0;">
+            <div class="search-options-period">
+                <DateWidget
+                    mode="from"
+                    date={date[0]}
+                    on:setDate="changeCriteria('from', event.date)"
+                />
+                <DateWidget
+                    mode="to"
+                    date={date[1]}
+                    on:setDate="changeCriteria('to', event.date)"
+                />
+            </div>
+            
+            <AnnuallyWidget
+                annually={annually}
+                on:setAnnually="changeCriteria('annually', event.annually)"
+            />
+
+        </div>
+
+        <SliderWidget
+            mode="clouds"
+            value={clouds}
+            limits={cloudsLimits}
+            on:changeValues="changeCriteria('clouds', event.value)"
+        />
+        <SliderWidget
+            mode="angle"
+            value={angle}
+            limits={angleLimits}
+            on:changeValues="changeCriteria('angle', event.value)"
+        />
+
+        <ArchiveWidget
+            restricted={restricted}
+            archive={archive}
+            on:setArchive="changeCriteria('archive', event.archive)"
+        />
+    </div>
+
+    <SatellitesWidget
+        _satellites={satellites}
+        restricted={restricted}
+        on:changeSatellites="changeCriteria('satellites', event.satellites)"
+    />
+
+</div>
+
+<div class="search-options-footer">
+    <button
+        type="button"
+        on:click="onSearchClickHandler()"
+        class="search-options-search-button search-options-search-button-{isSomeSatellitesChecked(satellites)?'active':'passive'}"
+    >
+        <span>Найти снимки</span>
+    </button>
+</div>
+
+<script>
+
+    import {getTotalHeight, createDefaultCriteria} from 'js/utils/CommonUtils';
+
+    import DateWidget from './DateWidget.html';
+    import SliderWidget from './SliderWidget.html';
+    import SatellitesWidget from './SatellitesWidget.html';
+    import ArchiveWidget from './ArchiveWidget.html';
+    import AnnuallyWidget from './AnnuallyWidget.html';
+
+    const fieldList = ['date', 'annually', 'clouds', 'angle', 'resolution', 'satellites', 'stereo', 'archive'];
+
+    export default {
+
+        data () {
+
+            return {
+                ...createDefaultCriteria(),
+
+                restricted: false,
+                cloudsLimits: {min: 0, max: 100},
+                angleLimits: {min: 0, max: 60}
+            };
+
+            return defaultCriteria;
+        },
+
+        onstate(params) {
+
+            const {changed = {}} = params;
+            let isChanged = false;
+
+            fieldList.forEach(field => {if (changed[field]) isChanged = true});
+
+            if (isChanged) {
+                const currentCriteria = this.getCriteria();
+                this.fire('change', currentCriteria);
+            }
+        },
+
+        methods: {
+
+            getCriteria() {
+
+                const currentState = this.get();
+                let result = {};
+
+                fieldList.forEach(field => result[field] = currentState[field]);
+
+                return result;
+            },
+
+            changeCriteria(paramName, paramValue) {
+
+                let currentState = {};
+
+                if (paramName === 'from' || paramName === 'to') {
+                    let {date} = this.get();
+                    const dateIndex = paramName === 'from' ? 0 : 1;
+                    currentState['date'] = date;
+                    currentState['date'][dateIndex] = paramValue;
+                }
+                else {
+                    currentState[paramName] = paramValue;
+                }
+
+                this.set(currentState);
+            },
+
+            onSearchClickHandler() {
+
+                this.fire('search');
+            },
+
+            getSearchPaneRef() {
+
+                return this.refs.searchPane;
+            },
+
+            resize() {
+
+                const { height } = document.body.querySelector('.scanex-sidebar').getBoundingClientRect();
+                const total = height - getTotalHeight(['.search-pane', '.search-options-footer' ]) - 11;
+                const ctnrHeight = document.body.querySelector('#map .panes .search-options-content .search-options-fixed-section').getBoundingClientRect().height;
+                const satellites = document.body.querySelector('#map .panes .search-options-content .search-options-satellites');
+
+                satellites.style.maxHeight = `${total - ctnrHeight - 33 + 15}px`;
+                satellites.style.height = satellites.style.maxHeight;
+            }
+            
+        },
+
+        helpers: {
+            isSomeSatellitesChecked(satellites) {
+                const {pc = [], ms = []} = satellites;
+                return ms.some(x => x.checked) || pc.some(x => x.checked);
+            }
+        },
+
+        components: { DateWidget, SliderWidget, SatellitesWidget, ArchiveWidget, AnnuallyWidget }
+    }
+
+</script>

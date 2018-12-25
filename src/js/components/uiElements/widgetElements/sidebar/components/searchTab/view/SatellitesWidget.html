@@ -1,54 +1,58 @@
-{#each Object.keys(preparedSatellites) as segment}
-    <div class="satellite-segment-container">
-        <div on:click="toggleSection(segment)" class="satellite-header {hidden[segment] ? 'closed' : 'opened'}">
-            <span>
-                <input
-                    checked="{preparedSatellites[segment]['allChecked']}"
-                    indeterminate={!preparedSatellites[segment]['allChecked'] && preparedSatellites[segment]['count'] > 0}
-                    type="checkbox"
-                    on:click="checkAllSatellites(event, _satellites, segment)"
-                />
-            </span>
-            <span>{getCurrentName(segment)}</span> <div class="count">{preparedSatellites[segment]['count']}</div>
-            <div class="toggleControl {hidden[segment] ? 'closed' : 'opened'}" />
-        </div>
-        {#if !hidden[segment]}
-            {#each preparedSatellites[segment].data as satellite}
-                <div style="padding:5px 5px 5px 25px;">
+<div class="no-select search-options-satellites" style="padding-right:10px;">
+    {#each Object.keys(preparedSatellites) as segment}
+        <div class="satellite-segment-container">
+            <div on:click="toggleSection(segment)" class="satellite-header {hidden[segment] ? 'closed' : 'opened'}">
+                <span>
                     <input
+                        checked="{preparedSatellites[segment]['allChecked']}"
+                        indeterminate={!preparedSatellites[segment]['allChecked'] && preparedSatellites[segment]['count'] > 0}
                         type="checkbox"
-                        id="sat_{satellite.id}"
-                        checked={satellite.checked}
-                        on:change="checkSatellite(_satellites, satellite.id)"
+                        on:click="checkAllSatellites(event, _satellites, restricted, segment)"
                     />
-                    <label
-                        style="vertical-align: middle; font-size:13px;" for="sat_{satellite.id}"
-                        on:mouseover="showSatelliteInfo(event, satellite)"
-                        on:mouseout="hideSatelliteInfo()"
-                    >{satellite.name}</label>
-                </div>
-            {/each}
-        {/if}
-    </div>
-{/each}
-<div class="all-count">{allCheckedCount}</div>
-<div ref:info />
+                </span>
+                <span>{getCurrentName(segment)}</span> <div class="count">{preparedSatellites[segment]['count']}</div>
+                <div class="toggleControl {hidden[segment] ? 'closed' : 'opened'}" />
+            </div>
+            {#if !hidden[segment]}
+                {#each preparedSatellites[segment].data as satellite}
+                    <div style="padding:5px 5px 5px 25px;">
+                        <input
+                            type="checkbox"
+                            id="sat_{satellite.id}"
+                            checked={satellite.checked}
+                            on:change="checkSatellite(_satellites, satellite.id)"
+                        />
+                        <label
+                            style="vertical-align: middle; font-size:13px;" for="sat_{satellite.id}"
+                            on:mouseover="showSatelliteInfo(event, satellite)"
+                            on:mouseout="hideSatelliteInfo()"
+                        >{satellite.name}</label>
+                    </div>
+                {/each}
+            {/if}
+        </div>
+    {/each}
+    <div class="all-count">{allCheckedCount}</div>
+    <InfoWidget ref:infoWidget />
+</div>
 
 <script>
 
-    import Info from './Info.js';
     import Translations from 'scanex-translations';
     import {PANCHROME_IDS} from 'js/config/constants/Constants';
+    import InfoWidget from './InfoWidget.html';
+
+    const unitTranslate = Translations.getText('resolution.unit');
 
     const satellitesMeta = {
         first: {
-            name: '0,3 - 0,5 м/пикс'
+            name: '0,3 - 0,5 ' + unitTranslate
         },
         second: {
-            name: '0,7 - 2 м/пикс'
+            name: '0,7 - 2 ' + unitTranslate
         },
         third: {
-            name: '>2 м/пикс'
+            name: '>2 ' + unitTranslate
         },
         panchrome: {
             name: 'Панхром (ч/б)'
@@ -102,16 +106,12 @@
             };
         },
 
-        oncreate() {
-
-            this._info = new Info (this.refs.info);
-            this._info.hide();
-        },
-
         onstate({ changed, current, previous }) {
 
+            const {_satellites: satellites} = current;
+
 			if (changed['_satellites']) {
-                this.fire('change');
+                this.fire('changeSatellites', {satellites});
             }
 		},
 
@@ -177,7 +177,7 @@
                 this.set({hidden});
             },
 
-            checkAllSatellites(e, satellites, segment = false) {
+            checkAllSatellites(e, satellites, restricted, segment = false) {
 
                 const setChecked = (satellite, segment, checkedState) => {
                     if (!segment) {
@@ -185,9 +185,13 @@
                     }
                     else {
                         const {ids} = satellitesMeta[segment];
-                        const {id} = satellite;
+                        const {id, restricted: currentRestricted} = satellite;
+                        let correctCheckedState = checkedState;
+                        if (currentRestricted && !restricted) {
+                            correctCheckedState = false;
+                        }
                         if (segment === getSatelliteSegment(satellite)) {
-                            satellite.checked = checkedState;
+                            satellite.checked = correctCheckedState;
                         }
                     }
                     return satellite;
@@ -230,18 +234,25 @@
                 const {target} = e;
                 const {resolution, swath, operator, since } = satellite;
                 const {left, top, width} = target.getBoundingClientRect();
+                const infoWidget = this.refs.infoWidget;
 
-                this._info.resolution = resolution;
-                this._info.swath = swath;
-                this._info.operator = operator;
-                this._info.since = since;
-
-                this._info.show(left + width, top - 100);
+                infoWidget.set({
+                    left,
+                    top,
+                    width,
+                    resolution,
+                    since,
+                    swath,
+                    operator,
+                    hidden: false
+                });
             },
 
             hideSatelliteInfo(e, satellite) {
 
-                this._info.hide();
+                const infoWidget = this.refs.infoWidget;
+
+                infoWidget.set({ hidden: true });
             }
         },
 
@@ -252,7 +263,9 @@
                 return satellitesMeta[segment]['name'];
             }
 
-        }
+        },
+
+        components: { InfoWidget }
 
     }
 

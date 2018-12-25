@@ -199,7 +199,7 @@ class ResultList extends EventTarget {
                 sortable: true,
                 formatter: item => {
                     let value = item.tilt;
-                    return value < 0 ? '' : Math.round (value);
+                    return value < 0 || typeof value !== 'number' ? '' : Math.round (value);
                 },
                 default: 0,
                 align: 'center',

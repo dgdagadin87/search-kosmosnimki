@@ -197,7 +197,7 @@ class AppStateManager {
                 clouds,
                 stereo,
                 satellites: {ms, pc}
-            }, ['searchCriteria:fullUpdate']
+            }, ['searchCriteria:update']
         );
 
         // drawings

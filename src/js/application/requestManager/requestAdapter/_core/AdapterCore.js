@@ -19,7 +19,7 @@ export default class AdapterCore {
         const store = this._application.getStore();
         const userInfo = store.getData('userInfo');
 
-        return userInfo['Role'] === ACCESS_USER_ROLE;
+        return userInfo['IsAuthenticated'] && userInfo['Role'] === ACCESS_USER_ROLE;
     }
 
     set criteria (value) {
