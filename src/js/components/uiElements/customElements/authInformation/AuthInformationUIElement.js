@@ -30,6 +30,14 @@ export default class UserInformationUIElement extends BaseUIElement {
             appStateManager.saveAppStateToLocalStorage(currentAppState);
             window.location.reload(true);
         });
+
+        setTimeout(() => {
+            const loginButton = document.querySelector('.authWidget-loginButton');
+            loginButton && loginButton.addEventListener('click', () => {
+                const currentAppState = appStateManager.getCurrentApplicationState();
+                appStateManager.saveAppStateToLocalStorage(currentAppState);
+            });
+        }, 0);
     }
 
 }
