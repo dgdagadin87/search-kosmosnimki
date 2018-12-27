@@ -1,0 +1,32 @@
+<div>
+    <div class="dialog-content">Максимальное количество снимков в корзине - 200</div>
+    <div class="dialog-footer">
+        <button
+            on:click="onCloseHandler()"
+            class="dialog-primary-button"
+        >Закрыть</button>
+    </div>
+</div>
+
+<script>
+
+    export default {
+
+        data() {
+            return {
+                mode: 'alert',
+                headerText: '',
+                messageText: '',
+                
+            };
+        },
+
+        methods: {
+            onCloseHandler() {
+                this.fire('close');
+            }
+        }
+
+    }
+
+</script>

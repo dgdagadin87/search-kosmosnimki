@@ -29,6 +29,8 @@ export default class SearchTabComponent extends BaseCompositedComponent {
         this._setViewData();
 
         this._bindEvents();
+
+        //this._application._modalComponent.show({component: 'message'});
     }
 
     _bindEvents() {

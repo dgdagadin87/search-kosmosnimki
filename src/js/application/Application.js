@@ -16,6 +16,8 @@ import DataStore from './searchDataStore/SearchDataStore';
 
 import MapComponent from './map/Map';
 
+import ModalComponent from './modal/ModalComponent';
+
 import Events from './events/Events';
 
 
@@ -47,6 +49,8 @@ class Application {
         this._initMapManagers();
 
         this._initAddons();
+
+        this._initDialogComponent();
 
         this._initUiElements();
 
@@ -228,6 +232,18 @@ class Application {
         }
     }
 
+    _initDialogComponent() {
+
+        const modalComponent = new ModalComponent({
+            application: this,
+            map: this.getMap()
+        });
+
+        modalComponent.init();
+
+        this._modalComponent = modalComponent;
+    }
+
     _initUiElements() {
 
         const isMobileGadget = isMobile();
@@ -312,6 +328,11 @@ class Application {
     getAddon(index) {
 
         return this._addons[index];
+    }
+
+    getModal() {
+
+        return this._modalComponent;
     }
 
     getUiElement(index) {

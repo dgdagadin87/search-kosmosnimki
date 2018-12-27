@@ -49,6 +49,7 @@ import 'scanex-datagrid/dist/scanex-datagrid.css';
 
 // scanex-color-picker
 import 'scanex-color-picker/dist/scanex-color-picker.css';
+import '../../../css/colorPicker.css';
 
 // scanex-search-input
 import 'scanex-search-input/dist/scanex-search-input.css';
@@ -64,6 +65,10 @@ import 'scanex-notify-widget/dist/scanex-notify-widget.css';
 
 // pikaday
 import 'pikaday/css/pikaday.css';
+
+// tingle.js
+import 'tingle.js/dist/tingle.min.css';
+import '../../../css/modal.css';
 
 // extended grid
 import '../../../css/extendedDataGrid.css';

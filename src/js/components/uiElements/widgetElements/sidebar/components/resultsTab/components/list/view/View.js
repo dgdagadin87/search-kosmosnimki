@@ -11,7 +11,7 @@ class ResultList extends EventTarget {
         this._cart = {};
         this._application = application;
         this._restricted = restricted;
-        this._container = document.querySelector('#map div.noselect.leaflet-control div.panes div.results-pane');
+        this._container = document.querySelector('#map div.leaflet-control div.panes div.results-pane');
         this._container.classList.add('result-list');
         this._onColumnClick = this._onColumnClick.bind(this);
         this._onCellClick = this._onCellClick.bind(this);

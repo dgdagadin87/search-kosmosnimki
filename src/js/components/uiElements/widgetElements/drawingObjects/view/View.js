@@ -1,7 +1,7 @@
 import { DataGrid } from 'scanex-datagrid';
 import EventTarget from 'scanex-event-target';
 import Translations from 'scanex-translations';
-import ColorPicker from 'scanex-color-picker';
+import {ColorPicker, hex2rgb, rgb2hsl } from 'scanex-color-picker';
 
 import { createContainer } from 'js/utils/CommonUtils';
 
@@ -108,8 +108,19 @@ class DrawnObjects extends EventTarget {
         this._colorPickerContainer = createContainer();
         this._colorPickerContainer.classList.add('noselect');
         this._hideColorPicker = this._hideColorPicker.bind(this);
-        this._colorPicker = new ColorPicker(this._colorPickerContainer);
-        this._colorPicker.addEventListener('change', this._onSetColor);
+        this._colorPicker = new ColorPicker({target:this._colorPickerContainer});
+        this._colorPickerWidget = this._colorPickerContainer.querySelector('.color-picker');
+        this._colorPicker.on('change', this._onSetColor);
+        this._colorPicker.on('state', (e) => {
+            const {current = {}} = e;
+            if (current['hex']) {
+                this._onSetColor({
+                    detail:{
+                        hex:current['hex']
+                    }
+                });
+            }
+        });
         document.body.addEventListener('click', this._hideColorPicker);
     }
     _toggle (e) {
@@ -124,6 +135,7 @@ class DrawnObjects extends EventTarget {
     }
     _hideColorPicker (e) {
         this._colorPickerContainer.style.visibility = 'hidden';
+        this._colorPickerWidget.style.visibility = 'hidden';
     }
     _onSetColor(e) {
         if(this._colorPickerCell) {
@@ -166,12 +178,17 @@ class DrawnObjects extends EventTarget {
                 if (item.color) {
                     this._colorPickerCell = {item, cell};
                     let {left, top} = cell.getBoundingClientRect();
-                    var colorPickerRect = this._colorPickerContainer.getBoundingClientRect();
+                    var colorPickerRect = this._colorPickerWidget.getBoundingClientRect();
+                    let {r,g,b} = hex2rgb(item.color);
+                    const {h,s,l} = rgb2hsl(r,g,b);
+                    this._colorPicker.set({hue: h, saturation: s, lightness: l});
                     this._colorPickerContainer.style.left = `${left - colorPickerRect.width - 50}px`;
+                    this._colorPickerWidget.style.left = `${left - colorPickerRect.width - 50}px`;
                     var rect = document.body.getBoundingClientRect();
                     this._colorPickerContainer.style.top = `${top + colorPickerRect.height < rect.bottom ? top : top - colorPickerRect.height + 10}px`;
-                    this._colorPicker.value = item.color;
+                    this._colorPickerWidget.style.top = `${top + colorPickerRect.height < rect.bottom ? top : top - colorPickerRect.height + 10}px`;
                     this._colorPickerContainer.style.visibility = 'visible';
+                    this._colorPickerWidget.style.visibility = 'visible';
                 }
                 break;            
             case 'delete':                

@@ -10,6 +10,8 @@ export default class View {
         map.addControl(this._main);
 
         this._main.getContainer().classList.add('noselect');
+        L.DomEvent.disableClickPropagation(this._main.getContainer());
+        L.DomEvent.disableScrollPropagation(this._main.getContainer());/**/
 
         return this._main;
     }

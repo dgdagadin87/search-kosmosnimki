@@ -109,11 +109,11 @@ export default class BaseLayersComponent extends BaseCompositedComponent {
         const application = this.getApplication();
         const {gmxBaseLayersManager} = this.getMap();
         const store = application.getStore();
+        const view = this.getView();
         const activeLayer = store.getMetaItem('activeLayer');
 
-        gmxBaseLayersManager.setCurrentID(activeLayer);
-
-        this._showLegend();
+        const activeLayerObject = gmxBaseLayersManager.get(activeLayer);
+        view.setActiveLayer(activeLayerObject);
     }
 
     _showLegend() {
