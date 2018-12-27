@@ -36,9 +36,14 @@ export default class ModalComponent extends BaseComponent {
                 contentParams['headerText'] = headerText;
                 contentParams['messageText'] = messageText;
             }
+            else if (component === 'warning') {
+                contentParams['mode'] = 'warning';
+                contentParams['messageText'] = messageText;
+            }
 
             const content = new Message({
-                target: this._getModalContainer()
+                target: this._getModalContainer(),
+                data: contentParams
             });
 
             content.on('close', () => this.hide());

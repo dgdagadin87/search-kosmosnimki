@@ -1,14 +1,33 @@
+{#if mode === 'error'}
 <div>
-    <div class="dialog-content">Максимальное количество снимков в корзине - 200</div>
+    <div class="dialog-content">
+        {#if headerText}
+            {headerText}<br />
+        {/if}
+        {messageText}
+    </div>
     <div class="dialog-footer">
         <button
             on:click="onCloseHandler()"
             class="dialog-primary-button"
-        >Закрыть</button>
+        >{translate('alerts.close')}</button>
     </div>
 </div>
+{:elseif mode === 'warning'}
+<div>
+    <div class="dialog-content">{messageText}</div>
+    <div class="dialog-footer">
+        <button
+            on:click="onCloseHandler()"
+            class="dialog-primary-button"
+        >{translate('alerts.close')}</button>
+    </div>
+</div>
+{/if}
 
 <script>
+
+    import Translations from 'scanex-translations';
 
     export default {
 
@@ -24,6 +43,12 @@
         methods: {
             onCloseHandler() {
                 this.fire('close');
+            }
+        },
+
+        helpers: {
+            translate(text) {
+                return Translations.getText(text);
             }
         }
 

@@ -10,7 +10,6 @@ import SearchTabComponent from './components/searchTab/SearchTabComponent';
 import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';
 import FavoritesTabComponent from './components/favoritesTab/FavoritesTabComponent';
 import ImageDetailsComponent from './components/imageDetails/ImageDetailsComponent';
-import LimitDialogComponent from './components/limitDialog/LimitDialogComponent';
 import DownloadDialogComponent from './components/downloadDialog/DownloadDialogComponent';
 
 import View from './view/View';
@@ -40,10 +39,6 @@ export default class SidebarUIElement extends BaseUIElement {
             {
                 index: 'imageDetails',
                 constructor: ImageDetailsComponent
-            },
-            {
-                index: 'limitDialog',
-                constructor: LimitDialogComponent
             },
             {
                 index: 'downloadDialog',
@@ -210,9 +205,13 @@ export default class SidebarUIElement extends BaseUIElement {
 
     _cartLimitMessage() {
 
-        const limitDialogComponent = this.getChildComponent('limitDialog');
+        const application = this.getApplication();
+        const modalComponent = application.getModal();
 
-        limitDialogComponent.show();
+        modalComponent.show({
+            component: 'warning',
+            messageText: Translations.getText('favorites.limit')
+        });
     }
 
     _onDownloadApplyClick() {
