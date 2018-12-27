@@ -85,7 +85,8 @@ const application = new Application({
                     about: '',
                     cancelLoading: false,
                     updateResults: false,
-                    activeIcon: null
+                    activeIcon: null,
+                    activeLayer: null
                 }
             }
         ]

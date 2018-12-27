@@ -146,7 +146,7 @@ class AppStateManager {
                 y: y,
                 z: 17 - map.getZoom()
             },
-            activeLayer: map.gmxBaseLayersManager.getCurrentID(),        
+            activeLayer: store.getMetaItem('activeLayer'),        
             bounds: map.getBounds(),
             searchCriteria,
             items: results,
@@ -293,6 +293,9 @@ class AppStateManager {
         const {x, y, z} = state.position;
         const center = L.Projection.Mercator.unproject({y, x});
         map.setView(center, 17 - z);
+
+        // active layer
+        store.setMetaItem('activeLayer', state['activeLayer'], ['activeLayer:changeFromPermalink']);
     }
 
     _getNormalizedData(dataKey) {
