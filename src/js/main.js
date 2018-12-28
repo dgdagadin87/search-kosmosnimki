@@ -19,7 +19,6 @@ import AppStateManagerAddon from './components/addons/appStateManager/AppStateMa
 
 import LoadingIndicatorUiElement from './components/uiElements/customElements/loadingIndicator/LoadingIndicatorUiElement';
 import PopupNotificationUiElement from './components/uiElements/customElements/popupNotification/PopupNotificationUiElement';
-import ErrorDialogUiElement from './components/uiElements/customElements/errorDialog/ErrorDialogUiElement';
 import HelpButtonUiElement from './components/uiElements/customElements/helpButton/HelpButtonUiElement';
 import AuthInformationUiElement from './components/uiElements/customElements/authInformation/AuthInformationUiElement';
 import LanguageSelectUiElement from './components/uiElements/customElements/languageSelect/LanguageSelectUiElement';
@@ -139,11 +138,6 @@ const application = new Application({
             type: 'custom',
             index: 'popupNotificator',
             constructor: PopupNotificationUiElement
-        },
-        {
-            type: 'custom',
-            index: 'errorDialog',
-            constructor: ErrorDialogUiElement
         },
         {
             type: 'custom',

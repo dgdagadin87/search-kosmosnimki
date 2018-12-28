@@ -22,19 +22,29 @@ export default class ModalComponent extends BaseComponent {
 
     show(options = {}) {
 
-        const { component = 'error',  headerText = '', messageText = '' } = options;
+        const {
+            component = 'error',
+            headerText = '',
+            messageText = '',
+            events = {},
+            data = {}
+        } = options;
+
+        let contentParams = {};
 
         if (typeof component === 'string') {
 
-            let contentParams = {};
-
-            if (component === 'error') {
-                contentParams['mode'] = 'error';
-                contentParams['headerText'] = headerText;
+            if (component === 'alert') {
+                contentParams['mode'] = 'alert';
                 contentParams['messageText'] = messageText;
             }
-            else if (component === 'alert') {
+            else if (component === 'warning') {
                 contentParams['mode'] = 'warning';
+                contentParams['messageText'] = messageText;
+            }
+            else if (component === 'error') {
+                contentParams['mode'] = 'error';
+                contentParams['headerText'] = headerText;
                 contentParams['messageText'] = messageText;
             }
 
@@ -44,6 +54,18 @@ export default class ModalComponent extends BaseComponent {
             });
 
             content.on('close', () => this.hide());
+
+            this._content = content;
+        }
+        else {
+            const content = new component({
+                target: this._getModalContainer(),
+                data
+            });
+
+            for (let index in events) {
+                content.on(index, events[index]);
+            }
 
             this._content = content;
         }

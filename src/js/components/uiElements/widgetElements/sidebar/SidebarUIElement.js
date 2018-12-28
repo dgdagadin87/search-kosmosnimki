@@ -2,7 +2,10 @@ import Translations from 'scanex-translations';
 
 import BaseUIElement from 'js/base/BaseUIElement';
 
-import { RESULT_MAX_COUNT_PLUS_ONE } from 'js/config/constants/Constants';
+import {
+    RESULT_MAX_COUNT_PLUS_ONE,
+    ACCESS_USER_ROLE
+} from 'js/config/constants/Constants';
 
 import {getTotalHeight} from 'js/utils/CommonUtils';
 
@@ -10,9 +13,10 @@ import SearchTabComponent from './components/searchTab/SearchTabComponent';
 import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';
 import FavoritesTabComponent from './components/favoritesTab/FavoritesTabComponent';
 import ImageDetailsComponent from './components/imageDetails/ImageDetailsComponent';
-import DownloadDialogComponent from './components/downloadDialog/DownloadDialogComponent';
 
 import View from './view/View';
+
+import DownloadDialog from './dialogs/DownloadDialog';
 
 
 export default class SidebarUIElement extends BaseUIElement {
@@ -39,10 +43,6 @@ export default class SidebarUIElement extends BaseUIElement {
             {
                 index: 'imageDetails',
                 constructor: ImageDetailsComponent
-            },
-            {
-                index: 'downloadDialog',
-                constructor: DownloadDialogComponent
             }
         ]);
 
@@ -64,7 +64,6 @@ export default class SidebarUIElement extends BaseUIElement {
         const resutsListComponent = this.getChildComponent('resultsTab.list');
         const favoritesTabComponent = this.getChildComponent('favoritesTab');
         const favoritesListComponent = this.getChildComponent('favoritesTab.list');
-        const downloadDialogComponent = this.getChildComponent('downloadDialog');
         const sidebarView = this.getView();
 
         sidebarView.on('change', (e) => this._onTabChangeHandler(e));
@@ -90,7 +89,6 @@ export default class SidebarUIElement extends BaseUIElement {
         resutsListComponent.events.on('filter:change', (e) => contourController.changeClientFilter(e));
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
-        downloadDialogComponent.events.on('downloadApply:click', () => this._onDownloadApplyClick());
     }
 
     _onTabChangeHandler(e) {
@@ -157,13 +155,41 @@ export default class SidebarUIElement extends BaseUIElement {
                 ContourController.addContoursOnMapAndList(result);
             }
             else {
-                downloadDialogComponent.show();
+                //downloadDialogComponent.show();
+                this._showDownloadDialog();
             }
         }
 
         application.showLoader(false);
 
         store.setMetaItem('cancelLoading', false);
+    }
+
+    _showDownloadDialog() {
+
+        const application = this.getApplication();
+        const modalComponent = application.getModal();
+
+        modalComponent.show({
+            component: DownloadDialog,
+            data: { isAuthentificated: this._isUserIsAuthenticated() },
+            events: {
+                close: () => modalComponent.hide(),
+                apply: () => {
+                    modalComponent.hide();
+                    this._onDownloadApplyClick();
+                }
+            }
+        });
+    }
+
+    _isUserIsAuthenticated() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const userInfo = store.getData('userInfo');
+
+        return userInfo['IsAuthenticated'] && userInfo['Role'] === ACCESS_USER_ROLE;
     }
 
     _resizeSidebar() {
@@ -220,11 +246,8 @@ export default class SidebarUIElement extends BaseUIElement {
         const store = application.getStore();
         const requestManager = application.getRequestManager();
         const shapeLoader = application.getAddon('shapeLoader');
-        const downloadDialogComponent = this.getChildComponent('downloadDialog');
 
         store.setMetaItem('cancelLoading', false);
-
-        downloadDialogComponent.hide();
         
         application.showLoader(true);
 

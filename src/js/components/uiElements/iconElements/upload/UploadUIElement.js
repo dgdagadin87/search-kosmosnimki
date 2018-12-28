@@ -83,9 +83,9 @@ export default class UploadUIElement extends BaseUIElement {
                     dialogComponent.show(drawingsProperties);
                 }
                 else {
-
-                    const errorText = `${Translations.getText('errors.upload')}<br />${Translations.getText('errors.points')}`;
-                    application.showError(errorText);
+                    const errorHeader = Translations.getText('errors.upload');
+                    const errorText = Translations.getText('errors.points');
+                    application.showError(errorText, errorHeader);
                 }
                 break;
 

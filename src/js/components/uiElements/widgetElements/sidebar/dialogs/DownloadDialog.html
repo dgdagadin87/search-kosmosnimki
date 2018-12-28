@@ -1,0 +1,57 @@
+<div>
+    <div class="dialog-content">
+        {#if !isAuthentificated}
+            {@html translate('results.change')}
+        {:else}
+            {@html translate('results.download')}
+        {/if}
+    </div>
+    <div class="dialog-footer">
+        {#if !isAuthentificated}
+            <button
+                on:click="onCloseHandler()"
+                class="dialog-primary-button"
+            >{translate('alerts.ok')}</button>
+        {:else}
+            <button
+                on:click="onApplyHandler()"
+                class="dialog-primary-button"
+            >{translate('download.ok')}</button>
+            <button
+                on:click="onCloseHandler()"
+                class="dialog-cancel-button"
+            >{translate('download.cancel')}</button>
+        {/if}
+    </div>
+</div>
+
+<script>
+
+    import Translations from 'scanex-translations';
+
+    export default {
+
+        data() {
+            return {
+                isAuthentificated: false
+            };
+        },
+
+        methods: {
+            onApplyHandler() {
+                this.fire('apply');
+            },
+            onCloseHandler() {
+                this.fire('close');
+            }
+        },
+
+        helpers: {
+            translate(text) {
+                return Translations.getText(text);
+            }
+        }
+
+    }
+
+</script>

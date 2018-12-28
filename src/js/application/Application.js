@@ -303,11 +303,15 @@ class Application {
         notificationWidget.show(message);
     }
 
-    showError(errorText) {
+    showError(errorText = '', errorHeader = '') {
 
-        const errorDialog = this.getUiElement('errorDialog');
+        const modalComponent = this.getModal();
 
-        errorDialog.show(errorText);
+        modalComponent.show({
+            component: 'error',
+            headerText: errorHeader,
+            messageText: errorText
+        });
     }
 
     getRequestManager() {

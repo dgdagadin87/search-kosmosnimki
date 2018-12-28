@@ -49,3 +49,19 @@
     font-weight: 500;
     padding: 0 30px;
 }
+
+.dialog-cancel-button {
+    border-style: none;        
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 4px;    
+    display: inline-block;
+    height: 35px;     
+    cursor: pointer;
+    background-color: transparent;
+    color: #8394a8;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 0px 30px 0px 30px;
+}

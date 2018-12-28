@@ -8,6 +8,16 @@
         >{translate('alerts.close')}</button>
     </div>
 </div>
+{:elseif mode === 'warning'}
+<div>
+    <div class="dialog-content">{messageText}</div>
+    <div class="dialog-footer">
+        <button
+            on:click="onCloseHandler()"
+            class="dialog-primary-button"
+        >{translate('alerts.close')}</button>
+    </div>
+</div>
 {:elseif mode === 'error'}
 <div>
     <div class="dialog-content">
