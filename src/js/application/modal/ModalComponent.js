@@ -12,10 +12,7 @@ export default class ModalComponent extends BaseComponent {
         const modal = new Tingle.modal({
             footer: false,
             stickyFooter: false,
-            closeMethods: [],
-            onClose: function() {
-                console.log('modal closed');
-            },
+            closeMethods: []
         });
 
         modal.setContent('<div id="search-modal-container"></div>');
@@ -36,7 +33,7 @@ export default class ModalComponent extends BaseComponent {
                 contentParams['headerText'] = headerText;
                 contentParams['messageText'] = messageText;
             }
-            else if (component === 'warning') {
+            else if (component === 'alert') {
                 contentParams['mode'] = 'warning';
                 contentParams['messageText'] = messageText;
             }

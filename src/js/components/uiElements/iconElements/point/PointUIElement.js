@@ -42,7 +42,7 @@ export default class PointUIElement extends BaseUIElement {
     _omMapDrawStop(e) {
 
         const {object} = e;
-
+console.log(this._application.getStore().getMetaItem('activeIcon'))
         this._setActiveIcon(object, false);
     }
 

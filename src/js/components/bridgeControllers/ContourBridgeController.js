@@ -445,6 +445,11 @@ export default class ContourBridgeController extends BaseBridgeController {
     }
 
     showQuicklookOnListAndMap(e, fromMap = false) {
+        
+        const application = this.getApplication();
+        const store = application.getStore();
+        const events = application.getServiceEvents();
+        const currentTab = store.getMetaItem('currentTab');
 
         let gmxId;
         if (!fromMap) {
@@ -452,14 +457,14 @@ export default class ContourBridgeController extends BaseBridgeController {
             gmxId = gmx_id;
         }
         else {
+            const activeIcon = store.getMetaItem('activeIcon');
+            if (activeIcon) {
+                console.log('RRRRRRRRRRRR')
+                return;
+            }
             let { gmx: {id}} = e;
             gmxId = id;
         }
-
-        const application = this.getApplication();
-        const store = application.getStore();
-        const events = application.getServiceEvents();
-        const currentTab = store.getMetaItem('currentTab');
 
         let currentContour = store.getData('contours', gmxId);
         let visible = getProperty(currentContour, 'visible');

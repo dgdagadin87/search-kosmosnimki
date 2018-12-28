@@ -252,7 +252,7 @@ export default class AngleFilter extends EventTarget {
 
         const store = this._application.getStore();
         const clientFilter = store.getData('clientFilter');
-        const {filterData: {angle = [0, 60]}} = clientFilter;
+        const {filterData: {angle = [0, 80]}} = clientFilter;
 
         return angle;
     }

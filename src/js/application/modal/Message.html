@@ -1,11 +1,6 @@
-{#if mode === 'error'}
+{#if mode === 'alert'}
 <div>
-    <div class="dialog-content">
-        {#if headerText}
-            {headerText}<br />
-        {/if}
-        {messageText}
-    </div>
+    <div class="dialog-content">{messageText}</div>
     <div class="dialog-footer">
         <button
             on:click="onCloseHandler()"
@@ -13,9 +8,14 @@
         >{translate('alerts.close')}</button>
     </div>
 </div>
-{:elseif mode === 'warning'}
+{:elseif mode === 'error'}
 <div>
-    <div class="dialog-content">{messageText}</div>
+    <div class="dialog-content">
+        {#if headerText}
+            {headerText}<br />
+        {/if}
+        {messageText}
+    </div>
     <div class="dialog-footer">
         <button
             on:click="onCloseHandler()"

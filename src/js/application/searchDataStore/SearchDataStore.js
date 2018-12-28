@@ -1,7 +1,7 @@
 import BaseDataStore from 'js/base/BaseDataStore';
 
 import { CONTOUR_ITEM_ATTRIBUTES, CONTOUR_ITEM_ATTR_TYPES } from './Attributes';
-import { fromGmx, prepareDate } from 'js/utils/CommonUtils';
+import { isNumeric, fromGmx, prepareDate } from 'js/utils/CommonUtils';
 
 
 const fieldsList = [
@@ -225,7 +225,7 @@ export function createFilterConditions(item, isChanged, unChecked, clouds, angle
     const angleValue = Math.abs(tiltValue);
 
     const platformsCondition = unChecked.indexOf(platformValue) === -1;
-    const cloudsCondition = isChanged ? (cloudValue > 0 ? clouds[0] <= cloudValue && cloudValue <= clouds[1] : true) : true;
+    const cloudsCondition = isChanged ? (isNumeric(cloudValue) ? clouds[0] <= cloudValue && cloudValue <= clouds[1] : true) : true;
     const angleCondition = isChanged ? (angle[0] <= angleValue && angleValue <= angle[1]) : true;
     const dateCondition = isChanged ? (date[0].getTime() <= preparedDate.getTime() && preparedDate.getTime() <= date[1].getTime()) : true;
 
@@ -315,7 +315,7 @@ export default class SearchDataStore extends BaseDataStore {
             filterData: {
                 unChecked = [],
                 clouds = [0, 100],
-                angle  = [0, 60],
+                angle  = [0, 80],
                 date   = [0, 0]
             },
         } = clientFilter;

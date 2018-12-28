@@ -123,7 +123,7 @@ export default class DrawingsMapManager extends BaseMapManager {
         const currentTab = store.getMetaItem('currentTab');
         const contourController = application.getBridgeController('contour');
         const {
-            filterData: {unChecked = [], clouds = [0, 100], angle = [0, 60], date = [0, 0]},
+            filterData: {unChecked = [], clouds = [0, 100], angle = [0, 80], date = [0, 0]},
             isChanged = false
         } = store.getData('clientFilter');
 
@@ -166,7 +166,7 @@ export default class DrawingsMapManager extends BaseMapManager {
         const tab_filter = (item) => {
             
             const {
-                filterData: {unChecked = [], clouds = [0, 100], angle = [0, 60], date = [0, 0]},
+                filterData: {unChecked = [], clouds = [0, 100], angle = [0, 80], date = [0, 0]},
                 isChanged = false
             } = store.getData('clientFilter');
             const currentTab = store.getMetaItem('currentTab');

@@ -22,9 +22,12 @@ function unHex (str) {
 }
 
 function isNumber(n) {
-
     return !isNaN (new Number(n));
 }
+
+function isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+  }
 
 function createContainer () {
 
@@ -167,7 +170,7 @@ function createDefaultCriteria() {
         date: [ dateStart, dateEnd ],
         annually: false,
         clouds: [0, 100],
-        angle: [0, 60],
+        angle: [0, 80],
         resolution: [0.3, 20],
         satellites: satellites,
         stereo: false,
@@ -185,7 +188,7 @@ function createDefaultFilter() {
     return {
         date:  [ dateStart, dateEnd ],
         clouds: [0, 100],
-        angle: [0, 60],
+        angle: [0, 80],
         unChecked: []
     };
 }
@@ -709,6 +712,7 @@ export {
     hex,
     unHex,
     isNumber,
+    isNumeric,
     createContainer,
     getWindowCenter,
     getMapCenter,

@@ -209,7 +209,7 @@ export default class SidebarUIElement extends BaseUIElement {
         const modalComponent = application.getModal();
 
         modalComponent.show({
-            component: 'warning',
+            component: 'alert',
             messageText: Translations.getText('favorites.limit')
         });
     }
