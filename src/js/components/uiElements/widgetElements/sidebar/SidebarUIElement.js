@@ -139,7 +139,6 @@ export default class SidebarUIElement extends BaseUIElement {
         const application = this.getApplication();
         const store = application.getStore();
         const ContourController = application.getBridgeController('contour');
-        const downloadDialogComponent = this.getChildComponent('downloadDialog');
         const isLoadingCancelled = store.getMetaItem('cancelLoading');
 
         if (!isLoadingCancelled) {
@@ -155,7 +154,6 @@ export default class SidebarUIElement extends BaseUIElement {
                 ContourController.addContoursOnMapAndList(result);
             }
             else {
-                //downloadDialogComponent.show();
                 this._showDownloadDialog();
             }
         }
@@ -253,13 +251,11 @@ export default class SidebarUIElement extends BaseUIElement {
 
         requestManager.requestSearchContours()
         .then ((data) => {
-
             application.showLoader(false);
 
             const cancelLoading = store.getMetaItem('cancelLoading');
 
             if (!cancelLoading) {
-
                 store.setDownloadCache(data);
                 shapeLoader.download('results', 'results');
             }
