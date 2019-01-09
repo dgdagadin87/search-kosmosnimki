@@ -1,7 +1,7 @@
 import BaseDataStore from 'js/base/BaseDataStore';
 
 import { CONTOUR_ITEM_ATTRIBUTES, CONTOUR_ITEM_ATTR_TYPES } from './Attributes';
-import { isNumeric, fromGmx, prepareDate } from 'js/utils/CommonUtils';
+import { isNumeric, fromGmx, prepareDate, compareDates } from 'js/utils/CommonUtils';
 
 
 const fieldsList = [
@@ -206,7 +206,7 @@ export function isClientFilterChanged(searchCriteria, clientFilter) {
         return true;
     }
 
-    if (filterMinDate.getTime() !== criteriaMinDate.getTime() || filterMaxDate.getTime() !== criteriaMaxDate.getTime()) {
+    if (!compareDates(criteriaMinDate, filterMinDate) || !compareDates(criteriaMaxDate,filterMaxDate)) {
         return true;
     }
 
