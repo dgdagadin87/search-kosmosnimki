@@ -33,6 +33,10 @@
                 class="dialog-upload-button"
                 on:click="onApplyHandler()"
             >{translate('alerts.addToDrawings')}</button>
+            <button
+                on:click="onCancelHandler()"
+                class="dialog-cancel-button"
+            >{translate('alerts.cancel')}</button>
         {:else}
             <button
                 class="dialog-upload-button"

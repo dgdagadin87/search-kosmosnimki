@@ -189,6 +189,12 @@ const application = new Application({
         },
         {
             type: 'icon',
+            index: 'boxZoom',
+            constructor: BoxZoomUiElement,
+            mobile: false
+        },
+        {
+            type: 'icon',
             index: 'upload',
             constructor: UploadUiElement
         },
@@ -196,12 +202,6 @@ const application = new Application({
             type: 'icon',
             index: 'download',
             constructor: DownloadUiElement
-        },
-        {
-            type: 'icon',
-            index: 'boxZoom',
-            constructor: BoxZoomUiElement,
-            mobile: false
         },
         {
             type: 'widget',
