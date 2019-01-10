@@ -1,0 +1,97 @@
+<div class="upload-dialog">
+    <div class="header">
+        {drawingProps.length > 0 ? translate('alerts.addToDrawingsHeader') : translate('alerts.wrongDrawings')}
+    </div>
+    <div class="panel-content">
+        <div class="content">
+            <div class="item-header">
+                {fullItem['name']}
+            </div>
+            <div class="item-data">
+                {#each itemKeys as index}
+                    {#if typeof (fullItem[index]) !== 'object'}
+                        <div class="item-container">
+                            <input
+                                type="radio"
+                                class="item-radio"
+                                checked={index === selected}
+                                name="upload_radio_{fullItem[index]['itemId']}"
+                                value="{fullItem[index]}"
+                                on:change="onRadioChange(index)"
+                            />
+                            <span>{index}:</span>
+                            <span>{fullItem[index]}</span>
+                        </div>
+                    {/if}
+                {/each}
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        {#if drawingProps.length > 0}
+            <button
+                class="dialog-upload-button"
+                on:click="onApplyHandler()"
+            >{translate('alerts.addToDrawings')}</button>
+        {:else}
+            <button
+                class="dialog-upload-button"
+                on:click="onCancelHandler()"
+            >{translate('alerts.cancel')}</button>
+        {/if}
+    </div>
+</div>
+
+<script>
+
+    import Translations from 'scanex-translations';
+
+    export default {
+
+        data() {
+            return {
+                selectedIndex: null,
+                drawingProps: []
+            };
+        },
+
+        computed: {
+            firstProp: ({drawingProps}) => drawingProps.length > 0 ? drawingProps[0] : {},
+            fullItem: ({firstProp}) => {
+                const {itemId, geoJSON: {properties} = {}, name} = firstProp;
+                return { 'geometry': name, ...properties  };
+            },
+            itemKeys: ({fullItem}) => Object.keys(fullItem),
+            selected: ({selectedIndex, itemKeys}) => selectedIndex ? selectedIndex : itemKeys[0],
+            preparedData: ({drawingProps, selected}) => {
+                const correctIndex = selected === 'geometry' ? 'name' : selected;
+                return drawingProps.map(currentItem => {
+                    const {geoJSON: {properties = {}}} = currentItem;
+                    currentItem['selectedName'] = properties[correctIndex];
+                    return currentItem;
+                });
+            }
+        },
+
+        methods: {
+            onApplyHandler() {
+                const {preparedData = []} = this.get();
+                this.fire('apply', preparedData);
+            },
+            onCancelHandler() {
+                this.fire('cancel');
+            },
+            onRadioChange(selectedIndex) {
+                this.set({ selectedIndex });
+            }
+        },
+
+        helpers: {
+            translate(text) {
+                return Translations.getText(text);
+            }
+        }
+
+    }
+
+</script>

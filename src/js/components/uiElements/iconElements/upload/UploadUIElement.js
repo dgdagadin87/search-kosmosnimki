@@ -2,11 +2,11 @@ import Translations from 'scanex-translations';
 
 import BaseUIElement from 'js/base/BaseUIElement';
 
-import DialogComponent from './components/dialog/DialogComponent';
-
 import {MAX_UPLOAD_OBJECTS, MAX_UPLOAD_POINTS} from 'js/config/constants/Constants';
 
 import {getShapefileObject, getCoordinatesCount} from 'js/utils/CommonUtils';
+
+import UploadDialog from './dialogs/UploadDialog';
 
 
 export default class UploadUIElement extends BaseUIElement {
@@ -27,22 +27,10 @@ export default class UploadUIElement extends BaseUIElement {
         map.gmxControlsManager.add(this._view);
         map.addControl(this._view);
 
-        this.initChildren([
-            {
-                index: 'dialog',
-                constructor: DialogComponent
-            }
-        ]);
-
         this._bindEvents();
     }
 
-    _bindEvents() {
-
-        const dialogComponent = this.getChildComponent('dialog');
-
-        dialogComponent.events.on('click:apply', this._onApplyClick.bind(this));
-    }
+    _bindEvents() {}
 
     _onShowClick() {
 
@@ -65,7 +53,6 @@ export default class UploadUIElement extends BaseUIElement {
     _uploadHandler({type, results}) {
 
         const application = this.getApplication();
-        const dialogComponent = this.getChildComponent('dialog');
         const contourController = application.getBridgeController('contour');
 
         switch (type) {
@@ -80,7 +67,7 @@ export default class UploadUIElement extends BaseUIElement {
 
                     results.forEach((item, key) => drawingsProperties.push(getShapefileObject(item, key)));
 
-                    dialogComponent.show(drawingsProperties);
+                    this._showUploadDialog(drawingsProperties);
                 }
                 else {
                     const errorHeader = Translations.getText('errors.upload');
@@ -106,6 +93,24 @@ export default class UploadUIElement extends BaseUIElement {
                 break;
 
         }
+    }
+
+    _showUploadDialog(drawingProps = []) {
+
+        const application = this.getApplication();
+        const modalComponent = application.getModal();
+
+        modalComponent.show({
+            component: UploadDialog,
+            data: { drawingProps },
+            events: {
+                cancel: () => modalComponent.hide(),
+                apply: (data) => {
+                    modalComponent.hide();
+                    this._onApplyClick(data);
+                }
+            }
+        });
     }
 
     _errorHandler(e) {
