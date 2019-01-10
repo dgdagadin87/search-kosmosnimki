@@ -100,7 +100,7 @@ export default class UploadUIElement extends BaseUIElement {
         const application = this.getApplication();
         const modalComponent = application.getModal();
 
-        modalComponent.show({
+        modalComponent.show({showClose: true,
             component: UploadDialog,
             data: { drawingProps },
             events: {

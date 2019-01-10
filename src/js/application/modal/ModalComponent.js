@@ -1,5 +1,7 @@
 import Tingle from 'tingle.js';
 
+import Translations from 'scanex-translations';
+
 import BaseComponent from 'js/base/BaseComponent';
 
 import Message from './Message.html';
@@ -15,19 +17,34 @@ export default class ModalComponent extends BaseComponent {
             closeMethods: []
         });
 
-        modal.setContent('<div id="search-modal-container"></div>');
+        modal.setContent(
+            '<div id="search-modal-container">' +
+                '<i title="' + Translations.getText('alerts.close') + '" class="panel-icon-close" style="display:none;"></i>' +
+            '</div>'
+        );
 
         this._modal = modal;
+
+        this._bindEvents();
+    }
+
+    _bindEvents() {
+
+        const closeIcon = this._getCloseIcon();
+
+        closeIcon.addEventListener('click', () => this.hide());
     }
 
     show(options = {}) {
 
+        const closeIcon = this._getCloseIcon();
         const {
             component = 'error',
             headerText = '',
             messageText = '',
             events = {},
-            data = {}
+            data = {},
+            showClose = false
         } = options;
 
         let contentParams = {};
@@ -70,6 +87,12 @@ export default class ModalComponent extends BaseComponent {
             this._content = content;
         }
 
+        let closeState = 'none';
+        if (showClose) {
+            closeState = 'block'
+        }
+        closeIcon.style.display = closeState;
+
         this._modal.open();
     }
 
@@ -87,6 +110,12 @@ export default class ModalComponent extends BaseComponent {
     _getModalContainer() {
 
         return document.querySelector('#search-modal-container');
+    }
+
+    _getCloseIcon() {
+
+        const container = this._getModalContainer();
+        return container.querySelector('i.panel-icon-close');
     }
 
 }
