@@ -346,13 +346,12 @@ class ShapeLoader {
             })
             .then(response => {
 
-                application.showLoader(false);
-
                 const {Status: status, Result: result} = response;
 
                 switch(status) {
 
                     case 'ok':
+                        application.showLoader(false);
                         resolve({
                             type: 'shapefile',
                             results: result
@@ -360,8 +359,9 @@ class ShapeLoader {
                         break;
 
                     default:
-                        requestManager.requestIdLoader(this._shapeLoaderUrl, { method: 'POST', body: formData })
+                        requestManager.requestIdLoader(this._idLoaderUrl, { method: 'POST', body: formData })
                         .then (response => {
+                            application.showLoader(false);
                             this._removeFileInput();
                             return response.json();
                         })
@@ -380,6 +380,7 @@ class ShapeLoader {
                             }
                         })
                         .catch (e => {
+                            application.showLoader(false);
                             this._removeFileInput();
                             reject(e);
                         });
