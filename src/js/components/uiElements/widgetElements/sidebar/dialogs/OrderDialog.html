@@ -134,10 +134,14 @@
 
         oncreate() {
 
-            const link = this.refs.warningContainer.querySelector('.link');
-            const {permalink} = this.get();
-            
-            link.addEventListener('click', () => this.fire('warning', permalink));
+            const warningContainer = this.refs.warningContainer;
+
+            if (warningContainer) {
+
+                const link = this.refs.warningContainer.querySelector('.link');
+                const {permalink} = this.get();
+                link.addEventListener('click', () => this.fire('warning', permalink));
+            }
         },
 
         methods: {

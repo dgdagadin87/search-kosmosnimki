@@ -59,7 +59,8 @@ export default class CloudnessFilter extends EventTarget {
 
         if (this._cloudSlider) {
             const sliderContainer = this._cloudSlider._container;
-            sliderContainer.removeChild(sliderContainer.querySelector('.slider-widget-bar'));
+            const widgetBar = sliderContainer.querySelector('.slider-widget-bar')
+            if (widgetBar) sliderContainer.removeChild(widgetBar);
             sliderContainer.classList.remove('slider-widget');
             sliderContainer.classList.remove('no-select');
         }

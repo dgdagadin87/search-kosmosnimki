@@ -114,7 +114,8 @@ export default class DateFilter extends EventTarget {
 
         if (this._dateSlider) {
             const sliderContainer = this._dateSlider._container;
-            sliderContainer.removeChild(sliderContainer.querySelector('.slider-widget-bar'));
+            const widgetBar = sliderContainer.querySelector('.slider-widget-bar');
+            if (widgetBar) sliderContainer.removeChild(widgetBar);
             sliderContainer.classList.remove('slider-widget');
             sliderContainer.classList.remove('no-select');
         }
