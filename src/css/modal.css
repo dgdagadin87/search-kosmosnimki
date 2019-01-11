@@ -77,17 +77,17 @@
     cursor:pointer;
     position: absolute;
     top: 9px;
-    right: 5px;
+    right: 9px;
 }
 
-.upload-dialog .panel-body {
+.order-main-dialog .panel-body, .upload-dialog .panel-body {
     background-color: #eef2f5;
     font-family: 'Roboto', sans-serif;
     font-size: 14px;
     min-width: 250px;
     max-width: 350px;
 }
-.upload-dialog .header {
+.order-main-dialog .header, .upload-dialog .header {
     font-weight: bold;
     text-align: center;
     padding: 5px 10px 5px 10px;
@@ -117,7 +117,7 @@
 .upload-dialog .item-container span:last-child {
     color: #666666;
 }
-.upload-dialog .panel-footer {
+.order-main-dialog .panel-footer, .upload-dialog .panel-footer {
     text-align: center;
     padding: 10px;
 }

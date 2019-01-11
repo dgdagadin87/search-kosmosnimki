@@ -4,10 +4,11 @@ import BaseUIElement from 'js/base/BaseUIElement';
 
 import {
     RESULT_MAX_COUNT_PLUS_ONE,
-    ACCESS_USER_ROLE
+    ACCESS_USER_ROLE,
+    HOME_LINK
 } from 'js/config/constants/Constants';
 
-import {getTotalHeight} from 'js/utils/CommonUtils';
+import {getTotalHeight, getRootUrl} from 'js/utils/CommonUtils';
 
 import SearchTabComponent from './components/searchTab/SearchTabComponent';
 import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';
@@ -17,6 +18,7 @@ import ImageDetailsComponent from './components/imageDetails/ImageDetailsCompone
 import View from './view/View';
 
 import DownloadDialog from './dialogs/DownloadDialog';
+import OrderDialog from './dialogs/OrderDialog';
 
 
 export default class SidebarUIElement extends BaseUIElement {
@@ -88,7 +90,7 @@ export default class SidebarUIElement extends BaseUIElement {
         resutsListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         resutsListComponent.events.on('filter:change', (e) => contourController.changeClientFilter(e));
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
-        favoritesTabComponent.events.on('makeOrder:click', (e, bBox) => this._onMakeOrderClick(e, bBox));
+        favoritesTabComponent.events.on('makeOrder:click', () => this._showOrderDialog());
     }
 
     _onTabChangeHandler(e) {
@@ -181,6 +183,84 @@ export default class SidebarUIElement extends BaseUIElement {
         });
     }
 
+    _showOrderDialog() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const modalComponent = application.getModal();
+        const appStateManager = application.getAddon('appStateManager');
+
+        const showModal = data => {
+            modalComponent.show({
+                data,
+                showClose: true,
+                component: OrderDialog,
+                events: {
+                    login: () => this._onLoginButtonClick(),
+                    warning: (permalink) => this._onWarningClick(permalink)
+                }
+            });
+        };
+
+        const userInfo = store.getData('userInfo');
+        const isAuthed = this._isUserIsAuthenticated();
+        const selectedCarts = store.getSelectedFavorites();
+
+        if (selectedCarts.length < 1) {
+            return;
+        }
+
+        let orderData = { userInfo, isAuthed };
+
+        if (!isAuthed) {
+            showModal(orderData);
+            return;
+        }
+
+        appStateManager.getPermalinkId()
+        .then(result => {
+            orderData['permalink'] = `${getRootUrl()}?link=${result}`;
+            showModal(orderData);
+        })
+        .catch(e => this._errorHandler(e))
+    }
+
+    _onLoginButtonClick() {
+
+        const application = this.getApplication();
+        const appStateManager = application.getAddon('appStateManager');
+        const authContainer = document.getElementById('auth');
+        const loginButton = authContainer.querySelector('.authWidget-loginButton');
+
+        const currentAppState = appStateManager.getCurrentApplicationState();
+        const savedState = appStateManager.getAppStateFromLocalStorage();
+        if (!savedState) {
+            appStateManager.saveAppStateToLocalStorage(currentAppState);
+        }
+
+        loginButton.click();
+    }
+
+    _onWarningClick(permalink) {
+
+        const application = this.getApplication();
+        const appStateManager = application.getAddon('appStateManager');
+        const matches = /link=([^&]+)/g.exec(permalink);
+
+        if (Array.isArray (matches) && matches.length > 0) {
+            const permalinkId = matches[1];
+            appStateManager.readPermalink(permalinkId)
+            .then (response => {
+                appStateManager.saveAppStateToLocalStorage(response);
+                window.location = HOME_LINK;
+            })
+            .catch(error => window.console.error(error));
+        }
+        else {
+            window.console.error('Permalink not set:' + permalink);
+        }
+    }
+
     _isUserIsAuthenticated() {
 
         const application = this.getApplication();
@@ -217,14 +297,6 @@ export default class SidebarUIElement extends BaseUIElement {
 
         const imageDetailsComponent = this.getChildComponent('imageDetails');
         imageDetailsComponent.toggle(e, bBox);
-    }
-
-    _onMakeOrderClick(e) {
-
-        const application = this.getApplication();
-        const events = application.getServiceEvents();
-
-        events.trigger('makeOrder:click', e);
     }
 
     _cartLimitMessage() {
