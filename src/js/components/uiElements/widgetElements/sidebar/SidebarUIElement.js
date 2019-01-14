@@ -9,6 +9,7 @@ import {
 } from 'js/config/constants/Constants';
 
 import {getTotalHeight, getRootUrl} from 'js/utils/CommonUtils';
+import {getProperty} from 'js/application/searchDataStore/SearchDataStore';
 
 import SearchTabComponent from './components/searchTab/SearchTabComponent';
 import ResultsTabComponent from './components/resultsTab/ResultsTabComponent';
@@ -197,20 +198,29 @@ export default class SidebarUIElement extends BaseUIElement {
                 component: OrderDialog,
                 events: {
                     login: () => this._onLoginButtonClick(),
-                    warning: (permalink) => this._onWarningClick(permalink)
+                    warning: (permalink) => this._onWarningClick(permalink),
+                    submit: ({dataToSend, view}) => this._onSubmitClick(dataToSend, view),
+                    close: () => modalComponent.hide()
                 }
             });
         };
 
         const userInfo = store.getData('userInfo');
+        const inputValues = { ...userInfo, customer: '', project: '', number: '', comment: '' };
         const isAuthed = this._isUserIsAuthenticated();
+        const isInternal = this._isUserIsInternal();
         const selectedCarts = store.getSelectedFavorites();
 
         if (selectedCarts.length < 1) {
             return;
         }
 
-        let orderData = { userInfo, isAuthed };
+        let orderData = {
+            inputValues,
+            isAuthed,
+            isInternal,
+            items: selectedCarts.map(item => getProperty(item, 'sceneid')).join(',')
+        };
 
         if (!isAuthed) {
             showModal(orderData);
@@ -261,7 +271,40 @@ export default class SidebarUIElement extends BaseUIElement {
         }
     }
 
+    _onSubmitClick(data, dialogView) {
+
+        const application = this.getApplication();
+        const requestManager = application.getRequestManager();
+        
+        requestManager.requestCreateOrder(data)
+        .then(response => {
+
+            const {Status: status} = response;
+
+            if (status === 'ok') {                    
+                dialogView.showSuccess();
+            }
+            else {
+                alert('Error! Watch in console');
+                window.console.error(response);
+            }
+        })
+        .catch(error => {
+            alert('Error! Watch in console');
+            window.console.error(error);
+        });
+    }
+
     _isUserIsAuthenticated() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+        const userInfo = store.getData('userInfo');
+
+        return userInfo['IsAuthenticated'];
+    }
+
+    _isUserIsInternal() {
 
         const application = this.getApplication();
         const store = application.getStore();

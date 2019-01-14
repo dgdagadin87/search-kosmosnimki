@@ -76,9 +76,10 @@
 }
 .cart button {
     padding: 10px 45px 10px 45px;    
-    font-weight: bold;
+    font-weight: normal;
     margin-right: 20px;
-    border-radius: 6px;    
+    border-radius: 6px;
+    cursor: pointer;
 }
 .cart .cart-to-order, .cart .cart-order-submit{
     background-color: #3ca1d0;

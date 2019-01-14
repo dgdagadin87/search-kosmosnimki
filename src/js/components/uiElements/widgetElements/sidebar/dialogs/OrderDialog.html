@@ -11,125 +11,221 @@
     </div>
 </div>
 {:else}
-<div class="noselect order-main-dialog">
-    <div class="cart" style="border-radius:5px;">
-        <div
-            class="header"
-            style="padding-top:10px; font-size:16px; text-align:left;"
-        >{translate('cart.header')}</div>
-        <div class="cart-order">
-            <div class="cart-order-form">
-                <div
-                    ref:warningContainer
-                    class="cart-order-warning"
-                    style="text-align: center;"
-                >{@html translate('cart.warning', true)}</div>
-                <table>
-                    <tbody>
-                        <tr class="cart-customer">
-                            <td>
-                                <label>{translate('cart.customer')}</label>
-                            </td>
-                            <td>
-                                <input type="text" value="" />
-                            </td>
-                            <td>*</td>
-                        </tr>
-                        <tr class="cart-project">
-                            <td>
-                                <label>{translate('cart.project.name')}</label>
-                            </td>
-                            <td>
-                                <input type="text" value="" />
-                            </td>
-                            <td>*</td>
-                        </tr>
-                        <tr class="cart-project-type">
-                            <td>
-                                <label>{translate('cart.project.type.title')}</label>                                    
-                            </td>
-                            <td>
-                                <select>
-                                    <option value="commercial">{translate('cart.project.type.commercial')}</option>
-                                    <option value="internal">{translate('cart.project.type.internal')}</option>
-                                    <option value="presale">{translate('cart.project.type.presale')}</option>
-                                </select>                                  
-                            </td>
-                            <td>*</td>
-                        </tr>
-                        <tr class="cart-project-number">
-                            <td>
-                                <label>{translate('cart.project.number')}</label>
-                            </td>
-                            <td>
-                                <input type="text" class="cart-project-number" value="" />
-                            </td>
-                            <td>*</td>
-                        </tr>
-                        <tr class="cart-person">
-                            <td>
-                                <label>{translate('cart.person')}</label>
-                            </td>
-                            <td>
-                                <input type="text" value="{userInfo['FullName']}" />
-                            </td>
-                            <td>*</td>
-                        </tr>
-                        <tr class="cart-company">
-                            <td>
-                                <label>{translate('cart.company')}</label>
-                            </td>
-                            <td>
-                                <input type="text" readonly value="{userInfo['Organization']}" />
-                            </td>
-                            <td></td>
-                        </tr>
-                        <tr class="cart-email">
-                            <td>
-                                <label>{translate('cart.email')}</label>
-                            </td>
-                            <td>
-                                <input type="text" value="{userInfo['Email']}" />
-                            </td>
-                            <td>*</td>
-                        </tr>
-                        <tr class="cart-comment">
-                            <td>
-                                <label>{translate('cart.comment')}</label>
-                            </td>
-                            <td>                            
-                                <textarea maxlength="1000"></textarea>
-                            </td>
-                            <td>                                
-                            </td>
-                        </tr>                  
-                    </tbody>
-                </table>                
-            </div>
-            <div class="cart-order-footer">                
-                <button class="cart-order-submit">{translate('cart.submit')}</button>
+    {#if !isSuccess}
+    <div class="noselect order-main-dialog">
+        <div class="cart" style="border-radius:5px;">
+            <div
+                class="header"
+                style="padding-top:10px; font-size:16px; text-align:left;"
+            >{translate('cart.header')}</div>
+            <div class="cart-order">
+                <div class="cart-order-form">
+                    <div
+                        ref:warningContainer
+                        class="cart-order-warning"
+                        style="text-align: center;"
+                    >{@html translate('cart.warning', true)}</div>
+                    <table>
+                        <tbody>
+                            <tr class="cart-customer">
+                                <td>
+                                    <label>{translate('cart.customer')}</label>
+                                </td>
+                                <td>
+                                    <input
+                                        disabled={isLoading}
+                                        type="text"
+                                        class="{inputErrors['customer'] ? 'invalid-field' : ''}"
+                                        value="{inputValues['customer']}"
+                                        on:keyup="onTextInputChange(event, 'customer')"
+                                    />
+                                </td>
+                                <td>{isInternal ? '*' : ''}</td>
+                            </tr>
+                            {#if isInternal}
+                            <tr class="cart-project">
+                                <td>
+                                    <label>{translate('cart.project.name')}</label>
+                                </td>
+                                <td>
+                                    <input
+                                        disabled={isLoading}
+                                        type="text"
+                                        class="{inputErrors['project'] ? 'invalid-field' : ''}"
+                                        value="{inputValues['project']}"
+                                        on:keyup="onTextInputChange(event, 'project')"
+                                    />
+                                </td>
+                                <td>*</td>
+                            </tr>
+                            <tr class="cart-project-type">
+                                <td>
+                                    <label>{translate('cart.project.type.title')}</label>
+                                </td>
+                                <td>
+                                    <select bind:value='cartType' disabled={isLoading}>
+                                        <option value="commercial">{translate('cart.project.type.commercial')}</option>
+                                        <option value="internal">{translate('cart.project.type.internal')}</option>
+                                        <option value="presale">{translate('cart.project.type.presale')}</option>
+                                    </select>
+                                </td>
+                                <td>*</td>
+                            </tr>
+                            <tr class="cart-project-number">
+                                <td>
+                                    <label>{translate('cart.project.number')}</label>
+                                </td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        disabled={isLoading}
+                                        class="cart-project-number {cartType !== 'commercial' ? 'read-only' : ''} {inputErrors['number'] ? 'invalid-field' : ''}"
+                                        value="{inputValues['number']}"
+                                        readonly={cartType !== 'commercial'}
+                                        on:keyup="onTextInputChange(event, 'number')"
+                                    />
+                                </td>
+                                <td>{cartType === 'commercial' ? '*' : ''}</td>
+                            </tr>
+                            {/if}
+                            <tr class="cart-person">
+                                <td>
+                                    <label>{translate('cart.person')}</label>
+                                </td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        disabled={isLoading}
+                                        class="{inputErrors['FullName'] ? 'invalid-field' : ''}"
+                                        value="{inputValues['FullName']}"
+                                        on:keyup="onTextInputChange(event, 'FullName')"
+                                    />
+                                </td>
+                                <td>*</td>
+                            </tr>
+                            {#if isInternal}
+                            <tr class="cart-company">
+                                <td>
+                                    <label>{translate('cart.company')}</label>
+                                </td>
+                                <td>
+                                    <input type="text" readonly value="{inputValues['Organization']}" />
+                                </td>
+                                <td />
+                            </tr>
+                            {/if}
+                            <tr class="cart-email">
+                                <td>
+                                    <label>{translate('cart.email')}</label>
+                                </td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        disabled={isLoading}
+                                        class="{inputErrors['Email'] ? 'invalid-field' : ''}"
+                                        value="{inputValues['Email']}"
+                                        on:keyup="onTextInputChange(event, 'Email')"
+                                    />
+                                </td>
+                                <td>*</td>
+                            </tr>
+                            <tr class="cart-comment">
+                                <td>
+                                    <label>{translate('cart.comment')}</label>
+                                </td>
+                                <td>
+                                    <textarea
+                                        disabled={isLoading}
+                                        maxlength="1000"
+                                        on:change="onTextInputChange(event, 'comment')"
+                                    >{inputValues['comment']}</textarea>
+                                </td>
+                                <td />
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="cart-order-footer">
+                    <button
+                        disabled={!isButtonValid || isLoading}
+                        class="cart-order-submit {!isButtonValid || isLoading ? 'button-disabled' : ''}"
+                        on:click="onSubmitClick()"
+                    >{translate('cart.submit')}</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    {:else}
+    <div class="auth-dialog">
+        <div class="dialog-content" style="color:#8394a8; text-align: left;">
+            <div>{translate('cart.success.header')}</div>
+            <div>{translate('cart.success.content')}</div>
+            <div>{translate('cart.success.footer')}</div>
+        </div>
+        <div class="dialog-footer" style="padding-bottom:25px;">
+            <button
+                on:click="onCloseHandler()"
+                class="dialog-login-button"
+            >{translate('alerts.close')}</button>
+        </div>
+    </div>
+    {/if}
 {/if}
 
 <script>
 
     import Translations from 'scanex-translations';
 
+    const isInternalRestricted = ['Email', 'FullName', 'project', 'number', 'customer'];
+    const defaultRestricted = ['Email', 'FullName'];
+
     export default {
 
         data() {
             return {
-                userInfo: {},
                 permalink: '',
+                items: '',
                 isAuthed: false,
+                isInternal: false,
                 isLoading: false,
                 isSuccess: false,
                 hasError: false,
-                errorText: ''
+                errorText: '',
+
+                inputValues: {
+                    FullName: '',
+                    Organization: '',
+                    Email: '',
+                    customer: '',
+                    project: '',
+                    number: '',
+                    comment: ''
+                },
+                cartType: 'commercial',
+
+                inputErrors: {
+                    FullName: false,
+                    Email: false,
+                    customer: false,
+                    project: false,
+                    number: false
+                }
             };
+        },
+
+        computed: {
+            isButtonValid: ({isInternal, inputValues}) => {
+                const {Email = '', FullName = '', project = '', number = '', customer = ''} = inputValues;
+
+                if (isInternal) {
+                    return Boolean(Email && FullName && project && number && customer);
+                }
+                else {
+                    return Boolean(Email && FullName);
+                }
+
+                return false;
+            }
         },
 
         oncreate() {
@@ -147,16 +243,102 @@
         methods: {
             onLoginHandler() {
                 this.fire('login');
+            },
+
+            onCloseHandler() {
+                this.fire('close');
+            },
+
+            onTextInputChange(ev, fieldName) {
+
+                const {isInternal, inputValues = {}, inputErrors = {}, cartType = 'commercial'} = this.get();
+                const restrictedFields = isInternal ? isInternalRestricted : defaultRestricted;
+                const {target: {value}} = ev;
+
+                let dataForSet = {inputValues: { ...inputValues }, inputErrors: { ...inputErrors }};
+
+                dataForSet['inputValues'][fieldName] = value;
+
+                if (restrictedFields.indexOf(fieldName) !== -1 && !Boolean(value)) {
+                    if (fieldName !== 'number') {
+                        dataForSet['inputErrors'][fieldName] = true;
+                    }
+                    else {
+                        dataForSet['inputErrors']['number'] = cartType === 'commercial';
+                    }
+                }
+                else {
+                    dataForSet['inputErrors'][fieldName] = false;
+                }
+
+                this.set(dataForSet);
+            },
+
+            onSubmitClick() {
+
+                const {isButtonValid} = this.get();
+
+                if (!isButtonValid) {
+                    return;
+                }
+
+                this.set({ isLoading: true });
+
+                const dataToSend = this.getSendData();
+
+                this.fire('submit', {dataToSend, view: this});
+            },
+
+            showSuccess() {
+
+                this.set({ isSuccess: true, isLoading: false });
+            },
+
+            getSendData() {
+
+                const {permalink, inputValues, isInternal, items, cartType} = this.get();
+                const projectType = this.getProjectType(isInternal ?  cartType : 'commercial');
+
+                const dataToSend = {
+                    TinyReference: permalink,
+                    ReceiveWay: '',
+                    Customer: inputValues['customer'],
+                    Project: isInternal ? inputValues['project'] : '',
+                    ProjectType: projectType,
+                    ContractNumber: isInternal ? inputValues['number'] : '',
+                    Name: '',
+                    Surname: inputValues['FullName'],
+                    Organization: isInternal ? inputValues['Organization'] : '',
+                    Email: inputValues['Email'],
+                    Phone: '',
+                    Comment: inputValues['comment'],
+                    Scenes: items,
+                    Internal: isInternal,
+                };
+                
+                return dataToSend;
+            },
+
+            getProjectType (type) {
+
+                switch (type) {
+                    case 'commercial':
+                        return 'К';
+                    case 'internal':
+                        return 'ВН';
+                    case 'presale':
+                        return 'ПС';
+                    default:
+                        throw 'unknown project type';
+                }
             }
         },
 
         helpers: {
             translate(text, replaceBreaks = false) {
-
                 if (replaceBreaks) {
                     return Translations.getText(text).replace(/\r\n/, '<br />');
                 }
-
                 return Translations.getText(text);
             }
         }
