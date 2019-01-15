@@ -35,9 +35,6 @@ import '../../../css/makeOrder.css';
 // scanex-auth
 import 'scanex-auth/dist/scanex-auth.css';
 
-// floating-panel
-import 'scanex-float-panel/dist/scanex-float-panel.css';
-
 // scanex-lang-widget
 import 'scanex-lang-widget/dist/scanex-lang-widget.css';
 

@@ -50,7 +50,6 @@
     "scanex-color-picker": "git+https://github.com/Scanex/ColorPicker.git",
     "scanex-datagrid": "git+https://github.com/Scanex/DataGrid.git",
     "scanex-event-target": "git+https://github.com/Scanex/EventTarget.git",
-    "scanex-float-panel": "git+https://github.com/Scanex/FloatingPanel.git",
     "scanex-lang-widget": "git+https://github.com/Scanex/LanguageWidget.git",
     "scanex-leaflet-sidebar": "git+https://github.com/Scanex/Leaflet.Sidebar.git",
     "scanex-loader-widget": "git+https://github.com/Scanex/LoaderWidget.git",
