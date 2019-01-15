@@ -1,5 +1,6 @@
 .results-header {
     padding: 15px;
+    padding-bottom: 0;
     font-family: 'Roboto', sans-serif;
     font-size: 14px;
     font-weight: 500;

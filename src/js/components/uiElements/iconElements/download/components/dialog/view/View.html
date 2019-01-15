@@ -1,0 +1,82 @@
+<div class="dialog-download" style="top: 45px; left: 475px; display:{isHidden?'none':'block'};">
+    <table border="0" cellspacing="0" cellpadding="0">
+        <tbody>
+            <tr>
+                <td class="download-type">{translate('download.type')}</td>
+                <td>
+                    <select bind:value='downloadType'>
+                        <option value="borders">{translate('download.borders')}</option>
+                        <option value="results">{translate('download.results')}</option>
+                        <option value="rcsv">{translate('download.rcsv')}</option>
+                        <option value="cart">{translate('download.cart')}</option>
+                        <option value="ccsv">{translate('download.ccsv')}</option>
+                        <option value="quicklooks">{translate('download.quicklooks')}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="download-file">{translate('download.file')}</td>
+                <td>
+                    <input type="text" bind:value='fileName' />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="download-footer">
+                    <button on:click="onApplyHandler()" class="download-ok">{translate('download.ok')}</button>
+                    <button on:click="onCancelHandler()" class="download-cancel">{translate('download.cancel')}</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    import Translations from 'scanex-translations';
+
+    export default {
+
+        data() {
+            return {
+                isHidden: true,
+                downloadType: 'borders',
+                fileName: Translations.getText('download.noname')
+            };
+        },
+
+        methods: {
+
+            onCancelHandler() {
+                this.fire('cancel');
+            },
+
+            onApplyHandler() {
+                this.fire('apply');
+            },
+
+            getType() {
+                return this.get()['downloadType'];
+            },
+
+            getName() {
+                return this.get()['fileName'];
+            },
+
+            show() {
+                this.set({ isHidden: false });
+            },
+
+            hide() {
+                this.set({ isHidden: true });
+            }
+        },
+
+        helpers: {
+            translate(text) {
+                return Translations.getText(text);
+            }
+        }
+
+    }
+
+</script>

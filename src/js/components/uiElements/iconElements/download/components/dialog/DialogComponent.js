@@ -1,23 +1,27 @@
 import BaseComponent from 'js/base/BaseComponent';
 
-import View from './view/View';
+import { createContainer } from 'js/utils/CommonUtils';
+
+import View from './view/View.html';
 
 
 export default class DialogComponent extends BaseComponent {
 
     init() {
 
-        const application = this.getApplication();
-
-        this._view = new View(application, this.events);
+        this._view = new View({
+            target: createContainer()
+        })
 
         this._binEvents();
     }
 
     _binEvents() {
 
-        this.events.on('apply', () => this.events.trigger('click:apply'));
-        this.events.on('cancel', () => this.events.trigger('click:cancel'));
+        const view = this.getView();
+
+        view.on('apply', () => this.events.trigger('click:apply'));
+        view.on('cancel', () => this.events.trigger('click:cancel'));
     }
 
     show() {
