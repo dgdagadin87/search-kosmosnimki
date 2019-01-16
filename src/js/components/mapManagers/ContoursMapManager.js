@@ -92,7 +92,7 @@ export default class DrawingsMapManager extends BaseMapManager {
         const store = application.getStore();
         const currentTab = store.getMetaItem('currentTab');
 
-        const contours = store[(currentTab === 'search' ? 'getResults' : 'getFavorites')]();
+        const contours = store[(currentTab === 'search' || !currentTab ? 'getResults' : 'getFavorites')]();
         const contoursProperties = contours.map(({properties}) => properties);
 
         if (contoursProperties.length < 1) {
