@@ -4,7 +4,7 @@ import Pikaday from 'pikaday';
 
 import ExtendedSliderWidget from './ExtendedDateSliderWidget';
 
-import {getDifferenceBetweenDates, compareDates} from 'js/utils/CommonUtils';
+import {getDifferenceBetweenDates, compareDates, getNowDate} from 'js/utils/CommonUtils';
 
 const T = Translations;
 
@@ -22,7 +22,7 @@ export default class DateFilter extends EventTarget {
         this._setClientFilter = setClientFilter;
         this._closeAll = closeAll;
 
-        const now = new Date();
+        const now = getNowDate();
 
         this._minMaxValues = [now, now];
         this._values = false;
@@ -310,6 +310,7 @@ export default class DateFilter extends EventTarget {
                 target.classList.remove('active');
                 filterContainer.style.visibility = 'hidden';
                 const [minValue, maxValue] = this._getValues();
+                this._dateSlider.setValues(this._getValues());
                 this._startDate.setDate(minValue);
                 this._endDate.setDate(maxValue);
             }
@@ -347,12 +348,6 @@ export default class DateFilter extends EventTarget {
         togglableContent.style.visibility = 'hidden';
 
         this._setValues([minValue, maxValue]);
-
-        /*this._setClientFilter([minValue, maxValue]);
-
-        let event = document.createEvent('Event');
-        event.initEvent('clientFilter:apply', false, false);
-        this.dispatchEvent(event);*/
     }
 
     _getValues() {

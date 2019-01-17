@@ -13,6 +13,17 @@ export default class ImageDetailsComponent extends BaseComponent {
             createContainer(),
             { left: 600, top: 300 }
         );
+
+        this._bindEvents();
+    }
+
+    _bindEvents() {
+
+        const application = this.getApplication();
+        const store = application.getStore();
+
+        store.on('currentTab:changeAfter', () => this.hide());
+        store.on('clientFilter:changeList', () => this.hide());
     }
 
     toggle(e, bBox) {
@@ -32,6 +43,15 @@ export default class ImageDetailsComponent extends BaseComponent {
             view.item = item;                
             view.show({left: left + width + 20, top});
         }
+
+        
+    }
+    
+    hide() {
+
+        const view = this.getView();
+
+        view.hide();
     }
 
 }

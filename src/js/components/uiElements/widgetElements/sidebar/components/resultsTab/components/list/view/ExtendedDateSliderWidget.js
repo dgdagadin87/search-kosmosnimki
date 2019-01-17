@@ -109,4 +109,12 @@ export default class ExtendedSliderWidget extends SliderWidget {
         this._hi = this.options.min + (hi * k) > this.options.max ? this.options.max : this.options.min + (hi * k);
     }
 
+    setValues(values) {
+
+        this.values = values;
+
+        this._leftInput.value = values[0];
+        this._rightInput.value = values[1];
+    }
+
 }

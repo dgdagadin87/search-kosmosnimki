@@ -383,9 +383,12 @@ export default class SidebarUIElement extends BaseUIElement {
         const application = this.getApplication();
         const store = application.getStore();
         const sidebar = this.getView();
+        const imageDetailsComponent = this.getChildComponent('imageDetails');
     
         const hasResultData = store.hasResults();
         const hasFavoritesData = store.hasFavorites();
+
+        imageDetailsComponent.hide();
     
         if (state === 'start') {
             sidebar.disable('results');

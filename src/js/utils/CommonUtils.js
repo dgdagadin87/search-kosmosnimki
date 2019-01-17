@@ -158,7 +158,7 @@ function createDefaultCriteria() {
         }
     };
 
-    const now = new Date();
+    const now = getNowDate();
 
     const dateStart = new Date(now.getFullYear(), 0, 1);
     const dateEnd = now;
@@ -181,7 +181,7 @@ function createDefaultCriteria() {
 
 function createDefaultFilter() {
 
-    const now = new Date();
+    const now = getNowDate();
     const dateStart = new Date(now.getFullYear(), 0, 1);
     const dateEnd = now;
 
@@ -708,6 +708,14 @@ function prepareDate(date) {
     return preparedDate;
 }
 
+function getNowDate() {
+
+    let now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    return now;
+}
+
 export {
     hex,
     unHex,
@@ -745,5 +753,6 @@ export {
     getRootUrl,
     getDifferenceBetweenDates,
     compareDates,
-    prepareDate
+    prepareDate,
+    getNowDate
 };

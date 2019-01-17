@@ -5,7 +5,7 @@
 
     import Pikaday  from 'pikaday';
     import Translations from 'scanex-translations';
-    import {compareDates} from 'js/utils/CommonUtils';
+    import {compareDates, getNowDate} from 'js/utils/CommonUtils';
 
     const LANGUAGE = 'rus';
 
@@ -13,7 +13,7 @@
 
         data () {
             return {
-                date: new Date(),
+                date: getNowDate(),
                 mode: 'from'
             };
         },
