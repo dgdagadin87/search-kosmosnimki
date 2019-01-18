@@ -112,6 +112,14 @@ export default class DrawingsMapManager extends BaseMapManager {
 
     _redrawContours() {
 
+        const application = this.getApplication();
+        const store = application.getStore();
+        const currentTab = store.getMetaItem('currentTab');
+
+        if (!currentTab) {
+            return;
+        }
+
         this._vectorLayer.repaint();
     }
 
