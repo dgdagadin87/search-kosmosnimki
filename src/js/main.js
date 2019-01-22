@@ -22,7 +22,6 @@ import PopupNotificationUiElement from './components/uiElements/customElements/p
 import HelpButtonUiElement from './components/uiElements/customElements/helpButton/HelpButtonUiElement';
 import AuthInformationUiElement from './components/uiElements/customElements/authInformation/AuthInformationUiElement';
 import LanguageSelectUiElement from './components/uiElements/customElements/languageSelect/LanguageSelectUiElement';
-//import OrderCreatorUiElement from './components/uiElements/customElements/orderCreator/OrderCreatorUiElement';
 
 import PointUiElement from './components/uiElements/iconElements/point/PointUiElement';
 import PolylineUiElement from './components/uiElements/iconElements/polyline/PolylineUiElement';
@@ -154,11 +153,6 @@ const application = new Application({
             index: 'languageSelect',
             constructor: LanguageSelectUiElement
         },
-        /*{
-            type: 'custom',
-            index: 'orderCreator',
-            constructor: OrderCreatorUiElement
-        },*/
         {
             type: 'icon',
             index: 'point',
