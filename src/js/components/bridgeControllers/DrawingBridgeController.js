@@ -90,9 +90,9 @@ export default class DrawingBridgeController extends BaseBridgeController {
         let idsList = [];
 
         items.forEach(item => {
-            const {selectedName, color, editable, visible, geoJSON: {geometry, properties}} = item;
+            const {name, selectedName, color, editable, visible, geoJSON: {geometry, properties}} = item;
             const itemId = this.addDrawingOnMapAndList({
-                name: selectedName,
+                name: selectedName ? selectedName : name,
                 color,
                 geoJSON: {type: 'Feature', properties, geometry},
                 visible,
