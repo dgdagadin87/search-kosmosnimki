@@ -164,11 +164,11 @@ class ResultList extends EventTarget {
                             break;
                         case 'PHR1A':
                         case 'PHR-1A':
-                            satelliteName = 'Pléiades-1A';
+                            satelliteName = 'Pléiades-1A' + (item.islocal ? ' (L)': '');
                             break;
                         case 'PHR1B':
                         case 'PHR-1B':
-                            satelliteName = 'Pléiades-1B';
+                            satelliteName = 'Pléiades-1B' + (item.islocal ? ' (L)': '');
                             break;
                         default:
                             satelliteName = `${getSatelliteName(item.platform)}${item.islocal ? ' (L)': ''}`;
