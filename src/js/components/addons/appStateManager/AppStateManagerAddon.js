@@ -180,7 +180,7 @@ class AppStateManager {
         // search criteria
         const searchCriteria = store.getData('searchCriteria');
         const stateCriteria = state['searchCriteria'];
-        const {archive, date: [dateStart, dateEnd], annually, angle, clouds, stereo, satellites} = stateCriteria;
+        const {archive = 'global', date: [dateStart, dateEnd], annually, angle, clouds, stereo, satellites} = stateCriteria;
 
         const dates = [moment(dateStart).toDate(), moment(dateEnd).toDate()];
 

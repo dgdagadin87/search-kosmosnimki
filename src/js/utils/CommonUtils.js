@@ -174,6 +174,7 @@ function createDefaultCriteria() {
         resolution: [0.3, 20],
         satellites: satellites,
         stereo: false,
+        archive: 'global'
     };
 
     return defaultCriteria;
