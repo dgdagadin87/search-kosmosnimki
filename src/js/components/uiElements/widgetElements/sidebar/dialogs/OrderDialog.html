@@ -214,11 +214,12 @@
         },
 
         computed: {
-            isButtonValid: ({isInternal, inputValues}) => {
+            isButtonValid: ({isInternal, inputValues, cartType}) => {
                 const {Email = '', FullName = '', project = '', number = '', customer = ''} = inputValues;
 
                 if (isInternal) {
-                    return Boolean(Email && FullName && project && number && customer);
+                    const isProjectNumber = cartType !== 'commercial' ? true : number;
+                    return Boolean(Email && FullName && project && isProjectNumber && customer);
                 }
                 else {
                     return Boolean(Email && FullName);
