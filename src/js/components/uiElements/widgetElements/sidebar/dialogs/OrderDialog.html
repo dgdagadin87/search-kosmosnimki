@@ -38,6 +38,7 @@
                                         class="{inputErrors['customer'] ? 'invalid-field' : ''}"
                                         value="{inputValues['customer']}"
                                         on:keyup="onTextInputChange(event, 'customer')"
+                                        on:paste="onTextInputPaste(event, 'customer')"
                                     />
                                 </td>
                                 <td>{isInternal ? '*' : ''}</td>
@@ -54,6 +55,7 @@
                                         class="{inputErrors['project'] ? 'invalid-field' : ''}"
                                         value="{inputValues['project']}"
                                         on:keyup="onTextInputChange(event, 'project')"
+                                        on:paste="onTextInputPaste(event, 'project')"
                                     />
                                 </td>
                                 <td>*</td>
@@ -83,6 +85,7 @@
                                         value="{inputValues['number']}"
                                         readonly={cartType !== 'commercial'}
                                         on:keyup="onTextInputChange(event, 'number')"
+                                        on:paste="onTextInputPaste(event, 'number')"
                                     />
                                 </td>
                                 <td>{cartType === 'commercial' ? '*' : ''}</td>
@@ -99,6 +102,7 @@
                                         class="{inputErrors['FullName'] ? 'invalid-field' : ''}"
                                         value="{inputValues['FullName']}"
                                         on:keyup="onTextInputChange(event, 'FullName')"
+                                        on:paste="onTextInputPaste(event, 'FullName')"
                                     />
                                 </td>
                                 <td>*</td>
@@ -125,6 +129,7 @@
                                         class="{inputErrors['Email'] ? 'invalid-field' : ''}"
                                         value="{inputValues['Email']}"
                                         on:keyup="onTextInputChange(event, 'Email')"
+                                        on:paste="onTextInputPaste(event, 'Email')"
                                     />
                                 </td>
                                 <td>*</td>
@@ -137,7 +142,8 @@
                                     <textarea
                                         disabled={isLoading}
                                         maxlength="1000"
-                                        on:change="onTextInputChange(event, 'comment')"
+                                        on:keyup="onTextInputChange(event, 'comment')"
+                                        on:paste="onTextInputPaste(event, 'comment')"
                                     >{inputValues['comment']}</textarea>
                                 </td>
                                 <td />
@@ -273,6 +279,10 @@
                 }
 
                 this.set(dataForSet);
+            },
+
+            onTextInputPaste(ev, fieldName) {
+               setTimeout( () => this.onTextInputChange(ev, fieldName), 0);
             },
 
             onSubmitClick() {
