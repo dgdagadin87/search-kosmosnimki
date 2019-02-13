@@ -84,7 +84,7 @@ const QUICKLOOK = {
     height: 600
 };
 
-const PANCHROME_IDS = ['WV01', 'RP_PC', 'SP5_5PC', 'EROSB', 'EROSA'];
+const PANCHROME_IDS = [/*'WV01',*/ 'RP_PC', 'SP5_5PC', 'EROSB', 'EROSA'];
 
 export {
     HOME_LINK,

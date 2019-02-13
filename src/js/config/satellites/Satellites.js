@@ -295,7 +295,8 @@ const satellites = {
     ms: [
         new DG({id: 'WV04', platforms: ['WV04'], name: 'WorldView-4', resolution: 0.3, swath: 13.2, since: '2016'}),
         new DG({id: 'WV03', platforms: ['WV03'], name: 'WorldView-3', resolution: 0.3, swath: 13.1, since: '2014'}),
-        new DG({id: 'WV02', platforms: ['WV02'], name: 'WorldView-2', resolution: 0.4, swath: 16.4, since: '2009'}),        
+        new DG({id: 'WV02', platforms: ['WV02'], name: 'WorldView-2', resolution: 0.4, swath: 16.4, since: '2009'}),
+        new DG({id: 'WV01', platforms: ['WV01'], name: 'WorldView-1', resolution: 0.5, swath: 17.6, since: '2007'}),
         new DG({id: 'GE01', platforms: ['GE01'], name: 'GeoEye-1', resolution: 0.4, swath: 15.2, since: '2008'}),
         new PHR(),
         new DG({id: 'QB02', platforms: ['QB02'], name: 'QuickBird', resolution: 0.5, swath: 16.5, since: '2001 - 2015', endingDate: '2015'}),
@@ -323,7 +324,7 @@ const satellites = {
         new SP67_P(),
     ],
     pc: [
-        new DG({id: 'WV01', platforms: ['WV01'], name: 'WorldView-1', resolution: 0.5, swath: 17.6, since: '2007'}),
+        //new DG({id: 'WV01', platforms: ['WV01'], name: 'WorldView-1', resolution: 0.5, swath: 17.6, since: '2007'}),
         new EROS({id: 'EROSB', platforms: ['EROS-B'], name: 'EROS B', resolution: 0.7, swath: 7, since: '2006'}),        
         new RP_PC(),
         new EROS({id: 'EROSA', platforms: ['EROS-A1'], name: 'EROS A', resolution: 1.9, swath: 14, since: '2000'}),
