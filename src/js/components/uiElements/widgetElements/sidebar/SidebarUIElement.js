@@ -82,6 +82,7 @@ export default class SidebarUIElement extends BaseUIElement {
         globalEvents.on('system:window:resize', () => this._resizeSidebar());
         globalEvents.on('system:uiElements:created', () => this._resizeSidebar());
         serviceEvents.on('sidebar:cart:limit', () => this._cartLimitMessage());
+        serviceEvents.on('permalink:searchResults', () => this._searchResults());
         serviceEvents.on('sidebar:setCurrentTab', (tab) => this._manageTabState('applyAppState', tab));
 
         searchTabComponent.events.on('searchButton:click', () => this._searchResults());

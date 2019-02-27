@@ -61,13 +61,13 @@ class AppStateManager {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
     }
 
-    getPermalinkId() {
+    getPermalinkId(searchMode = false) {
 
         return new Promise((resolve, reject) => { 
 
             const application = this.getApplication();
             const requestManager = application.getRequestManager();
-            const currentState = this.getCurrentApplicationState();
+            const currentState = this.getCurrentApplicationState(searchMode);
             const content = JSON.stringify(currentState);
 
             requestManager.requestCreatePermalink({ content })
@@ -110,7 +110,7 @@ class AppStateManager {
         });
     }
 
-    getCurrentApplicationState() {
+    getCurrentApplicationState(searchMode = false) {
 
         const serialize = group => group.filter(s => s.checked).map(s => s.id);
         const application = this.getApplication();
@@ -139,6 +139,7 @@ class AppStateManager {
         let cadastre = {};
 
         return {
+            searchMode,
             lang: language,
             drawingObjects,
             position: {
@@ -169,6 +170,8 @@ class AppStateManager {
         const serviceEvents = application.getServiceEvents();
         const drawingController = application.getBridgeController('drawing');
         const contourController = application.getBridgeController('contour');
+
+        const {searchMode = false} = state;
 
         // remove from local storage
         this.removeAppStateFromLocalStorage();
@@ -215,7 +218,7 @@ class AppStateManager {
                 const visibleValue = ['visible', 'failed'].indexOf(rawVisibleValue) !== -1 ? 'visible' : rawVisibleValue;
                 contours[gmxId]['visible'] = visibleValue;
             }
-    
+
             return contours;
         }, {});
 
@@ -286,6 +289,10 @@ class AppStateManager {
 
         contourController.clearContoursOnResults();
         contourController.addContoursOnMapAndList({fields, values, types}, true);
+
+        if (searchMode) {
+            serviceEvents.trigger('permalink:searchResults');
+        }
 
         serviceEvents.trigger('sidebar:setCurrentTab', state.activeTabId);
 
