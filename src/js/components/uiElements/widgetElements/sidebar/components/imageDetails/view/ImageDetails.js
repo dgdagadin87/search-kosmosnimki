@@ -68,21 +68,25 @@ class ImageDetails extends EventTarget {
         this.dispatchEvent(event);
     }
     set item (value) {
-        this._item = value;        
+        this._item = value;
         this._container.innerHTML =
-        `<table>
+        `<i title="Закрыть" class="panel-icon-close" style="top:0px;right:0px;"></i>
+        <table>
             <tbody>
                 <tr>
                     <td class="image-info-id-label">ID:</td>
                     <td class="image-info-id-value">${this._item.sceneid}</td>
                 </tr>
-                <tr>                    
+                <tr>
                     <td class="image-info-id-label" colspan="2">
                         <a href="${this._item.url}" target="_blank">${Translations.getText('quicklook')}</a>
                     </td>
                 </tr>
             </tbody>
-        </table>`;         
+        </table>`;
+
+        const clickIcon = this._container.querySelector('.panel-icon-close');
+        clickIcon.addEventListener('click', () => this.hide());
     }
     get item () {
         return this._item;

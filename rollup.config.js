@@ -48,12 +48,12 @@ export default [
             ]),
             babel(),
             //uglify(),
-            /*serve({
+            serve({
                 contentBase:['', 'dist'],
                 host: 'localhost',
                 port: 8080,
             }),
-            livereload()*/
+            livereload()
         ]
     },
     {
