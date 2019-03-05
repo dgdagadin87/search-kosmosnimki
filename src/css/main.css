@@ -413,8 +413,8 @@ html, body {
 }
 
 .iconlayers-legend {
-    width: 238px;
-    height: 83px;
+    width: 271px;
+    height: 101px;
     background-image: url('img/legend.png');
     position: absolute;
     bottom:125px;
