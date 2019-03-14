@@ -87,8 +87,8 @@ class KOMPSAT extends Satellite {
 }
 
 class SpaceView extends Satellite {
-    constructor({id, platforms, name, resolution, swath, arity, since}){
-        super({id, platforms, name, resolution, swath, operator: Translations.getText('operator.spaceview'), arity, since, restricted: true});
+    constructor({id, platforms, name, resolution, swath, arity, since, restricted = true}){
+        super({id, platforms, name, resolution, swath, operator: Translations.getText('operator.spaceview'), arity, since, restricted});
     }
 }
 
@@ -96,6 +96,7 @@ class GF1 extends SpaceView {
     constructor({id, platforms, name, resolution, swath, since, sensor}){
         super({id, platforms, name, resolution, swath, since});
         this._sensor = sensor;
+        this._restricted = false;
     }
     get sensor() {
         return this._sensor;
@@ -286,7 +287,7 @@ class Triplesat extends Satellite {
             operator: Translations.getText('operator.twentyfirst'),
             since: '2015',
             ms: true,
-            restricted: true,
+            restricted: false,
         });
     }    
 }
@@ -304,14 +305,15 @@ const satellites = {
         new KOMPSAT({id: 'KOMPSAT3', platforms: ['KOMPSAT3'], name: 'KOMPSAT-3', resolution: 0.7, swath: 16, since: '2012'}),
         new SV1(),            
         new Satellite({id: 'IK', platforms: ['IK-2','IKONOS-2'], name: 'IKONOS', resolution: 0.8, swath: 11.3, operator: Translations.getText('operator.ge'), since: '1999 - 2015', endingDate: '2015'}),
-        new SpaceView({id: 'GF2', platforms: ['GF2'], name: 'GaoFen-2', resolution: 0.8, swath: 45, since: '2014'}),
+        new SpaceView({id: 'GF2', platforms: ['GF2'], name: 'GaoFen-2', resolution: 0.8, swath: 45, since: '2014', restricted: false}),
+        new SpaceView({id: 'GF4', platforms: ['GF4'], name: 'GaoFen-4', resolution: 50, swath: 400, since: '2015', restricted: false}),
         new KOMPSAT({id: 'KOMPSAT2', platforms: ['KOMPSAT2'], name: 'KOMPSAT-2', resolution: 1, swath: 15, since: '2006'}), 
         new Triplesat(),
         new RP_1MS(),
         new SP6_7(),
         new Satellite({id: 'BKA', platforms: ['BKA'], name: 'БелКА', resolution: 2, swath: 20, operator: Translations.getText('operator.vniiem'), since: '2012', restricted: true}),
         new GF1({id: 'GF1_2m', platforms: ['GF1'], name: 'Gaofen-1 (2 м)', resolution: 2, swath: 60, since: '2013', sensor: 'A'}),        
-        new SpaceView({id: 'ZY3', platforms: ['ZY3','ZY302'], name: 'ZiYuan 3', resolution: 2.1, swath: 51, since: '2012'}),
+        new SpaceView({id: 'ZY3', platforms: ['ZY3','ZY302'], name: 'ZiYuan 3', resolution: 2.1, swath: 51, since: '2012', restricted: false}),
         // new SP5_2MS(),
         new RP_4MS(),
         // new SP5_5MS(),
