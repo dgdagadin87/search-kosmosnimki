@@ -73,15 +73,8 @@ export default class RequestAdapter {
 
         const store = this._application.getStore();
         const searchCriteria = store.getData('searchCriteria');
-        const userInfo = store.getData('userInfo');
 
         const core = this.getCore();
-
-        if (userInfo['IsAuthenticated'] && userInfo['Role'] === 'scanex') {
-            const satellitesIds = ['WV04', 'WV03', 'WV02', 'WV01', 'GE01', 'IK'];
-            searchCriteria['satellites']['ms'] = searchCriteria['satellites']['ms'].filter(item => satellitesIds.indexOf(item.id) === -1);
-            searchCriteria['satellites']['pc'] = searchCriteria['satellites']['pc'];
-        }
 
         core.criteria = searchCriteria;
         core.geometries = this._getGeometries();
