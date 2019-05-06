@@ -150,8 +150,8 @@ export default class DrawingBridgeController extends BaseBridgeController {
                 );
 
                 // show drawing on map
-                object.bringToBack();
-
+                //object.bringToBack();
+                object.bringToFront();
 
                 // adding drawing object on list
                 this.addDrawingOnList({object, geoJSON});
@@ -290,7 +290,8 @@ export default class DrawingBridgeController extends BaseBridgeController {
             }
             drawing.options.uuid = drawingId;
             object.drawing = drawing;
-            drawing.bringToBack();
+            //drawing.bringToBack();
+            drawing.bringToFront();
             drawing.visible = true;
         }
         else {
@@ -343,7 +344,8 @@ export default class DrawingBridgeController extends BaseBridgeController {
                 currentDrawing.visible = true;
 
                 if (currentDrawing.drawing) {
-                    drawing.bringToBack();
+                    //drawing.bringToBack();
+                    drawing.bringToFront();
                     drawing.visible = true;
                 }
             }
