@@ -44,7 +44,11 @@ export default class AdapterCore {
         }
 
         let ss = serialize(ms).concat(serialize(pc));
-        return `(${ss.filter(x => x.checked).map(x => `(${x.condition(archive, this._getAuthorized())})`).join(' OR ')})`;
+        let platformsList = ss.filter(x => x.checked).map(x => `(${x.condition(archive, this._getAuthorized())})`);
+        if (platformsList.length < 1) {
+            platformsList.push('platform IN (\'_NO_\') AND islocal = FALSE');
+        }
+        return `(${platformsList.join(' OR ')})`;
     }
 
     get geometries () {
