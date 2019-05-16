@@ -33,22 +33,30 @@ export default class AdapterCore {
     get satellites () {
 
         const serialize = s => Object.keys(s).reduce((a,k) => a.concat(s[k]), []);
-        const satellitesIds = ['WV04', 'WV03', 'WV02', 'WV01', 'GE01', 'IK'];
+        const satellitesIds = ['WV04', 'WV03', 'WV02', 'WV01', 'GE01', 'IK', 'QB02'];
         let {satellites, archive} = this._criteria;
 
         let ms = satellites.ms;
         let pc = satellites.pc;
-        if (this._getAuthorized()) {
+        /*if (this._getAuthorized()) {
             ms = satellites.ms.filter(item => satellitesIds.indexOf(item.id) === -1);
             pc = satellites.pc.filter(item => satellitesIds.indexOf(item.id) === -1);
-        }
+        }*/
 
         let ss = serialize(ms).concat(serialize(pc));
-        let platformsList = ss.filter(x => x.checked).map(x => `(${x.condition(archive, this._getAuthorized())})`);
-        if (platformsList.length < 1) {
-            platformsList.push('platform IN (\'_NO_\') AND islocal = FALSE');
+        let platformsList = ss.filter(x => x.checked).map(x => {
+            return `(${x.condition(archive, this._getAuthorized())})`
+        });
+        let newPlatforms = [];
+        platformsList.forEach(item => {
+            if (item !== '()') {
+                newPlatforms.push(item);
+            }
+        });
+        if (newPlatforms.length < 1) {
+            newPlatforms.push('platform IN (\'_NO_\') AND islocal = FALSE');
         }
-        return `(${platformsList.join(' OR ')})`;
+        return `(${newPlatforms.join(' OR ')})`;
     }
 
     get geometries () {
