@@ -65,6 +65,7 @@ export default class SidebarUIElement extends BaseUIElement {
         const searchTabComponent = this.getChildComponent('searchTab');
         const resultsHeaderComponent = this.getChildComponent('resultsTab.header');
         const resutsListComponent = this.getChildComponent('resultsTab.list');
+        const tableHeaderComponent = this.getChildComponent('resultsTab.tableHeader');
         const favoritesTabComponent = this.getChildComponent('favoritesTab');
         const favoritesListComponent = this.getChildComponent('favoritesTab.list');
         const sidebarView = this.getView();
@@ -90,7 +91,8 @@ export default class SidebarUIElement extends BaseUIElement {
         resultsHeaderComponent.events.on('filter:clear', () => contourController.clearClientFilter());
         resultsHeaderComponent.events.on('results:setVisibleToCart', () => contourController.setVisibleToCart());
         resutsListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
-        resutsListComponent.events.on('filter:change', (e) => contourController.changeClientFilter(e));
+        //resutsListComponent.events.on('filter:change', (e) => contourController.changeClientFilter(e));
+        tableHeaderComponent.events.on('filter:change', (e) => contourController.changeClientFilter(e));
         favoritesListComponent.events.on('imageDetails:show', (e, bBox) => this._showImageDetails(e, bBox));
         favoritesTabComponent.events.on('makeOrder:click', () => this._showOrderDialog());
     }

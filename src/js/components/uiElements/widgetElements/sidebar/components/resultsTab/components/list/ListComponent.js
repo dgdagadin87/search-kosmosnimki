@@ -146,4 +146,11 @@ export default class ResultListComponent extends BaseComponent {
         this.events.trigger('imageDetails:show', e, bBox);
     }
 
+    sortGrid(sortData) {
+
+        const view = this.getView();
+
+        view.sort(sortData);
+    }
+
 }

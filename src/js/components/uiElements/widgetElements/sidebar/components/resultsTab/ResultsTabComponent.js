@@ -2,6 +2,7 @@ import BaseCompositedComponent from 'js/base/BaseCompositedComponent';
 
 import HeaderComponent from './components/header/HeaderComponent';
 import ListComponent from './components/list/ListComponent';
+import TableHeaderComponent from './components/tableHeader/TableHeaderComponent';
 
 import { TAB_RESULTS_NAME } from 'js/config/constants/Constants';
 
@@ -25,6 +26,10 @@ export default class ResultTabComponent extends BaseCompositedComponent {
                 constructor: HeaderComponent
             },
             {
+                index: 'tableHeader',
+                constructor: TableHeaderComponent
+            },
+            {
                 index: 'list',
                 constructor: ListComponent
             }
@@ -37,8 +42,11 @@ export default class ResultTabComponent extends BaseCompositedComponent {
 
         const application = this.getApplication();
         const store = application.getStore();
+        const tableHeader = this.getChildComponent('tableHeader');
+        const list = this.getChildComponent('list');
 
         store.on('currentTab:changeAfter', () => this._onAfterTabChangeHandler());
+        tableHeader.events.on('sortGrid', (sortData) => list.sortGrid(sortData));
     }
 
     _onAfterTabChangeHandler() {

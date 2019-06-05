@@ -1,5 +1,6 @@
 import Translations from 'scanex-translations';
-import ExtendedDataGrid from './ExtendedDataGrid';
+//import ExtendedDataGrid from './ExtendedDataGrid';
+import { DataGrid } from 'scanex-datagrid';
 
 import { getSatelliteName, getPanelHeight } from 'js/utils/CommonUtils';
 import EventTarget from 'scanex-event-target';
@@ -230,9 +231,14 @@ class ResultList extends EventTarget {
             },
         };
 
-        this._grid = new ExtendedDataGrid(
+        const sidebar = this._application.getUiElement('sidebar');
+        const resultList = sidebar.getChildComponent('resultsTab.tableHeader');
+        const view = resultList.getView();
+
+        this._grid = new DataGrid(
             this._container,
             {
+                customHeader: view,
                 application: this._application,
                 fields: this.fields, 
                 filter: item => Boolean (item.checked),
@@ -246,10 +252,10 @@ class ResultList extends EventTarget {
         this._grid.addEventListener('row:mouseout', this._onRowMouseOut);
         this._grid.addEventListener('sort', this._onSort);
 
-        this._grid._platformConstructor.addEventListener('changeClientFilter', (e) => this._onCLientFilterChange(e));
+        /*this._grid._platformConstructor.addEventListener('changeClientFilter', (e) => this._onCLientFilterChange(e));
         this._grid._cloudnessConstructor.addEventListener('changeClientFilter', (e) => this._onCLientFilterChange(e));
         this._grid._angleConstructor.addEventListener('changeClientFilter', (e) => this._onCLientFilterChange(e));
-        this._grid._acqdateConstructor.addEventListener('changeClientFilter', (e) => this._onCLientFilterChange(e));
+        this._grid._acqdateConstructor.addEventListener('changeClientFilter', (e) => this._onCLientFilterChange(e));*/
 
         this._stopPropagation = this._stopPropagation.bind(this);
     }
@@ -497,6 +503,11 @@ class ResultList extends EventTarget {
         this._disableMouseHover = true;
         this._grid.redrawRow(id, item);
         this._disableMouseHover = false;
+    }
+
+    sort(sortData) {
+
+        this._grid.sort(sortData);
     }
 }
 

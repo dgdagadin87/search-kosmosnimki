@@ -1,0 +1,196 @@
+<div class="table-list-header" ref:header>
+    <table>
+        <colgroup>
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+        </colgroup>
+        <tbody>
+            <tr>
+                <td class="table-list-col" data-field="visible" style="padding-top:20px;">
+                    <i class="table-list-sort" style="display: none"></i>
+                </td>
+                <td title="Стерео" class="table-list-col" data-field="stereo" style="padding-top:20px;padding-left:0px;">
+                    <i class="search search-stereo"></i>
+                    <i class="table-list-sort"></i>
+                </td>
+                <Satellites
+                    ref:satellites
+                    on:setSorted="changeSorting(event)"
+                    on:changeClientFilter="changeClientFilter(event)"
+                    on:onHeaderClick="onHeaderClick(event)"
+                    sort={sort}
+                    unChecked={clientFilter['unChecked']}
+                    tmpUnchecked={clientFilter['unChecked']}
+                />
+
+                <Cloudness
+                    ref:cloudness
+                    clouds={clientFilter['clouds']}
+                    on:setSorted="changeSorting(event)"
+                    on:onHeaderClick="onHeaderClick(event)"
+                    sort={sort}
+                    on:changeClientFilter="changeClientFilter(event)"
+                />
+
+                <Angles
+                    ref:angle
+                    angle={clientFilter['angle']}
+                    on:setSorted="changeSorting(event)"
+                    on:onHeaderClick="onHeaderClick(event)"
+                    sort={sort}
+                    on:changeClientFilter="changeClientFilter(event)"
+                />
+
+                <Data
+                    ref:data
+                    date={clientFilter['date']}
+                    on:setSorted="changeSorting(event)"
+                    on:onHeaderClick="onHeaderClick(event)"
+                    sort={sort}
+                    on:changeClientFilter="changeClientFilter(event)"
+                />
+                
+                <td class="table-list-col" data-field="info" style="padding-top:20px;">
+                    <i class="table-list-sort" style="display: none"></i>
+                </td>
+                <td
+                    title="Добавить все в корзину"
+                    class="table-list-col"
+                    data-field="cart"
+                    style="padding-top:20px;"
+                    on:click="onAddAllToCartClick()"
+                >
+                    <i class="cart-add cart-add-active"></i>
+                    <i class="table-list-sort" style="display: none"></i>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    import Translations from 'scanex-translations';
+    import Satellites from './Satellites.html';
+    import Cloudness from './Cloudness.html';
+    import Angles from './Angles.html';
+    import Data from './Data.html';
+
+    const now = new Date();
+
+    export default {
+
+        data () {
+            return {
+                clientFilter: {
+                    unChecked: [],
+                    clouds: [0, 100],
+                    angle: [0, 80],
+                    date: [now, now]
+                },
+                sort: { field: 'acqdate', asc: true }
+            };
+        },
+
+        methods: {
+            onCancelClick() {
+
+                this.set({hidden: true});
+            },
+
+            onCopyClick() {
+
+                const input = this.refs.textInput;
+
+                this.fire('copy', input);
+                this.set({hidden: true});
+            },
+
+            changeSorting(data) {
+
+                this.set({sort: data});
+                this.fire('setSorted', data);
+            },
+
+            changeClientFilter(event) {
+
+                this.fire('changeClientFilter', event);
+            },
+
+            setData(data) {
+
+                const {satellites = [], clientFilter: {filterData: {clouds = [], angle = [], date:filterDate = []}}} = data;
+
+                this.refs.satellites.set({satellites, isToggledHidden: true});
+                this.refs.cloudness.set({clouds, value: clouds, tmpValue: clouds, isToggledHidden: true});
+                this.refs.angle.set({angle, value: angle, tmpValue: angle, isToggledHidden: true});
+                this.refs.data.setData(filterDate);
+            },
+
+            clearFilter(filterData) {
+
+                const {clientFilter: {filterData: {unChecked = [], clouds = [], angle = [], date = []}}} = filterData;
+
+                this.refs.satellites.set({
+                    unChecked,
+                    tmpUnchecked: unChecked,
+                    isToggledHidden: true
+                });
+
+                this.refs.cloudness.clearFilter(clouds);
+
+                this.refs.angle.clearFilter(angle);
+
+                this.refs.data.clearFilter(date);
+            },
+
+            onHeaderClick(state) {
+
+                if (state === 'satellites') {
+                    this.refs.cloudness.set({isToggledHidden: true});
+                    this.refs.angle.set({isToggledHidden: true});
+                    this.refs.data.set({isToggledHidden: true});
+                }
+                else if (state === 'clouds') {
+                    this.refs.satellites.set({isToggledHidden: true});
+                    this.refs.angle.set({isToggledHidden: true});
+                    this.refs.data.set({isToggledHidden: true});
+                }
+                else if (state === 'angles') {
+                    this.refs.satellites.set({isToggledHidden: true});
+                    this.refs.cloudness.set({isToggledHidden: true});
+                    this.refs.data.set({isToggledHidden: true});
+                }
+                else {
+                    this.refs.satellites.set({isToggledHidden: true});
+                    this.refs.cloudness.set({isToggledHidden: true});
+                    this.refs.angle.set({isToggledHidden: true});
+                }
+            },
+
+            onAddAllToCartClick(){
+
+                this.fire('addAllToCart');
+            }
+        },
+
+        helpers: {
+            translate(key) {
+                return Translations.getText(key);
+            },
+            debug(param) {
+
+                console.log(param);
+            }
+        },
+
+        components: { Satellites, Cloudness, Angles, Data }
+    }
+
+</script>

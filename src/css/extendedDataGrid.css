@@ -124,6 +124,9 @@
 .filterable-cloudness-container {
     width: 215px;
 }
+.filterable-date-container {
+    width: 195px;
+}
 .filterable-field-container .slider-widget-tick-left,
 .filterable-field-container .slider-widget-tick-right {
     border-radius: 3px !important;

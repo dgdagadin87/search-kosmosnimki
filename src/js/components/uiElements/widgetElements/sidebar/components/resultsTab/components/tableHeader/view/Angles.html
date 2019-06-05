@@ -1,0 +1,172 @@
+<td
+    on:mouseover="onSortHover()"
+    on:mouseout="onSortOut()"
+    style="padding-left:3px;" class="table-list-col" data-field="tilt"
+>
+    <div class="filterable-field-container">
+        <div class="on-hover-div">
+            <div class="filterable-applied">
+                <div style="display: {isFilterApplied ? 'block' : 'none'};">
+                    <span class="min">{value[0]}</span>-<span class="max">{value[1]}</span>
+                </div>
+            </div>
+            <span
+                on:click="onHeaderClick()"
+                class="filterable-header-angle filterable-header {isToggledHidden ? '' : 'active'} {isFilterApplied  ? 'applied' : ''}"
+            >Угол</span>
+            <i
+                on:click="onSortClick()"
+                class="table-list-sort table-list-sort-{sortMethod}"
+                style="visibility: {isSortHidden ? 'hidden' : 'visible'};"
+            />
+        </div>
+        <div
+            on:mouseover="onFilterHover(event)"
+            style="visibility: {isToggledHidden ? 'hidden' : 'visible'}; padding-top:10px;"
+            class="togglable-content-angle togglable-content filterable-cloudness-container"
+        >
+            <div style="text-align: left;">
+                <input class="extended-slider-input min-input" type="text" value={value[0]} />
+                -
+                <input class="extended-slider-input max-input" type="text" value={value[1]} />
+            </div>
+            <div class="results-angle-slider-container" ref:sliderContainer></div>
+            <div class="min-value">{angle[0]}</div>
+            <div class="max-value">{angle[1]}</div>
+            <div style="clear: both;"></div>
+            <div on:click="onApplyClick()" class="apply">Применить</div>
+        </div>
+    </div>
+</td>
+
+<script>
+    
+    import RangeWidget from '../extended/ExtendedSliderwidget';
+
+    export default {
+
+        data () {
+            return {
+                sort: { field: 'acqdate', asc: false },
+                isMouseHovered: false,
+                isToggledHidden: true,
+                value: [0, 80],
+                tmpValue: [0, 80],
+                angle: [0, 80]
+
+            };
+        },
+
+        oncreate() {
+            
+            const {angle, value} = this.get();
+            const limits = {min: angle[0], max: angle[1]};
+
+            this._slider = new RangeWidget(this.refs.sliderContainer, limits);
+            this._slider.values = value;
+
+            this._slider._bar.querySelector('.slider-widget-range').style.width = '215px';
+
+            this._slider.addEventListener('stop', this.onSliderStopHandler.bind(this));
+        },
+
+        computed: {
+            isSortHidden: ({sort, isMouseHovered}) => {
+
+                const {field = ''} = sort;
+
+                if (field === 'cloudness') {
+                    return false;
+                }
+
+                if (isMouseHovered) {
+                    return false;
+                }
+
+                return true;
+            },
+
+            sortMethod: ({sort}) => !sort.asc ? 'down' : 'up',
+
+            isFilterApplied: ({value, angle}) => {
+                return (value[0] !== angle[0] || value[1] !== angle[1]);
+            }
+        },
+
+        methods: {
+            onFilterHover(ev) {
+
+                ev.stopPropagation();
+            },
+
+            onSortHover() {
+
+                this.set({isMouseHovered: true});
+            },
+            
+            onSortOut() {
+
+                this.set({isMouseHovered: false});
+            },
+
+            onSortClick() {
+
+                const {sort = {}} = this.get();
+                const {asc = false} = sort;
+
+                this.fire('setSorted', {field: 'cloudness', asc: !asc});
+            },
+
+            onApplyClick() {
+
+                const {tmpValue = []} = this.get();
+
+                this.set({value: [...tmpValue], isToggledHidden: true});
+
+                this.fire('changeClientFilter', { detail: {name: 'angle', value: tmpValue} });
+            },
+
+            onHeaderClick() {
+
+                const {isToggledHidden = true, value = []} = this.get();
+                let data = {isToggledHidden: !isToggledHidden};
+
+                if (isToggledHidden === false) {
+                    this._slider.values = value;
+                }
+
+                this.set(data);
+
+                this.fire('onHeaderClick', 'angles');
+            },
+
+            onSliderStopHandler(e) {
+
+                const {detail = [0, 100]} = e;
+
+                this.set({ tmpValue: detail });
+            },
+
+            clearFilter(angle) {
+
+                this.set({ isToggledHidden: true, value: angle, tmpValue: angle, angle });
+                this._slider.values = angle;
+
+                this._slider.setLimits(angle[0], angle[1]);
+
+                this._slider._bar.querySelector('.slider-widget-range').style.width = '215px';
+            }
+        },
+
+        helpers: {
+            translate(key) {
+                return Translations.getText(key);
+            },
+            debug(param) {
+
+                console.log(param);
+            }
+        }
+    }
+
+</script>

@@ -1,0 +1,299 @@
+<td
+    on:mouseover="onSortHover()"
+    on:mouseout="onSortOut()"
+    style="padding-left:10px;" class="table-list-col" data-field="acqdate"
+>
+    <div class="filterable-field-container">
+        <div class="on-hover-div">
+            <div class="filterable-applied">
+                <div style="display: {isFilterApplied ? 'block' : 'none'};">
+                    <span class="date-diff">{datesDiff}</span>
+                </div>
+            </div>
+            <span
+                on:click="onHeaderClick()"
+                class="filterable-header-date filterable-header {isToggledHidden ? '' : 'active'} {isFilterApplied ? ' applied' : ''}"
+            >Дата</span>
+            <i
+                on:click="onSortClick()"
+                class="table-list-sort table-list-sort-{sortMethod}"
+                style="visibility: {isSortHidden ? 'hidden' : 'visible'};"
+            />
+        </div>
+        <div
+            style="visibility: {isToggledHidden ? 'hidden' : 'visible'};"
+            class="togglable-content-date togglable-content filterable-date-container"
+        >
+            <div style="text-align: left; padding-top: 10px;">
+                <input
+                    ref:startDate
+                    type="text" value=""
+                    class="search-options-period-from-value min-input results-filter-date-start-container"
+                />
+                -
+                <input
+                    ref:endDate
+                    type="text" value=""
+                    class="search-options-period-to-value  max-input results-filter-date-end-container"
+                />
+            </div>
+            <div class="results-date-slider-container" ref:sliderContainer></div>
+            <div class="min-value">{getMonthName(minDate.getMonth())} {minDate.getFullYear()}</div>
+            <div class="max-value">{getMonthName(maxDate.getMonth())} {maxDate.getFullYear()}</div>
+            <div
+                on:click="onApplyClick()"
+                class="apply"
+                style="margin-top:25px;"
+            >Применить</div>
+        </div>
+    </div>
+</td>
+
+<script>
+    
+    import EventTarget from 'scanex-event-target';
+    import Translations from 'scanex-translations';
+    import Pikaday from 'pikaday';
+
+    import ExtendedSliderWidget from '../extended/ExtendedDateSliderWidget';
+
+    import {getDifferenceBetweenDates, compareDates, getNowDate} from 'js/utils/CommonUtils';
+
+    const now = new Date();
+
+    export default {
+
+        data () {
+            return {
+                sort: { field: 'acqdate', asc: false },
+                isMouseHovered: false,
+                isToggledHidden: true,
+                value: [now, now],
+                tmpValue: [now, now],
+                date: [now, now]
+            };
+        },
+
+        oncreate() {
+            
+            this.initDatePicker();
+            this.initSlider();
+        },
+
+        computed: {
+            isSortHidden: ({sort, isMouseHovered}) => {
+
+                const {field = ''} = sort;
+
+                if (field === 'acqdate') {
+                    return false;
+                }
+
+                if (isMouseHovered) {
+                    return false;
+                }
+
+                return true;
+            },
+
+            isFilterApplied: ({value, date}) => {
+
+                const minDate = date[0] ? date[0] : now;
+                const maxDate = date[1] ? date[1] : now;
+                const minValue = value[0] ? value[0] : now;
+                const maxValue = value[1] ? value[1] : now;
+
+                return !compareDates(minDate, minValue) || !compareDates(maxDate, maxValue);
+            },
+
+            sortMethod: ({sort}) => !sort.asc ? 'down' : 'up',
+
+            datesDiff: ({value}) => {
+
+                const minValue = value[0] ? value[0] : now;
+                const maxValue = value[1] ? value[1] : now;
+
+                return getDifferenceBetweenDates(minValue, maxValue);
+            },
+
+            minDate: ({date}) => date ? date[0] : now,
+            maxDate: ({date}) => date ? date[1] : now
+        },
+
+        methods: {
+
+            setData(filterDate, setLimits = true) {
+
+                this.set({date: filterDate, value: filterDate, tmpValue: filterDate, isToggledHidden: true});
+
+                if (setLimits) {
+                    this._dateSlider.setLimits(filterDate[0].getTime(), filterDate[1].getTime());
+                }
+                this._dateSlider.values = [filterDate[0].getTime(), filterDate[1].getTime()];
+
+                if (setLimits) {
+                    this._dateSlider._bar.querySelector('.slider-widget-range').style.width = '195px';
+                }
+
+                this._startDate.setDate(new Date(filterDate[0]));
+                this._endDate.setDate(new Date(filterDate[1]));
+            },
+
+            clearFilter(filterDate) {
+                this.setData(filterDate);
+            },
+
+            onSortHover() {
+
+                this.set({isMouseHovered: true});
+            },
+
+            onSortOut() {
+
+                this.set({isMouseHovered: false});
+            },
+
+            onSortClick() {
+
+                const {sort = {}} = this.get();
+                const {asc = false} = sort;
+
+                this.fire('setSorted', {field: 'acqdate', asc: !asc});
+            },
+
+            onHeaderClick() {
+
+                const {isToggledHidden = true, value = []} = this.get();
+                let data = {isToggledHidden: !isToggledHidden};
+
+                this.set(data);
+
+                if (!isToggledHidden) {
+
+                    this.setData(value, false);
+                }
+
+                this.fire('onHeaderClick', 'data');
+            },
+
+            initDatePicker() {
+
+                const {minDate, maxDate} = this.get();
+
+                this._dateFormat = 'dd.mm.yy';
+                let i18n = {
+                    previousMonth : 'Предыдущий месяц',
+                    nextMonth     : 'Следующий месяц',
+                    months        : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+                    weekdays      : ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],
+                    weekdaysShort : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
+                };
+                switch (Translations.getLanguage()){
+                    default:
+                    case 'rus':
+                        moment.locale('ru');
+                        break;
+                    case 'eng':
+                        moment.locale('en');
+                        i18n = {
+                        previousMonth : 'Previous Month',
+                        nextMonth     : 'Next Month',
+                        months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
+                        weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+                        weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+                        };
+                        break;
+                }
+
+                this._startDate = new Pikaday ({
+                    field: this.refs.startDate,
+                    format: 'DD.MM.YYYY',
+                    yearRange: 20,
+                    i18n: i18n,
+                    keyboardInput: false,
+                    blurFieldOnSelect: false,
+                });    
+
+                this._endDate = new Pikaday ({
+                    field: this.refs.endDate,
+                    format: 'DD.MM.YYYY',
+                    yearRange: 20,
+                    i18n: i18n,
+                    keyboardInput: false,
+                    blurFieldOnSelect: false,
+                });
+
+                this._startDate.setDate(minDate);
+                this._endDate.setDate(maxDate);
+            },
+
+            initSlider() {
+
+                const {minDate, maxDate, value = [now, now]} = this.get();
+
+                this._dateSlider = new ExtendedSliderWidget(
+                    this.refs.sliderContainer,
+                    {
+                        mode: 'date',
+                        min: minDate.getTime(),
+                        max: maxDate.getTime(),
+                        startDate: this._startDate,
+                        endDate: this._endDate
+                    }
+                );
+
+                const intValues = [minDate.getTime(), maxDate.getTime()];
+
+                this._dateSlider.values = intValues;
+                this._dateSlider._bar.querySelector('.slider-widget-range').style.width = '195px';
+
+                this._dateSlider.addEventListener('stop', this.onSliderStopHandler.bind(this));
+            },
+
+            onSliderStopHandler(e) {
+
+                const nowTime = now.getTime();
+                const {detail = [nowTime, nowTime]} = e;
+                const correctData = [new Date(detail[0]), new Date(detail[1])];
+
+                this.set({ tmpValue: correctData });
+            },
+
+            onApplyClick() {
+
+                const {tmpValue = []} = this.get();
+
+                this.set({value: [...tmpValue], isToggledHidden: true});
+
+                this.fire('changeClientFilter', { detail: {name: 'date', value: tmpValue} });
+            },
+        },
+
+        helpers: {
+            translate(key) {
+                return Translations.getText(key);
+            },
+
+            getMonthName(month) {
+
+                const monthObject = {
+                    0: 'янв',
+                    1: 'фев',
+                    2: 'мар',
+                    3: 'апр',
+                    4: 'май',
+                    5: 'июн',
+                    6: 'июл',
+                    7: 'авг',
+                    8: 'сен',
+                    9: 'окт',
+                    10: 'ноя',
+                    11: 'дек'
+                }
+
+                return monthObject[parseInt(month)];
+            }
+        }
+    }
+
+</script>

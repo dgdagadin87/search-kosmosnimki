@@ -1,0 +1,214 @@
+<td
+    on:mouseover="onSortHover()"
+    on:mouseout="onSortOut()"
+    style="padding-left:0;" class="table-list-col" data-field="platform"
+>
+    <div class="filterable-field-container">
+        <div class="on-hover-div">
+            <div class="filterable-applied">
+                <div style="display: {unChecked.length > 0 ? 'block' : 'none'};">
+                    <span class="checked">{checkedSatellites}</span>/<span class="all">{satellites.length}</span>
+                </div>
+            </div>
+            <span
+                on:click="onHeaderClick()"
+                class="filterable-header-platform filterable-header {isToggledHidden ? '' : 'active'} {unChecked.length > 0 ? 'applied' : ''}"
+            >Спутник</span>
+            <i
+                on:click="onSortClick()"
+                class="table-list-sort table-list-sort-{sortMethod}"
+                style="visibility: {isSortHidden ? 'hidden' : 'visible'};"
+            />
+        </div>
+        <div
+            style="visibility: {isToggledHidden ? 'hidden' : 'visible'};"
+            class="togglable-content-platform togglable-content filterable-satellites-container"
+        >
+            <fieldset class="search-options-satellites-ms">
+                {#if satellites.length > 3}
+                    <div class="satellite-col">
+                        <input
+                            on:click="onAllCheckboxClick(event)"
+                            checked={tmpUnchecked.length > 0 ? false : 'checked'}
+                            type="checkbox"
+                            id="sat_check_all"
+                            class="all-checkbox"
+                        />
+                        <strong>Все спутники</strong>
+                    </div>
+                {/if}
+                {#each satellites as satellite}
+                    <div class="satellite-col">
+                        <input
+                            on:click="onCheckboxClick(event, satellite.id)"
+                            checked={!isInUnchecked(satellite, tmpUnchecked) ? 'checked' : false}
+                            type="checkbox"
+                            id="sat_{satellite.id}"
+                            value={satellite.id}
+                            class="s-checkbox"
+                        />
+                        <label for="sat_{satellite.id}">{satellite.name}</label>
+                    </div>
+                {/each}
+            </fieldset>
+            <div on:click="onApplyClick()" class="apply">Применить</div>
+        </div>
+    </div>
+</td>
+
+<script>
+    
+    export default {
+
+        data () {
+            return {
+                satellites: [],
+                unChecked: [],
+                tmpUnchecked: [],
+                sort: { field: 'acqdate', asc: false },
+                isMouseHovered: false,
+                isToggledHidden: true
+            };
+        },
+
+        computed: {
+            isSortHidden: ({sort, isMouseHovered}) => {
+
+                const {field = ''} = sort;
+
+                if (field === 'platform') {
+                    return false;
+                }
+
+                if (isMouseHovered) {
+                    return false;
+                }
+
+                return true;
+            },
+
+            sortMethod: ({sort}) => !sort.asc ? 'down' : 'up',
+
+            checkedSatellites: ({satellites, unChecked}) => {
+
+                let checkedCount = 0;
+                satellites.forEach(satellite => {
+                    const {platforms} = satellite;
+                    if (platforms.some(platform => unChecked.indexOf(platform) === -1)) {
+                        checkedCount += 1;
+                    }
+                });
+
+                return checkedCount;
+            }
+        },
+
+        methods: {
+            onSortHover() {
+
+                this.set({isMouseHovered: true});
+            },
+            
+            onSortOut() {
+
+                this.set({isMouseHovered: false});
+            },
+
+            onSortClick() {
+
+                const {sort = {}} = this.get();
+                const {asc = false} = sort;
+
+                this.fire('setSorted', {field: 'platform', asc: !asc});
+            },
+
+            onHeaderClick() {
+
+                const {isToggledHidden = true, unChecked = []} = this.get();
+                let data = {isToggledHidden: !isToggledHidden};
+
+                if (isToggledHidden === false) {
+                    data['tmpUnchecked'] = [ ...unChecked ];
+                }
+
+                this.set(data);
+
+                this.fire('onHeaderClick', 'satellites');
+            },
+
+            onApplyClick() {
+
+                const { tmpUnchecked = [] } = this.get();
+                const unChecked = [ ...tmpUnchecked ];
+
+                this.set({ unChecked, isToggledHidden: true });
+
+                this.fire('changeClientFilter', { detail: {name: 'unChecked', value: unChecked} });
+            },
+
+            onCheckboxClick(e, id) {
+
+                const {target} = e;
+                const {checked} = target;
+                const {tmpUnchecked = []} = this.get();
+                const currentPlatforms = this._getSatellitePlatformsById(id);
+
+                let newUnchecked = [ ...tmpUnchecked ];
+
+                currentPlatforms.forEach(platform => {
+                    const unCheckedIndex = newUnchecked.indexOf(platform);
+                    if (!checked) {
+                        if (unCheckedIndex === -1) {
+                            newUnchecked.push(platform);
+                        }
+                    }
+                    else {
+                        newUnchecked.splice(newUnchecked.indexOf(platform), 1);
+                    }
+                });
+
+                this.set({ tmpUnchecked: newUnchecked });
+            },
+
+            onAllCheckboxClick(e) {
+
+                const {target} = e;
+                const {checked} = target;
+                const {satellites = []} = this.get();
+
+                if (checked) {
+                    this.set({tmpUnchecked: []});
+                }
+                else {
+                    let platforms = [];
+                    satellites.forEach(item => {
+                        const currentPlatforms = item.platforms;
+                        currentPlatforms.forEach(platform => {
+                            if (platforms.indexOf(platform) === -1){
+                                platforms.push(platform);
+                            }
+                        });
+                    });
+                    this.set({tmpUnchecked: platforms});
+                }
+            },
+
+            _getSatellitePlatformsById(satelliteId) {
+
+                const currentSatellite = this.get()['satellites'].filter(item => item['_id'] === satelliteId);
+
+                return currentSatellite[0]['_platforms'];
+            }
+        },
+
+        helpers: {
+            translate(key) {
+                return Translations.getText(key);
+            },
+            isInUnchecked(satellite, tmpUnchecked) {
+                return satellite.platforms.some(platform => tmpUnchecked.indexOf(platform) !== -1 );
+            }
+        }
+    }
+
+</script>

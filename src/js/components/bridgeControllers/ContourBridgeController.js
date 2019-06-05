@@ -392,10 +392,12 @@ export default class ContourBridgeController extends BaseBridgeController {
         if (!fromApplyingState) {
             eventList.push('contours:researchedMap');
             eventList.push('contours:researchedList');
+            eventList.push('contours:researchedListHeader');
         }
         else {
             eventList.push('contours:startResearchedMap');
             eventList.push('contours:startResearchedList');
+            eventList.push('contours:startResearchedListHeader');
         }
 
         store.rewriteData('contours', resultsForAdding, eventList);
@@ -418,7 +420,15 @@ export default class ContourBridgeController extends BaseBridgeController {
             }
         };
 
-        store.rewriteData('clientFilter', dataToRewrite, ['clientFilter:changeList','clientFilter:changeMap']);
+        store.rewriteData(
+            'clientFilter',
+            dataToRewrite,
+            [
+                'clientFilter:changeList',
+                'clientFilter:changeMap',
+                'clientFilter:clear'
+            ]
+        );
     }
 
     changeClientFilter(e) {
@@ -459,7 +469,6 @@ export default class ContourBridgeController extends BaseBridgeController {
         else {
             const activeIcon = store.getMetaItem('activeIcon');
             if (activeIcon) {
-                console.log('RRRRRRRRRRRR')
                 return;
             }
             let { gmx: {id}} = e;
