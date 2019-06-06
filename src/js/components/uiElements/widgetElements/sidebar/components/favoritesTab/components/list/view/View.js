@@ -250,11 +250,11 @@ class FavoritesList extends EventTarget {
                 
                 break;     
             default:
-                k = Object.keys(this._fields).indexOf('visible');
+                /*k = Object.keys(this._fields).indexOf('visible');
                 btn = row.querySelectorAll('td')[k].querySelector('i');
                 btn.classList.remove('search-visibility-on');
                 btn.classList.add('search-visibility-off');
-                item.visible = true;
+                item.visible = true;*/
 
                 event.initEvent('visible', false, false);
                 event.detail = item;

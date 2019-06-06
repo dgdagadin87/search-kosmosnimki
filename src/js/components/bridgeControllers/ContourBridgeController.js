@@ -71,8 +71,8 @@ export default class ContourBridgeController extends BaseBridgeController {
 
         events.trigger('contours:zoomMap', gmxId);
 
-        const event = {detail: {gmx_id: gmxId}};
-        this.showQuicklookOnListAndMap(event);
+        //const event = {detail: {gmx_id: gmxId}};
+        //this.showQuicklookOnListAndMap(event);
     }
 
     setSelectedOnListAndMap(e) {
