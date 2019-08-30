@@ -78,14 +78,14 @@ class DG extends Satellite{
     constructor ({id, platforms, name, resolution, swath, since, ms, endingDate}){
         super({id, platforms, name, resolution, swath, operator: Translations.getText('operator.dg'), since, ms, endingDate});
     }
-    condition (archive) {
+    /*condition (archive) {
 
         if (archive === 'local') {
             return '';
         }
 
         return `platform IN (${this.platforms.map(x => `'${x}'`).join(',')}) AND islocal = FALSE`;
-    }
+    }*/
 }
 
 class KOMPSAT extends Satellite {
