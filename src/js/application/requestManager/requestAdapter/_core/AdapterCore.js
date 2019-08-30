@@ -32,6 +32,8 @@ export default class AdapterCore {
 
     get satellites () {
 
+        let {satellites, archive} = this._criteria;
+
         let serialize = s => Object.keys(s).reduce((a,k) => a.concat(s[k]), []);
         let ss = serialize(satellites.ms).concat(serialize(satellites.pc));
 
